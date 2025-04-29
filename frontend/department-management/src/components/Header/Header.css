@@ -1,0 +1,72 @@
+.header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 50px 0;
+    z-index: 10;
+  }
+  
+  .header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  .nav ul {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .nav ul li {
+    margin-left: 20px;
+  }
+  
+  .nav ul li:first-child {
+    margin-left: 0;
+  }
+  
+  .nav ul li a {
+    text-decoration: none;
+    font-size: 18px;
+    color: black;
+    padding: 15px 25px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+  }
+  
+  .nav ul li a:hover {
+    background-color: orange;
+    color: white;
+  }
+  
+  .nav ul li a.active {
+    background-color: orange;
+    color: white;
+  }
+  
+  .auth-buttons {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .auth-buttons button {
+    padding: 15px 25px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 18px;
+    background-color: orange;
+    color: black;
+    transition: background-color 0.3s ease;
+  }
+  
+  .auth-buttons button:hover {
+    background-color: darkorange;
+  }
+  
