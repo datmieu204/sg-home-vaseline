@@ -1,0 +1,12 @@
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, func, Date, Float
+from app.core.database import Base
+
+class Household(Base):
+    __tablename__ = "households"
+    #
+    household_id = Column(String, primary_key=True, index=True, autoincrement=True, nullable=False)
+    account_id = Column(String, ForeignKey("accounts.account_id"), nullable=False)
+    number_of_members = Column(Integer, nullable=False)
+    name = Column(String, nullable=False)
+    phone = Column(String, nullable=False)
+    room_number = Column(String, nullable=False)
