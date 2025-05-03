@@ -1,6 +1,6 @@
 from .department import Department
 from .employee import Employee, EmployeePosition, EmployeeStatus
-from .household import Household
+from .household import Household, HouseholdStatus
 from .incident import Incident
 from .invoice import Invoice
 from .invoice_detail import InvoiceDetail
@@ -29,4 +29,5 @@ __all__ = [
     "EmployeePosition",
     "EmployeeStatus",
     "AccountStatus",
+    "HouseholdStatus",
 ]

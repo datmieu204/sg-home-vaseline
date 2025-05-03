@@ -16,9 +16,9 @@ app = FastAPI()
 #     return {"access_token": access_token, "token_type": "bearer"}
 
 
-from app.routers import admin, department_head, employee, resident
+from app.routers import admin, household, manager, staff
 
 app.include_router(admin.admin_router)
-# app.include_router(department_head_router)
-# app.include_router(employee_router)
-# app.include_router(resident_router)
+# app.include_router(household.household_router)
+# app.include_router(manager.manager_router)
+# app.include_router(staff.staff_router)
