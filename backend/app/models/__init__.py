@@ -1,5 +1,5 @@
 from .department import Department
-from .employee import Employee
+from .employee import Employee, EmployeePosition, EmployeeStatus
 from .household import Household
 from .incident import Incident
 from .invoice import Invoice
@@ -8,8 +8,8 @@ from .notification import Notification
 from .payment import Payment
 from .service import Service
 from .service_registration import ServiceRegistration
-from .task import Task
-from .account import Account
+from .task import Task, TaskStatus
+from .account import Account, AccountStatus
 
 __all__ = [
     "Department",
@@ -23,6 +23,10 @@ __all__ = [
     "Service",
     "ServiceRegistration",
     "Task",
+    "TaskStatus",
     "User",
     "NewModel",
+    "EmployeePosition",
+    "EmployeeStatus",
+    "AccountStatus",
 ]
