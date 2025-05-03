@@ -9,7 +9,8 @@ from .payment import Payment
 from .service import Service
 from .service_registration import ServiceRegistration
 from .task import Task, TaskStatus
-from .account import Account, AccountStatus
+from .account_employee import AccountEmployee
+from .account_household import AccountHousehold
 
 __all__ = [
     "Department",
@@ -28,6 +29,7 @@ __all__ = [
     "NewModel",
     "EmployeePosition",
     "EmployeeStatus",
-    "AccountStatus",
+    "AccountEmployee",
+    "AccountHousehold",
     "HouseholdStatus",
 ]

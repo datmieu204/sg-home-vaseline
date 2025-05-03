@@ -150,7 +150,7 @@ def disable_household(household_id: str, db: Session = Depends(get_db)):
 
 # -------------------------------------------------------------
 
-@admin_router.get("/manager_tasks")
+@admin_router.get("/tasks/managers")
 def get_tasks(db: Session = Depends(get_db)):
     # Lấy danh sách công việc mà assigner là head_manager và assignee là manager
     EmployeeAssigner = aliased(Employee, name="employees_assigner")
@@ -163,6 +163,26 @@ def get_tasks(db: Session = Depends(get_db)):
         .filter(EmployeeAssignee.position == EmployeePosition.manager)\
         .all()
     
+    task_list = [{"name_task": task.name_task, "deadline": task.deadline, "status": task.status.value} for task in tasks]
+    
+    return {"tasks": task_list}
+
+
+
+@admin_router.get("/tasks/managers/receptions")
+def get_reception_tasks(db: Session = Depends(get_db)):
+    # Lấy danh sách công việc mà assigner là head_manager và assignee là reception
+    EmployeeAssigner = aliased(Employee, name="employees_assigner")
+    EmployeeAssignee = aliased(Employee, name="employees_assignee")
+
+
+    tasks = db.query(Task)\
+        .join(EmployeeAssigner, Task.assigner_id == EmployeeAssigner.employee_id)\
+        .filter(EmployeeAssigner.position == EmployeePosition.head_manager)\
+        .join(EmployeeAssignee, Task.assignee_id == EmployeeAssignee.employee_id)\
+        .filter(EmployeeAssignee.position == EmployeePosition.reception)\
+        .all()
+
     task_list = [{"name_task": task.name_task, "deadline": task.deadline, "status": task.status.value} for task in tasks]
     
     return {"tasks": task_list}

@@ -2,7 +2,6 @@ from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, f
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
-
 class Department(Base):
     __tablename__ = "departments"
     #
