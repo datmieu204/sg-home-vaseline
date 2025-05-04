@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 # from app.auth import verify_password, create_access_token
-from app.models import Account
+from app.models import Employee, Household, AccountEmployee, AccountHousehold, Task, EmployeePosition, TaskStatus, EmployeeStatus, HouseholdStatus
 
 app = FastAPI()
 
@@ -18,7 +18,7 @@ app = FastAPI()
 
 from app.routers import admin, household, manager, staff
 
-app.include_router(admin.admin_router)
-# app.include_router(household.household_router)
+# app.include_router(admin.admin_router)
+app.include_router(household.household_router)
 # app.include_router(manager.manager_router)
 # app.include_router(staff.staff_router)

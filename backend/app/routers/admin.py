@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, aliased
 from app.core.database import get_db
-from app.models import Employee, Household, Account, Task, EmployeePosition, TaskStatus, EmployeeStatus, AccountStatus, HouseholdStatus
+from app.models import Employee, Household, AccountEmployee, AccountHousehold, Task, EmployeePosition, TaskStatus, EmployeeStatus, HouseholdStatus
 from pydantic import BaseModel
 from datetime import datetime, date
 from enum import Enum
