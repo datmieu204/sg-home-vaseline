@@ -1,4 +1,4 @@
-from .department import Department
+from .department import Department, DepartmentType
 from .employee import Employee, EmployeePosition, EmployeeStatus
 from .household import Household, HouseholdStatus
 from .incident import Incident
@@ -14,6 +14,7 @@ from .account_household import AccountHousehold
 
 __all__ = [
     "Department",
+    "DepartmentType",
     "Employee",
     "Household",
     "Incident",
@@ -25,8 +26,6 @@ __all__ = [
     "ServiceRegistration",
     "Task",
     "TaskStatus",
-    "User",
-    "NewModel",
     "EmployeePosition",
     "EmployeeStatus",
     "AccountEmployee",
