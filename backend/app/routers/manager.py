@@ -360,3 +360,268 @@ def get_task_staff_detail(
         deadline=task.deadline,
         description=task.description
     )
+
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# Add Task for Staff
+
+class AddTaskRequest(BaseModel):
+    task_name: str
+    assignee_id: str
+    deadline: Optional[datetime] = None
+    description: Optional[str] = None
+
+
+@manager_router.post("/tasks_staffs", response_model=TaskDetailResponse)
+def add_task_for_staff(
+    employee_id: str,
+    task_data: AddTaskRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Manager giao nhiệm vụ cho staff.
+    """
+    manager = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.manager,
+        Employee.status == EmployeeStatus.active
+    ).first()
+
+    if not manager:
+        raise HTTPException(status_code=404, detail="Manager not found or not active")
+
+    staff = db.query(Employee).filter(
+        Employee.employee_id == task_data.assignee_id,
+        Employee.position == EmployeePosition.staff,
+        Employee.status == EmployeeStatus.active
+    ).first()
+
+    if not staff:
+        raise HTTPException(status_code=404, detail="Staff not found or not active")
+
+    new_task_id = f'TASK_STAFF_' + str(db.query(Task).count() + 1)
+
+    new_task = Task(
+        task_id=new_task_id,
+        name_task=task_data.task_name,
+        assigner_id=employee_id,
+        assignee_id=task_data.assignee_id,
+        status=TaskStatus.in_progress,
+        assigned_time=datetime.utcnow(),
+        deadline=task_data.deadline,
+        description=task_data.description
+    )
+
+    db.add(new_task)
+    db.commit()
+    db.refresh(new_task)
+
+    return TaskDetailResponse(
+        task_id=new_task.task_id,
+        task_name=new_task.name_task,
+        assigner_id=new_task.assigner_id,
+        assigner_name=manager.employee_name,
+        assignee_id=new_task.assignee_id,
+        assignee_name=staff.employee_name,
+        status=new_task.status,
+        assigned_time=new_task.assigned_time,
+        deadline=new_task.deadline,
+        description=new_task.description
+    )
+
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# View List Accounts of Staffs of Manager
+
+class StaffAccountResponse(BaseModel):
+    employee_id: str
+    employee_name: str
+    phone: str
+    address: str
+    status: EmployeeStatus
+    begin_date: date
+    username: str
+
+    class Config:
+        from_attributes = True
+
+
+@manager_router.get("/accounts/staffs", response_model=List[StaffAccountResponse])
+def get_staff_accounts(
+    employee_id: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Lấy danh sách tài khoản của các nhân viên dưới quyền của manager.
+    """
+    manager = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.manager,
+        Employee.status == EmployeeStatus.active
+    ).first()
+
+    if not manager:
+        raise HTTPException(status_code=404, detail="Manager not found or not active")
+
+    staffs = db.query(Employee).filter(
+        Employee.department_id == manager.department_id,
+        Employee.position == EmployeePosition.staff,
+        Employee.status == EmployeeStatus.active
+    ).all()
+
+    staff_accounts = []
+    for staff in staffs:
+        account = db.query(AccountEmployee).filter(
+            AccountEmployee.employee_id == staff.employee_id
+        ).first()
+        if account:
+            staff_accounts.append(StaffAccountResponse(
+                employee_id=staff.employee_id,
+                employee_name=staff.employee_name,
+                phone=staff.phone,
+                address=staff.address,
+                status=staff.status,
+                begin_date=staff.begin_date,
+                username=account.username
+            ))
+
+    return staff_accounts
+
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# View Account Detail of Staffs of Manager
+
+class StaffAccountDetailResponse(BaseModel):
+    employee_id: str
+    employee_name: str
+    phone: str
+    address: str
+    status: EmployeeStatus
+    begin_date: date
+    username: str
+
+    class Config:
+        from_attributes = True
+
+
+@manager_router.get("/accounts/staffs/{employee_id}", response_model=StaffAccountDetailResponse)
+def get_staff_account_detail(
+    employee_id: str,
+    manager_id: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Lấy thông tin chi tiết tài khoản của nhân viên dưới quyền của manager.
+    """
+    manager = db.query(Employee).filter(
+        Employee.employee_id == manager_id,
+        Employee.position == EmployeePosition.manager,
+        Employee.status == EmployeeStatus.active
+    ).first()
+
+    if not manager:
+        raise HTTPException(status_code=404, detail="Manager not found or not active")
+
+    staff = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.staff,
+        Employee.status == EmployeeStatus.active
+    ).first()
+
+    if not staff:
+        raise HTTPException(status_code=404, detail="Staff not found or not active")
+
+    account = db.query(AccountEmployee).filter(
+        AccountEmployee.employee_id == staff.employee_id
+    ).first()
+
+    if not account:
+        raise HTTPException(status_code=404, detail="Account not found for this staff")
+
+    return StaffAccountDetailResponse(
+        employee_id=staff.employee_id,
+        employee_name=staff.employee_name,
+        phone=staff.phone,
+        address=staff.address,
+        status=staff.status,
+        begin_date=staff.begin_date,
+        username=account.username
+    )
+
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Add Account for Staffs of Manager
+
+class AddStaffAccountRequest(BaseModel):
+    employee_name: str
+    phone: str
+    address: str
+    begin_date: date
+    username: str
+    password: str
+
+    class Config:
+        from_attributes = True
+
+
+@manager_router.post("/accounts/staffs", response_model=StaffAccountDetailResponse)
+def add_staff_account(
+    employee_id: str,
+    account_data: AddStaffAccountRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Thêm tài khoản cho nhân viên dưới quyền của manager.
+    """
+    manager = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.manager,
+        Employee.status == EmployeeStatus.active
+    ).first()
+
+    if not manager:
+        raise HTTPException(status_code=404, detail="Manager not found or not active")
+
+    new_employee_id = f'STAFF_' + str(db.query(Employee).count() + 1)
+
+    new_account_id = f'ACC_STAFF' + str(db.query(AccountEmployee).count() + 1)
+
+    new_employee = Employee(
+        employee_id=new_employee_id,
+        employee_name=account_data.employee_name,
+        phone=account_data.phone,
+        address=account_data.address,
+        status=EmployeeStatus.active,
+        begin_date=account_data.begin_date,
+        position=EmployeePosition.staff,
+        department_id=manager.department_id
+    )
+
+    db.add(new_employee)
+    db.commit()
+    db.refresh(new_employee)
+
+
+    new_account = AccountEmployee(
+        employee_id=new_employee.employee_id,
+        username=account_data.username,
+        password=account_data.password,
+        account_id=new_account_id,
+    )
+
+    db.add(new_account)
+    db.commit()
+    db.refresh(new_account)
+
+    return StaffAccountDetailResponse(
+        employee_id=new_employee.employee_id,
+        employee_name=new_employee.employee_name,
+        phone=new_employee.phone,
+        address=new_employee.address,
+        status=new_employee.status,
+        begin_date=new_employee.begin_date,
+        username=new_account.username
+    )
+
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------

@@ -344,7 +344,7 @@ def create_manager_task(
         raise HTTPException(status_code=400, detail="Assignee must be a manager")
 
     # Tự động tạo task_id
-    new_task_id = f'TASK_MANAGER' + str(db.query(Task).count() + 1)
+    new_task_id = f'TASK_MANAGER_' + str(db.query(Task).count() + 1)
 
     new_task = Task(
         task_id=new_task_id,
