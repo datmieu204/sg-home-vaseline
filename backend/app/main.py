@@ -26,10 +26,11 @@ scheduler.add_job(
 scheduler.add_job(
     run_renew_service_registrations_job, 
     'cron', 
-    day=1, 
+    day="last", 
     hour=0, 
-    minute=0, 
+    minute=0,
 )
+
 scheduler.start()
 
 # Ensure scheduler shuts down when app stops
