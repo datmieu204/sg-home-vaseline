@@ -210,7 +210,7 @@ def get_notification_by_id(notification_id: str, db: Session = Depends(get_db)):
 
 
 @household_router.get("/services")
-def get_registration_services(db: Session = Depends(get_db)):
+def get_all_services(db: Session = Depends(get_db)):
     # Query all services
     services = db.query(Service).all()
 
@@ -227,24 +227,92 @@ def get_registration_services(db: Session = Depends(get_db)):
 
     return response
 
-@household_router.get("/services/{service_id}")
-def get_service_by_id(service_id: str, db: Session = Depends(get_db)):
-    # Query the service by service_id
-    service = db.query(Service).filter(Service.service_id == service_id).first()
+@household_router.patch("/services/registration_{service_id}")
+def set_service_registration(
+    household_id: str,
+    service_id: str,
+    status: ServiceRegistrationStatus = ServiceRegistrationStatus.in_use,
+    db: Session = Depends(get_db)
+):
+    """
+    Set or update a service registration for a household.
+    
+    Args:
+        household_id: ID of the household.
+        service_id: ID of the service to register.
+        status: Status of the registration (in_use or cancelled). Defaults to in_use.
+        db: Database session.
+    
+    Returns:
+        Details of the created or updated service registration, or existing registration if no changes needed.
+    
+    Raises:
+        HTTPException: If housework or service is not found, or if the operation fails.
+    """
+    # Validate household
+    household = db.query(Household).filter(
+        Household.household_id == household_id,
+        Household.status == HouseholdStatus.active
+    ).first()
+    if not household:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Household not found or inactive"
+        )
 
-    # Check if service exists
+    # Validate service
+    service = db.query(Service).filter(
+        Service.service_id == service_id,
+        Service.status == ServiceStatus.active
+    ).first()
     if not service:
-        raise HTTPException(status_code=404, detail="Service not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Service not found or inactive"
+        )
 
-    # Build the response
-    response = {
-        "service_id": service.service_id,
-        "service_name": service.service_name,
-        "price": service.price,
-        "status": service.status.value  # Convert Enum to string
+    # Check for existing registration
+    registration = db.query(ServiceRegistration).filter(
+        ServiceRegistration.household_id == household_id,
+        ServiceRegistration.service_id == service_id
+    ).first()
+
+    if registration and registration.status == ServiceRegistrationStatus.in_use and status == ServiceRegistrationStatus.in_use:
+        # No changes needed if existing registration is in_use and input status is in_use
+        return {
+            "service_registration_id": registration.service_registration_id,
+            "household_id": registration.household_id,
+            "service_id": registration.service_id,
+            "start_date": registration.start_date,
+            "status": registration.status.value
+        }
+    else:
+        # Create new registration if none exists or existing is cancelled
+        if not registration or registration.status == ServiceRegistrationStatus.cancelled:
+            registration = ServiceRegistration(
+                household_id=household_id,
+                service_id=service_id,
+                start_date=date.today(),
+                status=status
+            )
+            db.add(registration)
+        else:
+            # Update existing registration (e.g., change from in_use to cancelled)
+            registration.status = status
+    try:
+        db.commit()
+        db.refresh(registration)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to update registration: {str(e)}"
+        )
+
+    return {
+        "service_registration_id": registration.service_registration_id,
+        "household_id": registration.household_id,
+        "service_id": registration.service_id,
+        "start_date": registration.start_date,
+        "status": registration.status.value
     }
-
-    return response
-
-
-
