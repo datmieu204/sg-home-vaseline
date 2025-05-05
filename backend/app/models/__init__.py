@@ -1,7 +1,7 @@
 from .department import Department, DepartmentType
 from .employee import Employee, EmployeePosition, EmployeeStatus
 from .household import Household, HouseholdStatus
-from .incident import Incident
+from .incident import Incident, IncidentStatus
 from .invoice import Invoice
 from .invoice_detail import InvoiceDetail
 from .notification import Notification
@@ -18,6 +18,7 @@ __all__ = [
     "Employee",
     "Household",
     "Incident",
+    "IncidentStatus",
     "Invoice",
     "InvoiceDetail",
     "Notification",

@@ -7,7 +7,6 @@ from datetime import datetime, date
 from typing import List, Dict
 from enum import Enum
 from typing import Optional
-import uuid
 
 manager_router = APIRouter(prefix="/manager", tags=["manager"])
 

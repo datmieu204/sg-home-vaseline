@@ -12,8 +12,8 @@ class Incident(Base):
     #
     incident_id = Column(String, primary_key=True, index=True)
     incident_name = Column(String, index=True, nullable=False)
-    responsible_id = Column(Integer, ForeignKey("employees.employee_id"), nullable=False)
+    responsible_id = Column(String, ForeignKey("employees.employee_id"), nullable=False)
     report_time = Column(DateTime, nullable=False)
-    reporter_id = Column(Integer, ForeignKey("employees.employee_id"), nullable=False)
+    reporter_id = Column(String, ForeignKey("employees.employee_id"), nullable=False)
     description = Column(String, nullable=True)
     status = Column(Enum(IncidentStatus), nullable=False, default=IncidentStatus.in_progress)
