@@ -1,0 +1,66 @@
+.my-service-item {
+  background-color: white;
+  border-radius: 8px;
+  padding: 30px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border: 1px solid #f0f0f0;
+}
+
+.service-title {
+  color: #f89236;
+  font-size: 24px;
+  margin: 0 0 20px 0;
+}
+
+.service-details {
+  margin-bottom: 25px;
+}
+
+.detail-row {
+  display: flex;
+  margin-bottom: 12px;
+}
+
+.detail-label {
+  font-weight: 500;
+  width: 150px;
+  font-size: 16px;
+}
+
+.detail-value {
+  font-size: 16px;
+}
+
+.service-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+}
+
+.cancel-btn, .extend-btn {
+  padding: 12px 25px;
+  font-size: 16px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.cancel-btn {
+  background-color: white;
+  color: #f89236;
+  border: 1px solid #f89236;
+}
+
+.cancel-btn:hover {
+  background-color: #fff9f2;
+}
+
+.extend-btn {
+  background-color: #f89236;
+  color: white;
+  border: none;
+}
+
+.extend-btn:hover {
+  background-color: #e57d20;
+}

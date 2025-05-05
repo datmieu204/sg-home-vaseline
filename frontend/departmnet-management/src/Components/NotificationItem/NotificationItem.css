@@ -1,0 +1,88 @@
+.notification-item {
+  display: flex;
+  background-color: white;
+  border-radius: 8px;
+  padding: 25px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: all 0.3s;
+  border: 2px solid transparent;
+}
+
+.notification-item.unread {
+  border: 3px solid #ff4d4f;
+  border-radius: 8px;
+}
+
+.notification-select {
+  padding-right: 20px;
+}
+
+.notification-select input {
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+}
+
+.notification-content {
+  flex: 1;
+}
+
+.notification-title {
+  font-size: 22px;
+  margin: 0 0 15px 0;
+  color: #f89236;
+  font-weight: 600;
+}
+
+.notification-message {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  color: #333;
+  line-height: 1.5;
+}
+
+.notification-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.notification-time {
+  font-size: 16px;
+  color: #666;
+}
+
+.notification-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.detail-btn, .delete-btn {
+  padding: 10px 25px;
+  border-radius: 50px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 500;
+}
+
+.detail-btn {
+  background-color: white;
+  border: 1px solid #f89236;
+  color: #f89236;
+}
+
+.detail-btn:hover {
+  background-color: #ffecda;
+}
+
+.delete-btn {
+  background-color: #f89236;
+  border: none;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #e57d20;
+}

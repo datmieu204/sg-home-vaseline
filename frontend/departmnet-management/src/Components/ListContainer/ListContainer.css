@@ -1,0 +1,41 @@
+.list-container {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  height: 100%;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px; /* Increased padding */
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.list-title {
+  background-color: #ffecda;
+  padding: 20px 25px; /* Increased padding */
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-icon {
+  color: #f89236;
+  margin-right: 15px; /* Increased margin */
+  font-size: 22px; /* Increased font size */
+}
+
+.list-title h2 {
+  color: #f89236;
+  font-size: 28px; /* Increased font size */
+  margin: 0;
+  font-weight: 600;
+}
+
+.list-items {
+  padding: 0;
+  max-height: calc(100vh - 250px); /* Make list take available space */
+  overflow-y: auto; /* Allow scrolling if many items */
+}

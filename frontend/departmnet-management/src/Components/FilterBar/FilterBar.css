@@ -1,0 +1,25 @@
+.filter-options {
+  display: flex;
+  gap: 15px; /* Increased gap */
+}
+
+.filter-button {
+  background-color: white;
+  border: 1px solid #f89236;
+  color: #f89236;
+  border-radius: 4px;
+  padding: 12px 20px; /* Increased padding */
+  font-size: 16px; /* Increased font size */
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 500;
+}
+
+.filter-button:hover {
+  background-color: #ffecda;
+}
+
+.filter-button.active {
+  background-color: #f89236;
+  color: white;
+}

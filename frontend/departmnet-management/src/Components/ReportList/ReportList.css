@@ -1,0 +1,15 @@
+.report-page {
+  width: 100%;
+  height: calc(100vh - 80px); /* Take up full screen height minus header */
+  overflow: hidden; /* Hide overflow */
+  display: flex;
+  flex-direction: column;
+}
+
+.report-page h1 {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 28px; /* Increased font size */
+}
+
+/* Add additional styles specific to the report page if needed */
