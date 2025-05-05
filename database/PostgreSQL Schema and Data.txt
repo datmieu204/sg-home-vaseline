@@ -1,0 +1,246 @@
+-- Create ENUM types
+CREATE TYPE employee_status AS ENUM ('active', 'inactive');
+CREATE TYPE employee_position AS ENUM ('manager', 'staff', 'head_manager');
+CREATE TYPE incident_status AS ENUM ('in_progress', 'resolved');
+CREATE TYPE invoice_status AS ENUM ('paid', 'overdue', 'pending');
+CREATE TYPE payment_method AS ENUM ('cash', 'bank');
+CREATE TYPE service_registration_status AS ENUM ('in_use', 'cancelled');
+CREATE TYPE service_status AS ENUM ('active', 'inactive');
+CREATE TYPE task_status AS ENUM ('pending', 'in_progress', 'completed');
+CREATE TYPE household_status AS ENUM ('active', 'inactive');
+
+-- Create accounts_employee table
+CREATE TABLE accounts_employee (
+    account_id VARCHAR PRIMARY KEY,
+    employee_id VARCHAR NOT NULL UNIQUE,
+    username VARCHAR NOT NULL UNIQUE,
+    password VARCHAR NOT NULL
+);
+
+-- Create accounts_household table
+CREATE TABLE accounts_household (
+    account_id VARCHAR PRIMARY KEY,
+    household_id VARCHAR NOT NULL UNIQUE,
+    username VARCHAR NOT NULL UNIQUE,
+    password VARCHAR NOT NULL
+);
+
+-- Create departments
+CREATE TABLE departments (
+    department_id VARCHAR PRIMARY KEY,
+    department_name VARCHAR NOT NULL
+);
+
+-- Create employees
+CREATE TABLE employees (
+    employee_id VARCHAR PRIMARY KEY,
+    employee_name VARCHAR NOT NULL,
+    department_id VARCHAR REFERENCES departments(department_id),
+    account_id VARCHAR NOT NULL REFERENCES accounts_employee(account_id),
+    begin_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    position employee_position NOT NULL,
+    phone VARCHAR NOT NULL,
+    address VARCHAR NOT NULL,
+    status employee_status NOT NULL DEFAULT 'active'
+);
+
+-- Create households
+CREATE TABLE households (
+    household_id VARCHAR PRIMARY KEY,
+    account_id VARCHAR NOT NULL REFERENCES accounts_household(account_id),
+    number_of_members INTEGER NOT NULL,
+    name VARCHAR NOT NULL,
+    phone VARCHAR NOT NULL,
+    room_number VARCHAR NOT NULL,
+    status household_status NOT NULL DEFAULT 'active'
+);
+
+-- Create incidents
+CREATE TABLE incidents (
+    incident_id VARCHAR PRIMARY KEY,
+    incident_name VARCHAR NOT NULL,
+    responsible_id VARCHAR NOT NULL REFERENCES employees(employee_id),
+    report_time TIMESTAMP NOT NULL,
+    reporter_id VARCHAR NOT NULL REFERENCES employees(employee_id),
+    description VARCHAR,
+    status incident_status NOT NULL DEFAULT 'in_progress'
+);
+
+-- Create services
+CREATE TABLE services (
+    service_id VARCHAR PRIMARY KEY,
+    service_name VARCHAR NOT NULL,
+    price FLOAT NOT NULL,
+    status service_status NOT NULL DEFAULT 'active'
+);
+
+-- Create invoices
+CREATE TABLE invoices (
+    invoice_id VARCHAR PRIMARY KEY,
+    household_id VARCHAR NOT NULL REFERENCES households(household_id),
+    amount FLOAT NOT NULL,
+    month_date DATE NOT NULL,
+    created_date TIMESTAMP NOT NULL,
+    due_date DATE NOT NULL,
+    status invoice_status NOT NULL
+);
+
+-- Create invoice_details
+CREATE TABLE invoice_details (
+    invoice_detail_id VARCHAR PRIMARY KEY,
+    invoice_id VARCHAR NOT NULL REFERENCES invoices(invoice_id),
+    service_id VARCHAR NOT NULL REFERENCES services(service_id),
+    quantity INTEGER NOT NULL,
+    price FLOAT NOT NULL,
+    total FLOAT NOT NULL
+);
+
+-- Create notifications
+CREATE TABLE notifications (
+    notification_id VARCHAR PRIMARY KEY,
+    invoice_id VARCHAR NOT NULL REFERENCES invoices(invoice_id),
+    household_id VARCHAR NOT NULL REFERENCES households(household_id),
+    payment_id VARCHAR NOT NULL,
+    message VARCHAR
+);
+
+-- Create payments
+CREATE TABLE payments (
+    payment_id VARCHAR PRIMARY KEY,
+    invoice_id VARCHAR NOT NULL REFERENCES invoices(invoice_id),
+    amount FLOAT NOT NULL,
+    date TIMESTAMP NOT NULL,
+    method payment_method,
+    confirmed_by VARCHAR REFERENCES employees(employee_id)
+);
+
+-- Create service_registrations
+CREATE TABLE service_registrations (
+    service_registration_id SERIAL PRIMARY KEY,
+    household_id VARCHAR NOT NULL REFERENCES households(household_id),
+    service_id VARCHAR NOT NULL REFERENCES services(service_id),
+    start_date DATE NOT NULL,
+    status service_registration_status NOT NULL DEFAULT 'in_use'
+);
+
+-- Create tasks
+CREATE TABLE tasks (
+    task_id VARCHAR PRIMARY KEY,
+    name_task VARCHAR NOT NULL,
+    assigner_id VARCHAR NOT NULL REFERENCES employees(employee_id),
+    assignee_id VARCHAR NOT NULL REFERENCES employees(employee_id),
+    assigned_time TIMESTAMP,
+    description VARCHAR,
+    deadline TIMESTAMP,
+    status task_status NOT NULL DEFAULT 'pending'
+);
+
+-- Insert fake data
+-- Insert data into accounts_employee
+INSERT INTO accounts_employee (account_id, employee_id, username, password) VALUES
+('ACC001', 'EMP001', 'admin', 'admin'),
+('ACC002', 'EMP002', 'manager_recep', 'password123'),
+('ACC003', 'EMP003', 'staff1_recep', 'password123'),
+('ACC004', 'EMP004', 'staff2_recep', 'password123'),
+('ACC005', 'EMP005', 'manager_clean', 'password123'),
+('ACC006', 'EMP006', 'staff1_clean', 'password123'),
+('ACC007', 'EMP007', 'staff2_clean', 'password123'),
+('ACC008', 'EMP008', 'manager_secur', 'password123'),
+('ACC009', 'EMP009', 'staff1_secur', 'password123'),
+('ACC010', 'EMP010', 'staff2_secur', 'password123'),
+('ACC011', 'EMP011', 'manager_acct', 'password123'),
+('ACC012', 'EMP012', 'staff1_acct', 'password123'),
+('ACC013', 'EMP013', 'staff2_acct', 'password123'),
+('ACC014', 'EMP014', 'manager_tech', 'password123'),
+('ACC015', 'EMP015', 'staff1_tech', 'password123'),
+('ACC016', 'EMP016', 'staff2_tech', 'password123');
+
+-- Insert data into accounts_household
+INSERT INTO accounts_household (account_id, household_id, username, password) VALUES
+('ACC017', 'HH001', 'household1', 'password123'),
+('ACC018', 'HH002', 'household2', 'password123'),
+('ACC019', 'HH003', 'household3', 'password123'),
+('ACC020', 'HH004', 'household4', 'password123'),
+('ACC021', 'HH005', 'household5', 'password123');
+
+-- Insert departments
+INSERT INTO departments (department_id, department_name) VALUES
+('RECEP', 'Reception'),
+('CLEAN', 'Cleaning'),
+('SECUR', 'Security'),
+('ACCT', 'Accounting'),
+('TECH', 'Technical');
+
+-- Insert employees
+INSERT INTO employees (employee_id, employee_name, department_id, account_id, begin_date, position, phone, address, status) VALUES
+('EMP001', 'Admin User', NULL, 'ACC001', '2023-01-01', 'head_manager', '123456789', 'Admin Address', 'active'),
+('EMP002', 'Manager Reception', 'RECEP', 'ACC002', '2023-01-01', 'manager', '123456001', 'Reception Address', 'active'),
+('EMP003', 'Staff1 Reception', 'RECEP', 'ACC003', '2023-01-01', 'staff', '123456002', 'Reception Address', 'active'),
+('EMP004', 'Staff2 Reception', 'RECEP', 'ACC004', '2023-01-01', 'staff', '123456003', 'Reception Address', 'active'),
+('EMP005', 'Manager Cleaning', 'CLEAN', 'ACC005', '2023-01-01', 'manager', '123456004', 'Cleaning Address', 'active'),
+('EMP006', 'Staff1 Cleaning', 'CLEAN', 'ACC006', '2023-01-01', 'staff', '123456005', 'Cleaning Address', 'active'),
+('EMP007', 'Staff2 Cleaning', 'CLEAN', 'ACC007', '2023-01-01', 'staff', '123456006', 'Cleaning Address', 'active'),
+('EMP008', 'Manager Security', 'SECUR', 'ACC008', '2023-01-01', 'manager', '123456007', 'Security Address', 'active'),
+('EMP009', 'Staff1 Security', 'SECUR', 'ACC009', '2023-01-01', 'staff', '123456008', 'Security Address', 'active'),
+('EMP010', 'Staff2 Security', 'SECUR', 'ACC010', '2023-01-01', 'staff', '123456009', 'Security Address', 'active'),
+('EMP011', 'Manager Accounting', 'ACCT', 'ACC011', '2023-01-01', 'manager', '123456010', 'Accounting Address', 'active'),
+('EMP012', 'Staff1 Accounting', 'ACCT', 'ACC012', '2023-01-01', 'staff', '123456011', 'Accounting Address', 'active'),
+('EMP013', 'Staff2 Accounting', 'ACCT', 'ACC013', '2023-01-01', 'staff', '123456012', 'Accounting Address', 'active'),
+('EMP014', 'Manager Technical', 'TECH', 'ACC014', '2023-01-01', 'manager', '123456013', 'Technical Address', 'active'),
+('EMP015', 'Staff1 Technical', 'TECH', 'ACC015', '2023-01-01', 'staff', '123456014', 'Technical Address', 'active'),
+('EMP016', 'Staff2 Technical', 'TECH', 'ACC016', '2023-01-01', 'staff', '123456015', 'Technical Address', 'active');
+
+-- Insert households
+INSERT INTO households (household_id, account_id, number_of_members, name, phone, room_number) VALUES
+('HH001', 'ACC017', 3, 'Household 1', '987654321', '101'),
+('HH002', 'ACC018', 4, 'Household 2', '987654322', '102'),
+('HH003', 'ACC019', 2, 'Household 3', '987654323', '103'),
+('HH004', 'ACC020', 5, 'Household 4', '987654324', '104'),
+('HH005', 'ACC021', 1, 'Household 5', '987654325', '105');
+
+-- Services
+INSERT INTO services (service_id, service_name, price, status) VALUES
+('SVC001', 'Electricity', 0.1, 'active'),
+('SVC002', 'Water', 0.05, 'active'),
+('SVC003', 'Internet', 20.0, 'active'),
+('SVC004', 'Cleaning', 10.0, 'active');
+
+-- Service Registrations
+INSERT INTO service_registrations (household_id, service_id, start_date, status) VALUES
+('HH001', 'SVC001', '2023-01-01', 'in_use'),
+('HH001', 'SVC002', '2023-01-01', 'in_use'),
+('HH002', 'SVC003', '2023-02-01', 'in_use'),
+('HH003', 'SVC004', '2023-03-01', 'in_use');
+
+-- Invoices
+INSERT INTO invoices (invoice_id, household_id, amount, month_date, created_date, due_date, status) VALUES
+('INV001', 'HH001', 25.0, '2023-01-01', '2023-01-02 10:00:00', '2023-01-31', 'paid'),
+('INV002', 'HH002', 20.0, '2023-02-01', '2023-02-02 10:00:00', '2023-02-28', 'overdue');
+
+-- Invoice Details
+INSERT INTO invoice_details (invoice_detail_id, invoice_id, service_id, quantity, price, total) VALUES
+('IDET001', 'INV001', 'SVC001', 100, 0.1, 10.0),
+('IDET002', 'INV001', 'SVC002', 300, 0.05, 15.0),
+('IDET003', 'INV002', 'SVC003', 1, 20.0, 20.0);
+
+-- Payments
+INSERT INTO payments (payment_id, invoice_id, amount, date, method, confirmed_by) VALUES
+('PAY001', 'INV001', 25.0, '2023-01-15 14:00:00', 'cash', 'EMP001'),
+('PAY002', 'INV002', 10.0, '2023-03-01 09:00:00', 'bank', 'EMP011');
+
+-- Notifications (payment_id will be updated after payments are inserted)
+INSERT INTO notifications (notification_id, invoice_id, household_id, payment_id, message) VALUES
+('NOT001', 'INV001', 'HH001', 'PAY001', 'Payment received'),
+('NOT002', 'INV002', 'HH002', 'PAY002', 'Partial payment received');
+
+-- Incidents
+INSERT INTO incidents (incident_id, incident_name, responsible_id, report_time, reporter_id, description, status) VALUES
+('INC001', 'Power Outage', 'EMP002', '2023-01-10 08:00:00', 'EMP003', 'Power out in room 101', 'resolved'),
+('INC002', 'Leak', 'EMP005', '2023-02-15 09:00:00', 'EMP006', 'Water leak in room 102', 'in_progress');
+
+-- Tasks
+INSERT INTO tasks (task_id, name_task, assigner_id, assignee_id, assigned_time, description, deadline, status) VALUES
+('TASK001', 'Fix Power', 'EMP001', 'EMP002', '2023-01-10', 'Restore power in room 101', '2023-01-11', 'completed'),
+('TASK002', 'Repair Leak', 'EMP001', 'EMP005', '2023-02-15', 'Fix leak in room 102', '2023-02-20', 'in_progress'),
+('TASK003', 'Clean Reception Area', 'EMP002', 'EMP003', '2023-03-01', 'Clean and organize reception area', '2023-03-02', 'pending'),
+('TASK004', 'Security Patrol', 'EMP008', 'EMP009', '2023-04-01', 'Security patrol around the building', '2023-04-02', 'pending');

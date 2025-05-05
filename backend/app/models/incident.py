@@ -9,7 +9,6 @@ class IncidentStatus(enum.Enum):
 
 class Incident(Base):
     __tablename__ = "incidents"
-    #
     incident_id = Column(String, primary_key=True, index=True)
     incident_name = Column(String, index=True, nullable=False)
     responsible_id = Column(Integer, ForeignKey("employees.employee_id"), nullable=False)

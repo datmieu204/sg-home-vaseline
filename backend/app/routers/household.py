@@ -1,11 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, aliased
 from app.core.database import get_db
-from app.models import Employee, Household, InvoiceDetail, AccountHousehold, Service, Payment, Invoice, HouseholdStatus, Notification
-from pydantic import BaseModel
-from datetime import datetime, date
+from app.models import Employee, Household, InvoiceDetail, AccountHousehold, Service, Payment,ServiceRegistration, HouseholdStatus, Notification
+from app.models.invoice import Invoice, InvoiceStatus
+from app.models.service_registration import ServiceRegistrationStatus
+from app.models.service import ServiceStatus
+from datetime import date, datetime
 from enum import Enum
+import uuid
 from typing import Optional
+from app.routers.auto_generate_invoice import create_monthly_invoices_job
 
 household_router = APIRouter(prefix="/household", tags=["household"])
 
@@ -135,5 +139,112 @@ def get_notification_by_id(notification_id: str, db: Session = Depends(get_db)):
     }
 
     return response
+    # Get current date for comparison
+    current_date = date.today()
+
+    # Query overdue, unpaid invoices
+    overdue_invoices = (
+        db.query(Invoice)
+        .filter(
+            Invoice.due_date <= current_date,
+            Invoice.status != InvoiceStatus.paid  # Not paid
+        )
+        .all()
+    )
+
+    if not overdue_invoices:
+        return {"message": "No overdue invoices found", "notifications_created": 0}
+
+    # Track created notifications
+    notifications_created = 0
+    created_notifications = []
+
+    for invoice in overdue_invoices:
+        # Verify household exists
+        household = db.query(Household).filter(Household.household_id == invoice.household_id).first()
+        if not household:
+            continue  # Skip if household doesn't exist
+
+        # Check for existing notification for this invoice
+        existing_notification = (
+            db.query(Notification)
+            .filter(
+                Notification.invoice_id == invoice.invoice_id,
+                Notification.message.ilike(f"%overdue%")  # Case-insensitive check for "overdue"
+            )
+            .first()
+        )
+
+        if existing_notification:
+            continue  # Skip if notification already exists
+
+        # Generate unique notification_id
+        notification_id = f"NOT{uuid.uuid4().hex[:8]}"  # Example: NOT12345678
+
+        # Create notification
+        notification = Notification(
+            notification_id=notification_id,
+            invoice_id=invoice.invoice_id,
+            household_id=invoice.household_id,
+            payment_id=None,  # No payment yet
+            message=f"Invoice {invoice.invoice_id} is overdue. Please pay ${invoice.amount} by {invoice.due_date}."
+        )
+
+        db.add(notification)
+        notifications_created += 1
+        created_notifications.append({
+            "notification_id": notification.notification_id,
+            "invoice_id": notification.invoice_id,
+            "household_id": notification.household_id,
+            "message": notification.message
+        })
+
+    # Commit changes to the database
+    db.commit()
+
+    return {
+        "message": f"Created {notifications_created} notifications for overdue invoices",
+        "notifications_created": notifications_created,
+        "notifications": created_notifications
+    }
+
+
+@household_router.get("/services")
+def get_registration_services(db: Session = Depends(get_db)):
+    # Query all services
+    services = db.query(Service).all()
+
+    # Build the response
+    response = [
+        {
+            "service_id": service.service_id,
+            "service_name": service.service_name,
+            "price": service.price,
+            "status": service.status.value  # Convert Enum to string
+        }
+        for service in services
+    ]
+
+    return response
+
+@household_router.get("/services/{service_id}")
+def get_service_by_id(service_id: str, db: Session = Depends(get_db)):
+    # Query the service by service_id
+    service = db.query(Service).filter(Service.service_id == service_id).first()
+
+    # Check if service exists
+    if not service:
+        raise HTTPException(status_code=404, detail="Service not found")
+
+    # Build the response
+    response = {
+        "service_id": service.service_id,
+        "service_name": service.service_name,
+        "price": service.price,
+        "status": service.status.value  # Convert Enum to string
+    }
+
+    return response
+
 
 
