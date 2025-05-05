@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, aliased
 from app.core.database import get_db
-from app.models import Employee, Household, Task, EmployeePosition, TaskStatus, EmployeeStatus, HouseholdStatus, AccountHousehold, AccountEmployee, DepartmentType, Incident, IncidentStatus
+from app.models import Employee, Household, Task, EmployeePosition, TaskStatus, EmployeeStatus, HouseholdStatus, AccountHousehold, AccountEmployee, DepartmentType, Incident, IncidentStatus, Service, ServiceStatus, Invoice, InvoiceDetail, InvoiceStatus, Notification, Payment, PaymentMethod
 from pydantic import BaseModel, Field
 from datetime import datetime, date
 from typing import List, Dict
@@ -290,3 +290,356 @@ def create_incident_report(
     db.refresh(new_incident)
 
     return IncidentResponse.from_orm(new_incident)
+
+
+# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# View Service of a staff have department_id = RECEP 
+
+class ServiceResponse(BaseModel):
+    service_id: str
+    service_name: str
+    price: float
+    status: ServiceStatus
+    description: Optional[str]
+
+    class Config:
+        from_attributes = True
+
+
+@staff_router.get("/services", response_model=List[ServiceResponse])
+def view_services(employee_id: str, db: Session = Depends(get_db)):
+    """
+    Xem danh sách dịch vụ (chỉ cho staff trong phòng RECEP).
+    """
+    employee = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.staff,
+        Employee.department_id == 'RECEP'
+    ).first()
+
+    if not employee:
+        raise HTTPException(status_code=403, detail="Unauthorized: Not a staff in RECEP")
+
+    services = db.query(Service).all()
+
+    return [ServiceResponse.from_orm(service) for service in services]
+
+
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# View service detail of a staff have department_id = RECEP
+
+class ServiceDetailResponse(BaseModel):
+    service_id: str
+    service_name: str
+    price: float
+    status: ServiceStatus
+    description: Optional[str]
+
+
+    class Config:
+        from_attributes = True
+
+
+@staff_router.get("/services/{service_id}", response_model=ServiceDetailResponse)
+def get_service_detail(
+    employee_id: str,
+    service_id: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Lấy thông tin chi tiết dịch vụ (chỉ cho staff trong phòng RECEP).
+    """
+    employee = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.staff,
+        Employee.department_id == 'RECEP'
+    ).first()
+
+    if not employee:
+        raise HTTPException(status_code=403, detail="Unauthorized: Not a staff in RECEP")
+
+    service = db.query(Service).filter(Service.service_id == service_id).first()
+
+    if not service:
+        raise HTTPException(status_code=404, detail="Service not found")
+
+    return ServiceDetailResponse.from_orm(service)
+
+
+
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# Update service of a staff have department_id = RECEP 
+
+class ServiceUpdateRequest(BaseModel):
+    service_name: Optional[str]
+    price: Optional[float]
+    status: Optional[ServiceStatus]
+    description: Optional[str]
+    description: Optional[str]
+
+
+@staff_router.put("/services/{service_id}", response_model=ServiceResponse)
+def update_service(
+    service_id: str,
+    employee_id: str,
+    service_data: ServiceUpdateRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Chỉnh sửa dịch vụ (chỉ cho staff trong phòng RECEP).
+    """
+    employee = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.staff,
+        Employee.department_id == 'RECEP'
+    ).first()
+
+    if not employee:
+        raise HTTPException(status_code=403, detail="Unauthorized: Not a staff in RECEP")
+
+    service = db.query(Service).filter(Service.service_id == service_id).first()
+
+    if not service:
+        raise HTTPException(status_code=404, detail="Service not found")
+
+    if service_data.service_name is not None:
+        service.service_name = service_data.service_name
+    if service_data.price is not None:
+        service.price = service_data.price
+    if service_data.status is not None:
+        service.status = service_data.status
+    if service_data.description is not None:
+        service.description = service_data.description
+
+    db.commit()
+    db.refresh(service)
+
+    return ServiceResponse.from_orm(service)
+
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# Create service of a staff have department_id = RECEP
+
+class ServiceCreateRequest(BaseModel):
+    service_name: str
+    price: float
+    status: ServiceStatus
+    description: Optional[str] = None
+    class Config:
+        from_attributes = True
+
+
+@staff_router.post("/services", response_model=ServiceResponse)
+def create_service(
+    employee_id: str,
+    service_data: ServiceCreateRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Tạo dịch vụ mới (chỉ cho staff trong phòng RECEP).
+    """
+    employee = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.staff,
+        Employee.department_id == 'RECEP'
+    ).first()
+
+    if not employee:
+        raise HTTPException(status_code=403, detail="Unauthorized: Not a staff in RECEP")
+
+    new_service_id = f'SVC' + str(db.query(Service).count() + 1)
+
+    new_service = Service(
+        service_id=new_service_id,
+        service_name=service_data.service_name,
+        price=service_data.price,
+        status=service_data.status,
+        description=service_data.description
+    )
+
+    db.add(new_service)
+    db.commit()
+    db.refresh(new_service)
+
+    return ServiceResponse.from_orm(new_service)
+
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
+# View list invoice of a staff have department_id = ACCT
+
+class InvoiceResponse(BaseModel):
+    invoice_id: str
+    household_id: str
+    amount: float
+    month_date: date
+    created_date: datetime
+    due_date: date
+    status: InvoiceStatus
+
+    class Config:
+        from_attributes = True
+
+
+@staff_router.get("/invoices", response_model=List[InvoiceResponse])
+def get_invoices(employee_id: str, db: Session = Depends(get_db)):
+    """
+    Lấy danh sách hóa đơn (chỉ cho nhân viên staff thuộc phòng ACCT).
+    """
+    employee = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.staff,
+        Employee.department_id == 'ACCT',
+        Employee.status == EmployeeStatus.active
+    ).first()
+
+    if not employee:
+        raise HTTPException(status_code=403, detail="Unauthorized: Not an active staff in ACCT")
+
+    invoices = db.query(Invoice).order_by(Invoice.created_date.desc()).all()
+
+    return [InvoiceResponse.from_orm(invoice) for invoice in invoices]
+
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+
+# View invoice detail of a staff have department_id = ACCT
+
+class InvoiceDetailResponse(BaseModel):
+    invoice_detail_id: str
+    service_id: str
+    quantity: int
+    price: float
+    total: float
+
+    class Config:
+        from_attributes = True
+
+
+class InvoiceFullResponse(BaseModel):
+    invoice_id: str
+    household_id: str
+    amount: float
+    month_date: date
+    created_date: datetime
+    due_date: date
+    status: InvoiceStatus
+    details: List[InvoiceDetailResponse]
+
+    class Config:
+        from_attributes = True
+
+
+@staff_router.get("/invoices/{invoice_id}", response_model=InvoiceFullResponse)
+def get_invoice_detail(invoice_id: str, employee_id: str, db: Session = Depends(get_db)):
+    """
+    Xem chi tiết hóa đơn (invoice + invoice_details) cho nhân viên staff thuộc ACCT.
+    """
+    employee = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.staff,
+        Employee.department_id == 'ACCT',
+        Employee.status == EmployeeStatus.active
+    ).first()
+
+    if not employee:
+        raise HTTPException(status_code=403, detail="Unauthorized: Not an active staff in ACCT")
+
+    invoice = db.query(Invoice).filter(Invoice.invoice_id == invoice_id).first()
+
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+
+    invoice_details = db.query(InvoiceDetail).filter(
+        InvoiceDetail.invoice_id == invoice_id
+    ).all()
+
+    return InvoiceFullResponse(
+        invoice_id=invoice.invoice_id,
+        household_id=invoice.household_id,
+        amount=invoice.amount,
+        month_date=invoice.month_date,
+        created_date=invoice.created_date,
+        due_date=invoice.due_date,
+        status=invoice.status,
+        details=[InvoiceDetailResponse.from_orm(detail) for detail in invoice_details]
+    )
+
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+
+# Confirm invoice of a staff have department_id = ACCT
+
+class ConfirmPaymentResponse(BaseModel):
+    invoice_id: str
+    payment_id: str
+    status: str
+    message: str
+
+
+@staff_router.post("/invoices/{invoice_id}/confirm-payment", response_model=ConfirmPaymentResponse)
+def confirm_payment(
+    invoice_id: str,
+    employee_id: str,
+    payment_method: PaymentMethod = PaymentMethod.cash,
+    db: Session = Depends(get_db)
+):
+    """
+    Xác nhận thanh toán hóa đơn (chỉ cho nhân viên staff của ACCT) và gửi thông báo.
+    Dù thanh toán qua ngân hàng hay tiền mặt, số tiền thanh toán tự động lấy từ số tiền hóa đơn.
+    """
+    employee = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.staff,
+        Employee.department_id == 'ACCT',
+        Employee.status == EmployeeStatus.active
+    ).first()
+
+    if not employee:
+        raise HTTPException(status_code=403, detail="Unauthorized: Not an active staff in ACCT")
+
+    invoice = db.query(Invoice).filter(Invoice.invoice_id == invoice_id).first()
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+
+    if invoice.status == InvoiceStatus.paid:
+        raise HTTPException(status_code=400, detail="Invoice already paid")
+
+    payment_amount = invoice.amount
+
+    payment_id = 'PAY' + str(db.query(Payment).count() + 1)
+
+    payment = Payment(
+        payment_id=payment_id,
+        invoice_id=invoice_id,
+        amount=payment_amount,
+        date=datetime.now(),
+        method=payment_method,
+        confirmed_by=employee_id
+    )
+    db.add(payment)
+
+    invoice.status = InvoiceStatus.paid
+
+    notification_id = f'NOT' + str(db.query(Notification).count() + 1)
+    message_text = f"Hóa đơn {invoice_id} đã được thanh toán thành công."
+    notification = Notification(
+        notification_id=notification_id,
+        invoice_id=invoice_id,
+        household_id=invoice.household_id,
+        payment_id=payment_id,
+        message=message_text
+    )
+    db.add(notification)
+
+    db.commit()
+
+    return ConfirmPaymentResponse(
+        invoice_id=invoice_id,
+        payment_id=payment_id,
+        status=invoice.status.value,
+        message=message_text
+    )

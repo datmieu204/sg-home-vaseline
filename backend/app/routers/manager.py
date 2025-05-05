@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, aliased
 from app.core.database import get_db
-from app.models import Employee, Household, Task, EmployeePosition, TaskStatus, EmployeeStatus, HouseholdStatus, AccountHousehold, AccountEmployee, DepartmentType
+from app.models import Employee, Household, Task, EmployeePosition, TaskStatus, EmployeeStatus, HouseholdStatus, AccountHousehold, AccountEmployee, DepartmentType, Incident, IncidentStatus, Service, ServiceStatus, Invoice, InvoiceDetail, InvoiceStatus, Notification, Payment, PaymentMethod
 from pydantic import BaseModel, Field
 from datetime import datetime, date
 from typing import List, Dict
@@ -624,3 +624,179 @@ def add_staff_account(
 
 # ---------------------------------------------------------------------------
 # ---------------------------------------------------------------------------
+# View Service of a manager have department_id = RECEP
+
+
+class ServiceResponse(BaseModel):
+    service_id: str
+    service_name: str
+    price: float
+    status: ServiceStatus
+    description: Optional[str]
+
+    class Config:
+        from_attributes = True
+
+
+@manager_router.get("/services", response_model=List[ServiceResponse])
+def view_services(employee_id: str, db: Session = Depends(get_db)):
+    """
+    Xem danh sách dịch vụ (chỉ cho manager trong phòng RECEP).
+    """
+    employee = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.manager,
+        Employee.department_id == 'RECEP'
+    ).first()
+
+    if not employee:
+        raise HTTPException(status_code=403, detail="Unauthorized: Not a manager in RECEP")
+
+    services = db.query(Service).all()
+
+    return [ServiceResponse.from_orm(service) for service in services]
+
+
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# View service detail of a manager have department_id = RECEP
+
+class ServiceDetailResponse(BaseModel):
+    service_id: str
+    service_name: str
+    price: float
+    status: ServiceStatus
+    description: Optional[str]
+
+
+    class Config:
+        from_attributes = True
+
+
+@manager_router.get("/services/{service_id}", response_model=ServiceDetailResponse)
+def get_service_detail(
+    employee_id: str,
+    service_id: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Lấy thông tin chi tiết dịch vụ (chỉ cho manager trong phòng RECEP).
+    """
+    employee = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.manager,
+        Employee.department_id == 'RECEP'
+    ).first()
+
+    if not employee:
+        raise HTTPException(status_code=403, detail="Unauthorized: Not a manager in RECEP")
+
+    service = db.query(Service).filter(Service.service_id == service_id).first()
+
+    if not service:
+        raise HTTPException(status_code=404, detail="Service not found")
+
+    return ServiceDetailResponse.from_orm(service)
+
+
+
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# View list invoice of a manager have department_id = ACCT
+
+class InvoiceResponse(BaseModel):
+    invoice_id: str
+    household_id: str
+    amount: float
+    month_date: date
+    created_date: datetime
+    due_date: date
+    status: InvoiceStatus
+
+    class Config:
+        from_attributes = True
+
+
+@manager_router.get("/invoices", response_model=List[InvoiceResponse])
+def get_invoices(employee_id: str, db: Session = Depends(get_db)):
+    """
+    Lấy danh sách hóa đơn (chỉ cho nhân viên manager thuộc phòng ACCT).
+    """
+    employee = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.manager,
+        Employee.department_id == 'ACCT',
+        Employee.status == EmployeeStatus.active
+    ).first()
+
+    if not employee:
+        raise HTTPException(status_code=403, detail="Unauthorized: Not an active manager in ACCT")
+
+    invoices = db.query(Invoice).order_by(Invoice.created_date.desc()).all()
+
+    return [InvoiceResponse.from_orm(invoice) for invoice in invoices]
+
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+
+# View invoice detail of a manager have department_id = ACCT
+
+class InvoiceDetailResponse(BaseModel):
+    invoice_detail_id: str
+    service_id: str
+    quantity: int
+    price: float
+    total: float
+
+    class Config:
+        from_attributes = True
+
+
+class InvoiceFullResponse(BaseModel):
+    invoice_id: str
+    household_id: str
+    amount: float
+    month_date: date
+    created_date: datetime
+    due_date: date
+    status: InvoiceStatus
+    details: List[InvoiceDetailResponse]
+
+    class Config:
+        from_attributes = True
+
+
+@manager_router.get("/invoices/{invoice_id}", response_model=InvoiceFullResponse)
+def get_invoice_detail(invoice_id: str, employee_id: str, db: Session = Depends(get_db)):
+    """
+    Xem chi tiết hóa đơn (invoice + invoice_details) cho nhân viên manager thuộc ACCT.
+    """
+    employee = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.manager,
+        Employee.department_id == 'ACCT',
+        Employee.status == EmployeeStatus.active
+    ).first()
+
+    if not employee:
+        raise HTTPException(status_code=403, detail="Unauthorized: Not an active manager in ACCT")
+
+    invoice = db.query(Invoice).filter(Invoice.invoice_id == invoice_id).first()
+
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+
+    invoice_details = db.query(InvoiceDetail).filter(
+        InvoiceDetail.invoice_id == invoice_id
+    ).all()
+
+    return InvoiceFullResponse(
+        invoice_id=invoice.invoice_id,
+        household_id=invoice.household_id,
+        amount=invoice.amount,
+        month_date=invoice.month_date,
+        created_date=invoice.created_date,
+        due_date=invoice.due_date,
+        status=invoice.status,
+        details=[InvoiceDetailResponse.from_orm(detail) for detail in invoice_details]
+    )
