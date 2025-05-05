@@ -707,3 +707,11 @@ def disable_household_account(account_id: str, db: Session = Depends(get_db)):
         "household_id": household.household_id,
         "household_status": household.status.value
     }
+
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# DASHBOARD
+
+@admin_router.get("/dashboard/services")
+def get_service_count(db: Session = Depends(get_db)):
+    pass

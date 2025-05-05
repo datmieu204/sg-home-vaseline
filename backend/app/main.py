@@ -19,6 +19,6 @@ from app.routers import admin, household, manager, staff, login
 
 app.include_router(login.login_router)
 app.include_router(admin.admin_router)
+app.include_router(manager.manager_router)
 # app.include_router(household.household_router)
-# app.include_router(manager.manager_router)
 # app.include_router(staff.staff_router)
