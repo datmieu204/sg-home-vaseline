@@ -1,0 +1,49 @@
+.other-task-list {
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.task-list-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.add-task-button {
+  background-color: #ff6200;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.add-task-button:hover {
+  background-color: #e55a00;
+}
+
+.task-list {
+  margin-top: 20px;
+}
+
+.task-item {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.task-period {
+  font-weight: bold;
+}
+
+.task-status {
+  color: #888;
+}

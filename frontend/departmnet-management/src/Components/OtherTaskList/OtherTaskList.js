@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import './TaskList.css';
+import '../TaskList/TaskList.css'; // Sử dụng cùng file CSS với TaskList
 
-const TaskList = ({ tasks }) => {
+const OtherTaskList = ({ tasks }) => {
   const [isCollapsed, setIsCollapsed] = useState(false); // State để theo dõi trạng thái toggle
 
   const defaultTasks = [
@@ -25,6 +25,13 @@ const TaskList = ({ tasks }) => {
         <h2>Tất cả Nhiệm vụ</h2>
       </div>
 
+      {/* Nút Thêm Nhiệm vụ Mới */}
+      <div className="add-task-container">
+        <button className="add-task-button">
+          Thêm nhiệm vụ mới
+        </button>
+      </div>
+
       {/* Hiển thị hoặc ẩn danh sách nhiệm vụ dựa trên trạng thái */}
       {!isCollapsed && (
         <div className="task-list-content">
@@ -42,4 +49,4 @@ const TaskList = ({ tasks }) => {
   );
 };
 
-export default TaskList;
+export default OtherTaskList;
