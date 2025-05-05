@@ -3,6 +3,24 @@ import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
 import './OtherTaskList.css';
 import ListContainer from '../ListContainer/ListContainer';
 
+const TrashIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="red"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="trash-icon"
+  >
+    <polyline points="3 6 5 6 21 6"></polyline>
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
+    <line x1="10" y1="11" x2="10" y2="17"></line>
+    <line x1="14" y1="11" x2="14" y2="17"></line>
+  </svg>
+);
+
 const OtherTaskList = () => {
   const [tasks, setTasks] = useState([
     {
@@ -56,6 +74,13 @@ const OtherTaskList = () => {
     navigate('/add-task'); // Điều hướng đến trang thêm nhiệm vụ
   };
 
+  const handleDeleteTask = (id) => {
+    // Xóa nhiệm vụ khỏi danh sách
+    const updatedTasks = tasks.filter((task) => task.id !== id);
+    setTasks(updatedTasks);
+    setFilteredTasks(updatedTasks); // Cập nhật danh sách đã lọc
+  };
+
   const filterOptions = [
     { label: 'Tất cả', value: 'all' },
     { label: 'Đang mở', value: 'open' },
@@ -86,9 +111,18 @@ const OtherTaskList = () => {
           items={filteredTasks.map((task) => ({
             ...task,
             title: (
-              <Link to={`/other-task/${task.id}`} className="task-link">
-                {task.title}
-              </Link>
+              <div className="task-item">
+                <Link to={`/other-task/${task.id}`} className="task-link">
+                  {task.title}
+                </Link>
+                <button
+                  className="delete-task-button"
+                  onClick={() => handleDeleteTask(task.id)}
+                  title="Xóa nhiệm vụ"
+                >
+                  <TrashIcon />
+                </button>
+              </div>
             ),
           }))}
           searchPlaceholder="Tìm kiếm theo tên nhiệm vụ..."

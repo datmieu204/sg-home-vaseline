@@ -10,7 +10,8 @@ import {
   FaBell, 
   FaConciergeBell, 
   FaUserFriends, 
-  FaTachometerAlt
+  FaTachometerAlt,
+  FaReceipt
 } from 'react-icons/fa';
 
 // Import the logo directly
@@ -43,6 +44,12 @@ const MenuBar = ({ role }) => {
       { name: 'Thông báo', icon: <FaBell />, path: 'resident/notifications' },
       { name: 'Dịch vụ', icon: <FaConciergeBell />, path: 'resident/services' },
     ],
+    finance: [
+      { name: 'Tài khoản', icon: <FaUser />, path: 'emp/account' },
+      { name: 'Nhiệm vụ', icon: <FaClipboardList />, path: 'emp/tasks' },
+      { name: 'Báo cáo', icon: <FaChartLine />, path: 'emp/reports' },
+      { name: 'Xác nhận thanh toán', icon: <FaReceipt />, path: 'finance/payments' },
+    ]
   };
 
   const items = menuItems[role] || [];

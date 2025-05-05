@@ -8,7 +8,8 @@ import OtherTaskDetail from './Components/OtherTaskDetail/OtherTaskDetail';
 import OtherTask from './Components/OtherTask/OtherTask'; 
 import TaskEditing from './Components/TaskEditing/TaskEditing';
 import TaskCreating from './Components/TaskCreating/TaskCreating';
-
+import PaymentList from './Components/PaymentList/PaymentList';
+import PaymentConfirmation from './Components/PaymentConfirmation/PaymentConfirmation';
 
 // Các trang placeholder (trang trống ban đầu)
 const AccountPage = () => <div><h1>Trang Tài khoản</h1></div>;
@@ -17,7 +18,7 @@ const EmployeeTasksPage = () => <div><h1>Trang Nhiệm vụ nhân viên</h1></di
 const DashboardPage = () => <div><h1>Dashboard</h1></div>;
 
 const App = () => {
-  const userRole = 'leader'; // Có thể thay đổi thành 'admin', 'leader', 'resident'
+  const userRole = 'finance'; // Có thể thay đổi thành 'admin', 'leader', 'resident'
 
   // Định nghĩa các routes theo role
   const routesByRole = {
@@ -43,6 +44,12 @@ const App = () => {
       { path: '/resident/notifications', element: <div><h1>Thông báo</h1></div> },
       { path: '/resident/services', element: <div><h1>Dịch vụ</h1></div> },
     ],
+    finance: [
+      { path: 'emp/account', element: <AccountPage /> },
+      { path: 'emp/tasks', element: <TaskList />},
+      { path: 'emp/reports', element: <ReportsPage /> },
+      { path: 'finance/payments', element: <PaymentList /> },
+    ]
   };
 
   const roleRoutes = routesByRole[userRole] || [];
@@ -70,6 +77,8 @@ const App = () => {
 
           {/* Route thêm nhiệm vụ */}
           <Route path="/add-task" element={<TaskCreating role={userRole} />} />
+
+          <Route path="/payment-confirmation/:id" element={<PaymentConfirmation />} />
 
           {/* Route fallback nếu không khớp */}
           <Route path="*" element={<div><h1>404 - Không tìm thấy trang</h1></div>} />
