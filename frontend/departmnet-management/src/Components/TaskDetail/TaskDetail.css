@@ -1,7 +1,6 @@
 .task-detail {
-  margin-left: 220px;
   padding: 20px;
-  background-color: #fff8f0;
+  background-color: #ffffff;
   min-height: 100vh;
 }
 
@@ -19,14 +18,13 @@
 
 .task-pane {
   display: flex;
-  justify-content: center; /* Căn giữa theo chiều ngang */
-  align-items: center; /* Căn giữa theo chiều dọc */
   background-color: #fff4e6;
   border: 1px solid #ff6200;
   border-radius: 8px;
   padding: 20px;
   margin-top: 20px;
-  height: 400px; /* Đặt chiều cao cố định hoặc linh hoạt */
+  width: 1000px; 
+  height: 400px;
 }
 
 .task-content, .task-right-pane {
@@ -70,18 +68,34 @@
 }
 
 .task-checkbox {
-  margin-top: 15px;
+  position: absolute; /* Định vị checkbox */
+  bottom: 3px;
+  right: 10px;
+  display: flex;
+  align-items: center;
 }
 
 .task-checkbox input {
   margin-right: 8px;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ff6200;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.task-checkbox input:checked {
+  background-color: #ff6200;
+  border-color: #ff6200;
 }
 
 .task-right-pane {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 20px; /* Khoảng cách giữa "Người nhận" và "Trạng thái" */
+  gap: 25px; /* Khoảng cách giữa "Người nhận" và "Trạng thái" */
 }
 
 .task-assignees {
@@ -121,7 +135,6 @@
   color: #ff6200;
   font-size: 18px;
   margin-bottom: 10px;
-  text-align: center; /* Căn giữa chữ "Trạng thái" */
 }
 
 .task-status .status {
@@ -130,6 +143,5 @@
   border: 1px solid #ff6200;
   border-radius: 8px;
   color: #333;
-  text-align: center; /* Căn giữa nội dung trong box */
   width: 100%;
 }

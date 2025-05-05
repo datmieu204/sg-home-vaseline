@@ -1,65 +1,43 @@
-.task-list {
+.task-page {
+  width: 100%;
+  height: calc(100vh - 80px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   padding: 20px;
-  margin-left: 250px; /* Đảm bảo không đè lên menu bar */
+  background-color: #ffffff;
 }
 
 .task-list-header {
   display: flex;
   align-items: center;
   cursor: pointer;
-  user-select: none;
+  margin-bottom: 20px;
 }
 
 .task-list-header h2 {
   margin-left: 10px;
   color: #ff6200;
+  font-size: 24px;
 }
 
 .toggle-icon {
-  font-size: 16px;
-  transition: transform 0.3s ease;
+  font-size: 18px;
+  color: #666;
+  transition: transform 0.3s;
 }
 
 .toggle-icon.collapsed {
-  transform: rotate(-90deg); /* Xoay tam giác 90 độ khi bị ẩn */
+  transform: rotate(-90deg);
 }
 
-.task-list-content {
-  margin-top: 15px;
-}
-
-.task-item {
-  margin-bottom: 15px;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-}
-
-.task-period {
+.task-link {
+  text-decoration: none;
+  color: #ff6200;
   font-weight: bold;
-}
-
-.task-status {
-  color: #888;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.add-task-button {
-  background-color: #ff6200;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  padding: 10px 15px;
   cursor: pointer;
-  font-size: 16px;
 }
 
-.add-task-button:hover {
-  background-color: #e55a00;
+.task-link:hover {
+  text-decoration: underline;
 }

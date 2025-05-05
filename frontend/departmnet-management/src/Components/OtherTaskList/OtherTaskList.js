@@ -1,49 +1,101 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import '../TaskList/TaskList.css'; // Sử dụng cùng file CSS với TaskList
+import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
+import './OtherTaskList.css';
+import ListContainer from '../ListContainer/ListContainer';
 
-const OtherTaskList = ({ tasks }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false); // State để theo dõi trạng thái toggle
+const OtherTaskList = () => {
+  const [tasks, setTasks] = useState([
+    {
+      id: 1,
+      title: 'Nhiệm vụ tuần 28/04/2025 - 04/05/2025',
+      statusText: 'Đang mở',
+      statusType: 'open',
+      deadline: '04/05/2025 lúc 23:59',
+      deadlineLabel: 'Hết hạn',
+    },
+    {
+      id: 2,
+      title: 'Nhiệm vụ tuần 21/04/2025 - 27/04/2025',
+      statusText: 'Đã đóng',
+      statusType: 'closed',
+      deadline: '27/04/2025 lúc 23:59',
+      deadlineLabel: 'Hết hạn',
+    },
+    {
+      id: 3,
+      title: 'Nhiệm vụ tuần 14/04/2025 - 20/04/2025',
+      statusText: 'Đã đóng',
+      statusType: 'closed',
+      deadline: '20/04/2025 lúc 23:59',
+      deadlineLabel: 'Hết hạn',
+    },
+  ]);
 
-  const defaultTasks = [
-    { id: 1, period: 'Tuần 28/04/2025 - 04/05/2025', status: 'Đang mở', deadline: '04/05/2025 lúc 23:59' },
-    { id: 2, period: 'Tuần 21/04/2025 - 27/04/2025', status: 'Đã đóng', deadline: '27/04/2025 lúc 23:59' },
-    { id: 3, period: 'Tuần 14/04/2025 - 20/04/2025', status: 'Đã đóng', deadline: '20/04/2025 lúc 23:59' },
-    { id: 4, period: 'Tuần 07/04/2025 - 13/04/2025', status: 'Đã đóng', deadline: '13/04/2025 lúc 23:59' },
-    { id: 5, period: 'Tuần 31/03/2025 - 06/04/2025', status: 'Đã đóng', deadline: '06/04/2025 lúc 23:59' },
+  const [filteredTasks, setFilteredTasks] = useState(tasks);
+  const [isCollapsed, setIsCollapsed] = useState(false); // Toggle state
+  const navigate = useNavigate(); // Hook for navigation
+
+  const handleSearch = (searchTerm) => {
+    const filtered = tasks.filter((task) =>
+      task.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredTasks(filtered);
+  };
+
+  const handleFilter = (filterType) => {
+    if (filterType === 'all') {
+      setFilteredTasks(tasks);
+    } else if (filterType === 'open') {
+      setFilteredTasks(tasks.filter((task) => task.statusType === 'open'));
+    } else if (filterType === 'closed') {
+      setFilteredTasks(tasks.filter((task) => task.statusType === 'closed'));
+    }
+  };
+
+  const handleAddTask = () => {
+    navigate('/add-task'); // Điều hướng đến trang thêm nhiệm vụ
+  };
+
+  const filterOptions = [
+    { label: 'Tất cả', value: 'all' },
+    { label: 'Đang mở', value: 'open' },
+    { label: 'Đã đóng', value: 'closed' },
   ];
 
-  const taskList = tasks || defaultTasks;
-
   return (
-    <div className="task-list">
-      <div className="task-list-header" onClick={() => setIsCollapsed(!isCollapsed)}>
-        {/* Toggle icon */}
-        <span className={`toggle-icon ${isCollapsed ? 'collapsed' : ''}`}>
-          ▼
-        </span>
+    <div className="other-task-page">
+      <div
+        className="task-list-header"
+        onClick={() => setIsCollapsed(!isCollapsed)}
+      >
+        <span className={`toggle-icon ${isCollapsed ? 'collapsed' : ''}`}>▼</span>
         <h2>Tất cả Nhiệm vụ</h2>
       </div>
 
-      {/* Nút Thêm Nhiệm vụ Mới */}
+      {/* Nút Thêm nhiệm vụ mới */}
       <div className="add-task-container">
-        <button className="add-task-button">
+        <button className="add-task-button" onClick={handleAddTask}>
           Thêm nhiệm vụ mới
         </button>
       </div>
 
-      {/* Hiển thị hoặc ẩn danh sách nhiệm vụ dựa trên trạng thái */}
+      {/* Nội dung danh sách nhiệm vụ */}
       {!isCollapsed && (
-        <div className="task-list-content">
-          {taskList.map((task) => (
-            <div key={task.id} className="task-item">
-              <Link to={`/task/${task.id}`} className="task-period" style={{ cursor: 'pointer', color: '#ff6200' }}>
-                Nhiệm vụ {task.period}
+        <ListContainer
+          title="Danh sách nhiệm vụ khác"
+          items={filteredTasks.map((task) => ({
+            ...task,
+            title: (
+              <Link to={`/other-task/${task.id}`} className="task-link">
+                {task.title}
               </Link>
-              <p className="task-status">{task.status} | Hết hạn {task.deadline}</p>
-            </div>
-          ))}
-        </div>
+            ),
+          }))}
+          searchPlaceholder="Tìm kiếm theo tên nhiệm vụ..."
+          filterOptions={filterOptions}
+          onSearch={handleSearch}
+          onFilter={handleFilter} // Truyền handleFilter xuống ListContainer
+        />
       )}
     </div>
   );

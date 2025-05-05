@@ -1,43 +1,79 @@
 import React from 'react';
-import { Link } from 'react-router-dom'; // Sử dụng Link cho điều hướng
 import './MenuBar.css';
+import { Link, useLocation } from 'react-router-dom';
+
+// Icons import
+import { 
+  FaUser, 
+  FaClipboardList, 
+  FaChartLine, 
+  FaBell, 
+  FaConciergeBell, 
+  FaUserFriends, 
+  FaTachometerAlt
+} from 'react-icons/fa';
+
+// Import the logo directly
+import logo from '../../assets/white_logo.png'; // You'll need to create this assets folder
 
 const MenuBar = ({ role }) => {
+  const location = useLocation();
+  
   const menuItems = {
     admin: [
-      { name: 'Tài khoản', path: '/admin/account' },
-      { name: 'Nhiệm vụ người khác', path: '/admin/other-tasks' },
-      { name: 'Tài khoản người khác', path: '/admin/other-accounts' },
-      { name: 'Dashboard', path: '/admin/dashboard' },
+      { name: 'Tài khoản', icon: <FaUser />, path: '/admin/account' },
+      { name: 'Nhiệm vụ người khác', icon: <FaClipboardList />, path: '/admin/other-tasks' },
+      { name: 'Tài khoản người khác', icon: <FaUserFriends />, path: '/accounts' },
+      { name: 'Dashboard', icon: <FaTachometerAlt />, path: '/admin/dashboard' },
     ],
     leader: [
-      { name: 'Tài khoản', path: '/leader/account' },
-      { name: 'Nhiệm vụ', path: '/leader/tasks' },
-      { name: 'Báo cáo', path: '/leader/reports' },
-      { name: 'Nhiệm vụ nhân viên', path: '/leader/other-tasks' },
-      { name: 'Tài khoản nhân viên', path: '/leader/employee-accounts' },
+      { name: 'Tài khoản', icon: <FaUser />, path: '/leader/account' },
+      { name: 'Nhiệm vụ', icon: <FaClipboardList />, path: '/leader/tasks' },
+      { name: 'Báo cáo', icon: <FaChartLine />, path: '/leader/reports' },
+      { name: 'Nhiệm vụ nhân viên', icon: <FaClipboardList />, path: '/leader/other-tasks' },
+      { name: 'Tài khoản nhân viên', icon: <FaUserFriends />, path: '/leader/employee-tasks' },
     ],
     emp: [
-      { name: 'Tài khoản', path: '/emp/account' },
-      { name: 'Nhiệm vụ', path: '/emp/tasks' },
-      { name: 'Báo cáo', path: '/emp/reports' },
+      { name: 'Tài khoản', icon: <FaUser />, path: '/emp/account' },
+      { name: 'Nhiệm vụ', icon: <FaClipboardList />, path: '/emp/tasks' },
+      { name: 'Báo cáo', icon: <FaChartLine />, path: '/emp/reports' },
     ],
     resident: [
-      { name: 'Tài khoản', path: '/resident/account' },
-      { name: 'Thông báo', path: '/resident/notifications' },
-      { name: 'Dịch vụ', path: '/resident/services' },
+      { name: 'Tài khoản', icon: <FaUser />, path: 'resident/account' },
+      { name: 'Thông báo', icon: <FaBell />, path: 'resident/notifications' },
+      { name: 'Dịch vụ', icon: <FaConciergeBell />, path: 'resident/services' },
     ],
   };
 
   const items = menuItems[role] || [];
 
+  // If no logo is available, use a placeholder or text
+  const logoSrc = logo || "https://via.placeholder.com/50x30?text=SGHOME";
+
   return (
     <div className="menu-bar">
-      {items.map((item, index) => (
-        <Link key={index} to={item.path} className="menu-item">
-          {item.name}
-        </Link>
-      ))}
+      <div className="logo">
+        <img src={logoSrc} alt="SGHOME Logo" />
+      </div>
+      
+      <div className="menu-items">
+        {items.map((item, index) => {
+          // Check if this menu item is active
+          const isActive = location.pathname === item.path || 
+                          (item.path !== '/account' && location.pathname.startsWith(item.path));
+          
+          return (
+            <Link 
+              to={item.path} 
+              key={index} 
+              className={`menu-item ${isActive ? 'active' : ''}`}
+            >
+              <div className="menu-icon">{item.icon}</div>
+              <div className="menu-label">{item.name}</div>
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
 };
