@@ -1,0 +1,24 @@
+.menu-bar {
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    background-color: #f5e6d3;
+    padding: 10px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    border-right: 1px solid #ccc;
+  }
+  
+  .menu-item {
+    padding: 15px;
+    color: #ff6200;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .menu-item:hover {
+    background-color: #ff6200;
+    color: white;
+  }

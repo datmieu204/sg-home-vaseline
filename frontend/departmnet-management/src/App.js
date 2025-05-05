@@ -1,25 +1,16 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import MainLayout from './layouts/MainLayout';
+import TaskList from './Components/TaskList/TaskList';
 
-function App() {
+const App = () => {
+  // Giả định role được truyền vào, trong thực tế có thể lấy từ state hoặc API
+  const userRole = 'admin'; // Có thể thay đổi thành 'admin', 'leader', 'resident'
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <MainLayout role={userRole}>
+      <TaskList />
+    </MainLayout>
   );
-}
+};
 
 export default App;
