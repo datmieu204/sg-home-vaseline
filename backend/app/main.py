@@ -7,13 +7,14 @@ from app.routers.auto_generate_invoice import run_invoice_job
 from app.models import Employee, Household, AccountEmployee, AccountHousehold, Task, EmployeePosition, TaskStatus, EmployeeStatus, HouseholdStatus
 from app.routers import admin, household, manager, staff
 from apscheduler.schedulers.background import BackgroundScheduler
-from datetime import date, datetime, timedelta
+from app.routers.auto_extend_service_registration import run_renew_service_registrations_job
 app = FastAPI()
 
 
 # Schedule the job to run on the last day of each month at 23:59
 scheduler = BackgroundScheduler()
 db_session = next(get_db())
+
 scheduler.add_job(
     run_invoice_job,
     "cron",
@@ -21,14 +22,20 @@ scheduler.add_job(
     hour=23,
     minute=59
 )
+
+scheduler.add_job(
+    run_renew_service_registrations_job, 
+    'cron', 
+    day=1, 
+    hour=0, 
+    minute=0, 
+)
 scheduler.start()
 
 # Ensure scheduler shuts down when app stops
 @app.on_event("shutdown")
 def shutdown_event():
     scheduler.shutdown()
-
-
 
 # app.include_router(admin.admin_router)
 app.include_router(household.household_router)

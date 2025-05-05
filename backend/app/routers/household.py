@@ -4,12 +4,11 @@ from app.core.database import get_db
 from app.models import Employee, Household, InvoiceDetail, AccountHousehold, Service, Payment,ServiceRegistration, HouseholdStatus, Notification
 from app.models.invoice import Invoice, InvoiceStatus
 from app.models.service_registration import ServiceRegistrationStatus
-from app.models.service import ServiceStatus
 from datetime import date, datetime
-from enum import Enum
 import uuid
+from dateutil.relativedelta import relativedelta
+from sqlalchemy import and_
 from typing import Optional
-from app.routers.auto_generate_invoice import create_monthly_invoices_job
 
 household_router = APIRouter(prefix="/household", tags=["household"])
 
@@ -220,99 +219,156 @@ def get_all_services(db: Session = Depends(get_db)):
             "service_id": service.service_id,
             "service_name": service.service_name,
             "price": service.price,
-            "status": service.status.value  # Convert Enum to string
+            "status": service.status.value,  # Convert Enum to string
+            "description": service.description
         }
         for service in services
     ]
 
     return response
 
-@household_router.patch("/services/registration_{service_id}")
-def set_service_registration(
-    household_id: str,
-    service_id: str,
-    status: ServiceRegistrationStatus = ServiceRegistrationStatus.in_use,
+@household_router.get("/services/{service_id}")
+def get_service_by_id(service_id: str, db: Session = Depends(get_db)):
+    # Query the service
+    service = db.query(Service).filter(Service.service_id == service_id).first()
+
+    # Check if service exists
+    if not service:
+        raise HTTPException(status_code=404, detail="Service not found")
+
+    # Build the response
+    response = {
+        "service_id": service.service_id,
+        "service_name": service.service_name,
+        "price": service.price,
+        "status": service.status.value,  # Convert Enum to string
+        "description": service.description
+    }
+
+    return response
+
+
+@household_router.get("/services/myregister")
+def get_my_registered_services(household_id: str, db: Session = Depends(get_db)):
+    # Check if household exists
+    household = db.query(Household).filter(Household.household_id == household_id).first()
+    if not household:
+        raise HTTPException(status_code=404, detail="Household not found")
+
+    # Query registered services for the household
+    registered_services = (
+        db.query(ServiceRegistration)
+        .filter(ServiceRegistration.household_id == household_id)
+        .all()
+    )
+
+    # Build the response
+    response = [
+        {
+            "service_registration_id": service_registration.service_registration_id,
+            "service_id": service_registration.service_id,
+            "status": service_registration.status.value,  # Convert Enum to string
+            "registration_date": service_registration.registration_date,
+            "service_name": service_registration.service.service_name,
+            "price": service_registration.service.price
+        }
+        for service_registration in registered_services
+    ]
+
+    return response
+
+@household_router.patch("/services/myregister/{service_registration_id}")
+def cancel_service_registration(
+    service_registration_id: int,
     db: Session = Depends(get_db)
 ):
-    """
-    Set or update a service registration for a household.
-    
-    Args:
-        household_id: ID of the household.
-        service_id: ID of the service to register.
-        status: Status of the registration (in_use or cancelled). Defaults to in_use.
-        db: Database session.
-    
-    Returns:
-        Details of the created or updated service registration, or existing registration if no changes needed.
-    
-    Raises:
-        HTTPException: If housework or service is not found, or if the operation fails.
-    """
-    # Validate household
+    # Tìm đăng ký dịch vụ
+    service_registration = db.query(ServiceRegistration).filter(
+        ServiceRegistration.service_registration_id == service_registration_id
+    ).first()
+
+    if not service_registration:
+        raise HTTPException(status_code=404, detail="Service registration not found")
+
+    # Tìm household để xác nhận tồn tại (không bắt buộc nếu không cần kiểm tra)
     household = db.query(Household).filter(
-        Household.household_id == household_id,
-        Household.status == HouseholdStatus.active
+        Household.household_id == service_registration.household_id
     ).first()
     if not household:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Household not found or inactive"
-        )
+        raise HTTPException(status_code=404, detail="Household not found")
 
-    # Validate service
-    service = db.query(Service).filter(
-        Service.service_id == service_id,
-        Service.status == ServiceStatus.active
-    ).first()
-    if not service:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Service not found or inactive"
-        )
-
-    # Check for existing registration
-    registration = db.query(ServiceRegistration).filter(
-        ServiceRegistration.household_id == household_id,
-        ServiceRegistration.service_id == service_id
-    ).first()
-
-    if registration and registration.status == ServiceRegistrationStatus.in_use and status == ServiceRegistrationStatus.in_use:
-        # No changes needed if existing registration is in_use and input status is in_use
-        return {
-            "service_registration_id": registration.service_registration_id,
-            "household_id": registration.household_id,
-            "service_id": registration.service_id,
-            "start_date": registration.start_date,
-            "status": registration.status.value
-        }
-    else:
-        # Create new registration if none exists or existing is cancelled
-        if not registration or registration.status == ServiceRegistrationStatus.cancelled:
-            registration = ServiceRegistration(
-                household_id=household_id,
-                service_id=service_id,
-                start_date=date.today(),
-                status=status
-            )
-            db.add(registration)
-        else:
-            # Update existing registration (e.g., change from in_use to cancelled)
-            registration.status = status
-    try:
-        db.commit()
-        db.refresh(registration)
-    except Exception as e:
-        db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to update registration: {str(e)}"
-        )
+    # Hủy đăng ký dịch vụ
+    service_registration.status = ServiceRegistrationStatus.cancelled
+    db.commit()
 
     return {
-        "service_registration_id": registration.service_registration_id,
-        "household_id": registration.household_id,
-        "service_id": registration.service_id,
-        "start_date": registration.start_date,
-        "status": registration.status.value
+        "message": "Service registration cancelled successfully",
+        "service_registration_id": service_registration.service_registration_id,
+        "household_id": service_registration.household_id,
+        "service_id": service_registration.service_id,
+        "status": service_registration.status.value
     }
+   
+@household_router.post("/services/register/{service_id}")
+def register_service(
+    household_id: str,
+    service_id: str,
+    quantity: int,
+    db: Session = Depends(get_db)
+):
+    # Validate household exists
+    household = db.query(Household).filter(Household.household_id == household_id).first()
+    if not household:
+        raise HTTPException(status_code=404, detail="Household not found")
+    
+    # Validate service exists
+    service = db.query(Service).filter(Service.service_id == service_id).first()
+    if not service:
+        raise HTTPException(status_code=404, detail="Service not found")
+    
+    # Validate quantity
+    if quantity <= 0:
+        raise HTTPException(status_code=400, detail="Quantity must be positive")
+    
+    # Get current date and calculate end of month
+    current_date = datetime.now().date()
+    last_day_of_month = current_date + relativedelta(months=1, day=1) - relativedelta(days=1)
+    
+    # Check for existing registration in the same month
+    existing_registration = db.query(ServiceRegistration).filter(
+        and_(
+            ServiceRegistration.household_id == household_id,
+            ServiceRegistration.service_id == service_id,
+            ServiceRegistration.start_date >= current_date.replace(day=1),
+            ServiceRegistration.end_date <= last_day_of_month
+        )
+    ).first()
+    
+    if existing_registration:
+        # Update existing registration if it was cancelled
+        if existing_registration.status == ServiceRegistrationStatus.cancelled:
+            existing_registration.status = ServiceRegistrationStatus.in_use
+            existing_registration.quantity = quantity
+            existing_registration.start_date = current_date
+            existing_registration.end_date = last_day_of_month
+            db.commit()
+            db.refresh(existing_registration)
+            return existing_registration
+        else:
+            raise HTTPException(status_code=400, detail="Active registration already exists for this service in this month")
+    
+    # Create new registration
+    new_registration = ServiceRegistration(
+        household_id=household_id,
+        service_id=service_id,
+        quantity=quantity,
+        start_date=current_date,
+        end_date=last_day_of_month,
+        status=ServiceRegistrationStatus.in_use
+    )
+    
+    db.add(new_registration)
+    db.commit()
+    db.refresh(new_registration)
+    
+    return new_registration

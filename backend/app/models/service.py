@@ -13,3 +13,4 @@ class Service(Base):
     service_name = Column(String, nullable=False)
     price = Column(Float, nullable=False)
     status = Column(Enum(ServiceStatus), default=ServiceStatus.active, nullable=False)
+    description = Column(String, nullable=True)

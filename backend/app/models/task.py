@@ -2,9 +2,7 @@ from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, f
 from app.core.database import Base
 import enum
 
-
 class TaskStatus(enum.Enum):
-    pending = "pending"
     in_progress = "in_progress"
     completed = "completed"
 
@@ -18,4 +16,4 @@ class Task(Base):
     assigned_time = Column(DateTime, nullable=False)
     description = Column(String, nullable=False)
     deadline = Column(DateTime, nullable=True)
-    status = Column(Enum(TaskStatus), nullable=False, default=TaskStatus.pending, index=True)
+    status = Column(Enum(TaskStatus), nullable=False, default=TaskStatus.in_progress, index=True)

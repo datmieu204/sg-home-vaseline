@@ -1,14 +1,19 @@
-from sqlalchemy.orm import Session
+from datetime import date, datetime
+import uuid
+
 from apscheduler.schedulers.background import BackgroundScheduler
-from app.core.database import get_db
+from dateutil.relativedelta import relativedelta
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, func, Date, Float
+from sqlalchemy.orm import Session
+
+from app.core.database import Base, get_db
 from app.models.household import Household, HouseholdStatus
-from app.models.service_registration import ServiceRegistration, ServiceRegistrationStatus
-from app.models.service import Service, ServiceStatus
 from app.models.invoice import Invoice, InvoiceStatus
 from app.models.invoice_detail import InvoiceDetail
-import uuid
-from datetime import date, datetime
-from dateutil.relativedelta import relativedelta
+from app.models.service import Service, ServiceStatus
+from app.models.service_registration import ServiceRegistration, ServiceRegistrationStatus
+
+
 
 
 def get_last_day_of_month(target_date: date) -> date:
@@ -18,119 +23,108 @@ def get_last_day_of_month(target_date: date) -> date:
     return last_day
 
 def create_monthly_invoices_job(db: Session):
+    """
+    Automatically generate monthly invoices for all households based on their service registrations.
+    Includes service registrations that are 'cancelled' but have an end_date within the invoice month.
+    Skips households that already have an invoice for the current month.
+    """
     try:
-        # Target month is the current month
-        current_date = date.today()
-        month_date = current_date.replace(day=1)  # e.g., 2025-05-01
-        last_day = get_last_day_of_month(current_date)  # e.g., 2025-05-31
-        due_date = last_day + relativedelta(days=7)  # e.g., 2025-06-07
+        # Determine the current month and year
+        today = datetime.utcnow().date()
+        invoice_month = today.replace(day=1)  # First day of the current month
 
-        # Get all active households
-        households = (
-            db.query(Household)
-            .filter(Household.status == HouseholdStatus.active)
-            .all()
-        )
+        # Get all households with active status
+        households = db.query(Household).filter(Household.status == HouseholdStatus.active).all()
 
         invoices_created = 0
-        created_invoices = []
+        invoice_details_created = 0
 
+        # Iterate through each household
         for household in households:
-            # Check for existing invoice for this household and month
-            existing_invoice = (
-                db.query(Invoice)
-                .filter(
-                    Invoice.household_id == household.household_id,
-                    Invoice.month_date == month_date
-                )
-                .first()
-            )
+            # Check if an invoice already exists for this household and month
+            existing_invoice = db.query(Invoice).filter(
+                Invoice.household_id == household.household_id,
+                Invoice.month_date == invoice_month
+            ).first()
+
             if existing_invoice:
-                continue
+                continue  # Skip if invoice already exists for this household and month
 
-            # Get active service registrations for the household
-            registrations = (
-                db.query(ServiceRegistration, Service)
-                .join(Service, ServiceRegistration.service_id == Service.service_id)
-                .filter(
-                    ServiceRegistration.household_id == household.household_id,
-                    ServiceRegistration.status == ServiceRegistrationStatus.in_use,
-                    Service.status == ServiceStatus.active
-                )
-                .all()
-            )
+            # Get all service registrations for the household that are active in the invoice month
+            service_registrations = db.query(ServiceRegistration).filter(
+                ServiceRegistration.household_id == household.household_id,
+                ServiceRegistration.start_date <= invoice_month,
+                ServiceRegistration.end_date >= invoice_month
+            ).all()
 
-            if not registrations:
-                continue  # Skip if no registered services
+            if not service_registrations:
+                continue  # Skip if no service registrations
 
-            # Calculate total amount and create invoice details
-            total_amount = 0
+            # Calculate total amount for the invoice
+            total_amount = 0.0
             invoice_details = []
-            invoice_id = f"INV{uuid.uuid4().hex[:3]}"  # e.g., INV12345678
 
-            for registration, service in registrations:
-                quantity = 1  # Default quantity (adjust if usage data available)
-                price = service.price
-                total = quantity * price
-                total_amount += total
+            for registration in service_registrations:
+                # Get service details
+                service = db.query(Service).filter(Service.service_id == registration.service_id).first()
+                if not service:
+                    continue  # Skip if service not found
 
+                # Calculate total for this service registration
+                detail_total = service.price * registration.quantity
+                total_amount += detail_total
+
+                # Create InvoiceDetail
                 invoice_detail_id = f"IDET{uuid.uuid4().hex[:3]}"  # e.g., IDET12345678
                 invoice_detail = InvoiceDetail(
                     invoice_detail_id=invoice_detail_id,
-                    invoice_id=invoice_id,
+                    invoice_id=None,  # Will be set after invoice creation
                     service_id=service.service_id,
-                    quantity=quantity,
-                    price=price,
-                    total=total
+                    quantity=registration.quantity,
+                    price=service.price,
+                    total=detail_total
                 )
                 invoice_details.append(invoice_detail)
 
-            # Create invoice
+            if total_amount <= 0:
+                continue  # Skip if no valid invoice details
+
+            # Create Invoice
+            invoice_id = f"INV{uuid.uuid4().hex[:3]}"
             invoice = Invoice(
                 invoice_id=invoice_id,
                 household_id=household.household_id,
                 amount=total_amount,
-                month_date=month_date,
-                created_date=datetime.now(),
-                due_date=due_date,
-                status=InvoiceStatus.pending  # Use 'pending' if InvoiceStatus updated
+                month_date=invoice_month,
+                created_date=datetime.utcnow(),
+                due_date=invoice_month + relativedelta(months=1, days=-1),  # Due by end of next month
+                status=InvoiceStatus.pending
             )
 
-            db.add(invoice)
-            db.add_all(invoice_details)
-            invoices_created += 1
-            created_invoices.append({
-                "invoice_id": invoice.invoice_id,
-                "household_id": invoice.household_id,
-                "amount": invoice.amount,
-                "month_date": invoice.month_date,
-                "due_date": invoice.due_date,
-                "status": invoice.status.value,
-                "details": [
-                    {
-                        "invoice_detail_id": detail.invoice_detail_id,
-                        "service_id": detail.service_id,
-                        "quantity": detail.quantity,
-                        "price": detail.price,
-                        "total": detail.total
-                    }
-                    for detail in invoice_details
-                ]
-            })
+            # Set invoice_id for each invoice detail
+            for detail in invoice_details:
+                detail.invoice_id = invoice.invoice_id
 
+            # Add to session
+            db.add(invoice)
+            for detail in invoice_details:
+                db.add(detail)
+
+            invoices_created += 1
+            invoice_details_created += len(invoice_details)
+
+        # Commit the transaction
         db.commit()
-        print(f"[{current_date}] Created {invoices_created} invoices for {month_date.strftime('%Y-%m')}")
         return {
+            "status": "success",
             "invoices_created": invoices_created,
-            "invoices": created_invoices
+            "invoice_details_created": invoice_details_created,
+            "message": f"Created {invoices_created} invoices with {invoice_details_created} details for month {invoice_month.strftime('%Y-%m')}"
         }
+
     except Exception as e:
         db.rollback()
-        print(f"Error creating invoices: {e}")
-        raise
-    finally:
-        db.close()
-
+        raise Exception(f"Failed to create monthly invoices: {str(e)}")
 
 def run_invoice_job():
     # Extract the database session from the get_db generator
@@ -149,4 +143,3 @@ def run_invoice_job():
             db.close()
         except Exception:
             pass
-
