@@ -1,0 +1,93 @@
+.other-task-page {
+  width: 100%;
+  height: calc(100vh - 80px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: #ffffff;
+}
+
+.task-list-header {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.task-list-header h2 {
+  margin-left: 10px;
+  color: #ff6200;
+  font-size: 24px;
+}
+
+.toggle-icon {
+  font-size: 18px;
+  color: #666;
+  transition: transform 0.3s;
+}
+
+.toggle-icon.collapsed {
+  transform: rotate(-90deg);
+}
+
+.add-task-container {
+  margin-bottom: 20px;
+  display: flex;
+}
+
+.add-task-button {
+  background-color: #ff6200;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.add-task-button:hover {
+  background-color: #e55a00;
+}
+
+.task-link {
+  text-decoration: none;
+  color: #ff6200;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.task-link:hover {
+  text-decoration: underline;
+}
+.task-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.task-link {
+  flex: 1; /* Link nhiệm vụ chiếm toàn bộ không gian còn lại */
+  color: #ff6200;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.delete-task-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.trash-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.delete-task-button:hover .trash-icon {
+  stroke: red; /* Đổi màu thành đỏ đậm khi hover */
+}

@@ -1,41 +1,43 @@
-.task-list {
-    margin-left: 220px;
-    padding: 20px;
-    background-color: #fff8f0;
-    min-height: 100vh;
-  }
-  
-  .task-list h2 {
-    color: #ff6200;
-    font-size: 24px;
-    margin-bottom: 20px;
-  }
-  
-  .task-item {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .task-period {
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .task-status {
-    color: #666;
-    font-size: 14px;
-  }
-
 .task-page {
   width: 100%;
-  height: calc(100vh - 80px); /* Take up full screen height minus header */
-  overflow: hidden; /* Hide overflow */
+  height: calc(100vh - 80px);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
+  padding: 20px;
+  background-color: #ffffff;
 }
 
-.task-page h1 {
+.task-list-header {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
   margin-bottom: 20px;
-  color: #333;
-  font-size: 28px; /* Increased font size */
+}
+
+.task-list-header h2 {
+  margin-left: 10px;
+  color: #ff6200;
+  font-size: 24px;
+}
+
+.toggle-icon {
+  font-size: 18px;
+  color: #666;
+  transition: transform 0.3s;
+}
+
+.toggle-icon.collapsed {
+  transform: rotate(-90deg);
+}
+
+.task-link {
+  text-decoration: none;
+  color: #ff6200;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.task-link:hover {
+  text-decoration: underline;
 }

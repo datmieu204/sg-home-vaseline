@@ -10,7 +10,7 @@ import {
   FaBell, 
   FaConciergeBell, 
   FaUserFriends, 
-  FaTachometerAlt, 
+  FaTachometerAlt,
   FaReceipt
 } from 'react-icons/fa';
 
@@ -22,33 +22,33 @@ const MenuBar = ({ role }) => {
   
   const menuItems = {
     admin: [
-      { name: 'Tài khoản', icon: <FaUser />, path: '/account' },
-      { name: 'Nhiệm vụ người khác', icon: <FaClipboardList />, path: '/tasks' },
+      { name: 'Tài khoản', icon: <FaUser />, path: '/admin/account' },
+      { name: 'Nhiệm vụ người khác', icon: <FaClipboardList />, path: '/admin/other-tasks' },
       { name: 'Tài khoản người khác', icon: <FaUserFriends />, path: '/accounts' },
-      { name: 'Dashboard', icon: <FaTachometerAlt />, path: '/dashboard' },
+      { name: 'Dashboard', icon: <FaTachometerAlt />, path: '/admin/dashboard' },
     ],
     leader: [
-      { name: 'Tài khoản', icon: <FaUser />, path: '/account' },
-      { name: 'Nhiệm vụ', icon: <FaClipboardList />, path: '/tasks' },
-      { name: 'Báo cáo', icon: <FaChartLine />, path: '/reports' },
-      { name: 'Nhiệm vụ nhân viên', icon: <FaClipboardList />, path: '/tasks/employees' },
-      { name: 'Tài khoản nhân viên', icon: <FaUserFriends />, path: '/accounts/employees' },
+      { name: 'Tài khoản', icon: <FaUser />, path: '/leader/account' },
+      { name: 'Nhiệm vụ', icon: <FaClipboardList />, path: '/leader/tasks' },
+      { name: 'Báo cáo', icon: <FaChartLine />, path: '/leader/reports' },
+      { name: 'Nhiệm vụ nhân viên', icon: <FaClipboardList />, path: '/leader/other-tasks' },
+      { name: 'Tài khoản nhân viên', icon: <FaUserFriends />, path: '/leader/employee-tasks' },
     ],
     emp: [
-      { name: 'Tài khoản', icon: <FaUser />, path: '/account' },
-      { name: 'Nhiệm vụ', icon: <FaClipboardList />, path: '/tasks' },
-      { name: 'Báo cáo', icon: <FaChartLine />, path: '/reports' },
+      { name: 'Tài khoản', icon: <FaUser />, path: '/emp/account' },
+      { name: 'Nhiệm vụ', icon: <FaClipboardList />, path: '/emp/tasks' },
+      { name: 'Báo cáo', icon: <FaChartLine />, path: '/emp/reports' },
     ],
     resident: [
-      { name: 'Tài khoản', icon: <FaUser />, path: '/account' },
-      { name: 'Thông báo', icon: <FaBell />, path: '/notifications' },
-      { name: 'Dịch vụ', icon: <FaConciergeBell />, path: '/services' },
+      { name: 'Tài khoản', icon: <FaUser />, path: 'resident/account' },
+      { name: 'Thông báo', icon: <FaBell />, path: 'resident/notifications' },
+      { name: 'Dịch vụ', icon: <FaConciergeBell />, path: 'resident/services' },
     ],
     finance: [
-      { name: 'Tài khoản', icon: <FaUser />, path: '/account' },
-      { name: 'Nhiệm vụ', icon: <FaClipboardList />, path: '/tasks' },
-      { name: 'Báo cáo', icon: <FaChartLine />, path: '/reports' },
-      { name: 'Xác nhận thanh toán', icon: <FaReceipt />, path: '/payment-confirmation' },
+      { name: 'Tài khoản', icon: <FaUser />, path: 'emp/account' },
+      { name: 'Nhiệm vụ', icon: <FaClipboardList />, path: 'emp/tasks' },
+      { name: 'Báo cáo', icon: <FaChartLine />, path: 'emp/reports' },
+      { name: 'Xác nhận thanh toán', icon: <FaReceipt />, path: 'finance/payments' },
     ]
   };
 

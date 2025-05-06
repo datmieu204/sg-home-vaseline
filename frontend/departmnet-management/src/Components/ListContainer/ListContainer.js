@@ -22,10 +22,10 @@ const ListContainer = ({
         <FilterBar options={filterOptions} onFilter={onFilter} />
       </div>
       
-      <div className="list-title">
+      {/* <div className="list-title">
         <span className="dropdown-icon">▼</span>
         <h2>{title}</h2>
-      </div>
+      </div> */}
       
       <div className="list-items">
         {items.length > 0 ? (

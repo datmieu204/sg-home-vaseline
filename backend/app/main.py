@@ -8,6 +8,9 @@ from app.models import Employee, Household, AccountEmployee, AccountHousehold, T
 from app.routers import admin, household, manager, staff
 from apscheduler.schedulers.background import BackgroundScheduler
 from app.routers.auto_extend_service_registration import run_renew_service_registrations_job
+
+from fastapi.middleware.cors import CORSMiddleware  
+
 app = FastAPI()
 
 
@@ -38,7 +41,20 @@ scheduler.start()
 def shutdown_event():
     scheduler.shutdown()
 
-# app.include_router(admin.admin_router)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+from app.routers import admin, household, manager, staff, login
+
+app.include_router(login.login_router)
+app.include_router(admin.admin_router)
+app.include_router(manager.manager_router)
+app.include_router(staff.staff_router)
 app.include_router(household.household_router)
-# app.include_router(manager.manager_router)
-# app.include_router(staff.staff_router)

@@ -18,4 +18,3 @@ class Invoice(Base):
     created_date = Column(DateTime, nullable=False)
     due_date = Column(Date, nullable=False)
     status = Column(Enum(InvoiceStatus), nullable=False, default=InvoiceStatus.pending)
-

@@ -1,6 +1,6 @@
 .list-item {
   padding: 25px; /* Increased padding */
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #ff6200;
 }
 
 .item-title {
@@ -23,27 +23,27 @@
 
 .status-badge.open {
   background-color: rgba(248, 146, 54, 0.1);
-  color: #f89236;
+  color: #ff6200;
 }
 
 .status-badge.closed {
-  background-color: rgba(82, 196, 26, 0.1);
-  color: #52c41a;
+  background-color: rgba(243, 243, 243, 0.722);
+  color: #6b6a6a;
 }
 
 .status-badge.pending {
   background-color: rgba(250, 173, 20, 0.1);
-  color: #faad14;
+  color: #ff6200;
 }
 
 .separator {
   margin: 0 15px; /* Increased margin */
-  color: #d9d9d9;
+  color: #ff6200;
   font-size: 16px; /* Increased font size */
 }
 
 .deadline-label {
-  color: #999;
+  color: #ff6200;
   margin-right: 8px; /* Increased margin */
   font-size: 16px; /* Increased font size */
 }
