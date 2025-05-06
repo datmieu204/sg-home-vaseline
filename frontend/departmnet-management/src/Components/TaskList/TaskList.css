@@ -1,0 +1,43 @@
+.task-page {
+  width: 100%;
+  height: calc(100vh - 80px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: #ffffff;
+}
+
+.task-list-header {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.task-list-header h2 {
+  margin-left: 10px;
+  color: #ff6200;
+  font-size: 24px;
+}
+
+.toggle-icon {
+  font-size: 18px;
+  color: #666;
+  transition: transform 0.3s;
+}
+
+.toggle-icon.collapsed {
+  transform: rotate(-90deg);
+}
+
+.task-link {
+  text-decoration: none;
+  color: #ff6200;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.task-link:hover {
+  text-decoration: underline;
+}
