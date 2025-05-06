@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session, aliased
+from sqlalchemy.orm import Session, aliased, Query
 from app.core.database import get_db
-from app.models import Employee, Household, Task, EmployeePosition, TaskStatus, EmployeeStatus, HouseholdStatus, AccountHousehold, AccountEmployee, DepartmentType
+from app.models import Employee, Household, Task, EmployeePosition, TaskStatus, EmployeeStatus, HouseholdStatus, AccountHousehold, AccountEmployee, DepartmentType, Service, ServiceStatus, ServiceRegistration, InvoiceDetail, Invoice, Payment, PaymentMethod, Notification
 from pydantic import BaseModel, Field
 from datetime import datetime, date
 from typing import List, Dict
 from enum import Enum
 from typing import Optional
 import uuid
+from sqlalchemy import func
 
 admin_router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -135,7 +136,6 @@ def get_manager_tasks(db: Session = Depends(get_db)):
     """
     Lấy danh sách công việc mà assigner là head_manager và assignee là manager
     """
-    # Alias EmployeeAssigner và EmployeeAssignee để phân biệt giữa assigner và assignee
     EmployeeAssigner = aliased(Employee, name="employees_assigner")
     EmployeeAssignee = aliased(Employee, name="employees_assignee")
 
@@ -713,5 +713,193 @@ def disable_household_account(account_id: str, db: Session = Depends(get_db)):
 # DASHBOARD
 
 @admin_router.get("/dashboard/services")
-def get_service_count(db: Session = Depends(get_db)):
-    pass
+def get_service_dashboard(db: Session = Depends(get_db)):
+    """
+    Dashboard services
+    """
+
+    # Tổng số dịch vụ
+    total_services = db.query(Service).count()
+    
+    # Tổng số active/inactive
+    active_services = db.query(Service).filter(Service.status == ServiceStatus.active).count()
+    inactive_services = db.query(Service).filter(Service.status == ServiceStatus.inactive).count()
+    
+    # Tổng số dịch vụ đang được đăng ký (status = in_use)
+    in_use_services = db.query(ServiceRegistration.service_id).filter(
+        ServiceRegistration.status == "in_use"
+    ).distinct().count()
+    
+    # Doanh thu từng dịch vụ (sum total từ InvoiceDetail)
+    revenue_per_service = (
+        db.query(InvoiceDetail.service_id, func.sum(InvoiceDetail.total).label("total_revenue"))
+        .group_by(InvoiceDetail.service_id)
+        .all()
+    )
+    revenue_map = {r.service_id: r.total_revenue for r in revenue_per_service}
+    
+    # Số hộ đang đăng ký từng dịch vụ
+    registrations_per_service = (
+        db.query(ServiceRegistration.service_id, func.count(ServiceRegistration.household_id).label("num_households"))
+        .filter(ServiceRegistration.status == "in_use")
+        .group_by(ServiceRegistration.service_id)
+        .all()
+    )
+    registration_map = {r.service_id: r.num_households for r in registrations_per_service}
+    
+    # Lấy danh sách dịch vụ kèm thông tin chi tiết
+    services = db.query(Service).all()
+    service_data = []
+    for s in services:
+        service_data.append({
+            "service_id": s.service_id,
+            "service_name": s.service_name,
+            "price": s.price,
+            "status": s.status.value,
+            "num_households": registration_map.get(s.service_id, 0),
+            "total_revenue": revenue_map.get(s.service_id, 0.0)
+        })
+    
+    return {
+        "total_services": total_services,
+        "active_services": active_services,
+        "inactive_services": inactive_services,
+        "in_use_services": in_use_services,
+        "services": service_data
+    }
+
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+
+# EMPLOYEE
+
+@admin_router.get("/dashboard/employees")
+def get_employee_dashboard(db: Session = Depends(get_db)):
+    """
+    Dashboar employees
+    """
+    # Tổng số nhân viên
+    total_employees = db.query(Employee).count()
+    
+    # Tổng số active/inactive
+    active_employees = db.query(Employee).filter(Employee.status == EmployeeStatus.active).count()
+    inactive_employees = db.query(Employee).filter(Employee.status == EmployeeStatus.inactive).count()
+    
+    # Số nhân viên theo position
+    position_counts = (
+        db.query(Employee.position, func.count(Employee.employee_id).label("count"))
+        .group_by(Employee.position)
+        .all()
+    )
+    position_map = {pos.position.value: pos.count for pos in position_counts}
+    
+    # Số nhân viên theo phòng ban
+    department_counts = (
+        db.query(Employee.department_id, func.count(Employee.employee_id).label("count"))
+        .group_by(Employee.department_id)
+        .all()
+    )
+    department_map = {dep.department_id: dep.count for dep in department_counts}
+    
+    # Số nhiệm vụ đang xử lý và đã hoàn thành
+    task_counts = (
+        db.query(Task.assignee_id, Task.status, func.count(Task.task_id).label("count"))
+        .group_by(Task.assignee_id, Task.status)
+        .all()
+    )
+    task_status_map = {}
+    for task in task_counts:
+        if task.assignee_id not in task_status_map:
+            task_status_map[task.assignee_id] = {"in_progress": 0, "completed": 0}
+        task_status_map[task.assignee_id][task.status.value] = task.count
+    
+    # Danh sách nhân viên chi tiết
+    employees = db.query(Employee).all()
+    employee_data = []
+    for emp in employees:
+        emp_tasks = task_status_map.get(emp.employee_id, {"in_progress": 0, "completed": 0})
+        employee_data.append({
+            "employee_id": emp.employee_id,
+            "employee_name": emp.employee_name,
+            "status": emp.status.value,
+            "position": emp.position.value,
+            "department_id": emp.department_id,
+            "in_progress_tasks": emp_tasks["in_progress"],
+            "completed_tasks": emp_tasks["completed"],
+        })
+    
+    return {
+        "total_employees": total_employees,
+        "active_employees": active_employees,
+        "inactive_employees": inactive_employees,
+        "employees_by_position": position_map,
+        "employees_by_department": department_map,
+        "employees": employee_data
+    }
+
+#-----------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------
+
+@admin_router.get("/dashboard/households")
+def get_household_dashboard(db: Session = Depends(get_db)):
+    """
+    Dashboard household
+    """
+
+    # Tổng số hộ cư dân
+    total_households = db.query(Household).count()
+    
+    # Tổng số hộ cư dân active/inactive
+    active_households = db.query(Household).filter(Household.status == HouseholdStatus.active).count()
+    inactive_households = db.query(Household).filter(Household.status == HouseholdStatus.inactive).count()
+    
+    # Số hóa đơn theo trạng thái
+    invoice_status_counts = (
+        db.query(Invoice.status, func.count(Invoice.invoice_id).label("count"))
+        .group_by(Invoice.status)
+        .all()
+    )
+    invoice_status_map = {status.status.value: status.count for status in invoice_status_counts}
+    
+    # Doanh thu từ hóa đơn của từng hộ
+    revenue_per_household = (
+        db.query(Invoice.household_id, func.sum(Invoice.amount).label("total_revenue"))
+        .group_by(Invoice.household_id)
+        .all()
+    )
+    revenue_map = {r.household_id: r.total_revenue for r in revenue_per_household}
+    
+    # Số dịch vụ mà hộ cư dân đang đăng ký
+    service_registration_counts = (
+        db.query(ServiceRegistration.household_id, func.count(ServiceRegistration.service_id).label("num_services"))
+        .filter(ServiceRegistration.status == "in_use")
+        .group_by(ServiceRegistration.household_id)
+        .all()
+    )
+    service_registration_map = {r.household_id: r.num_services for r in service_registration_counts}
+    
+    # Danh sách hộ cư dân chi tiết
+    households = db.query(Household).all()
+    household_data = []
+    for h in households:
+        household_revenue = revenue_map.get(h.household_id, 0.0)
+        household_services = service_registration_map.get(h.household_id, 0)
+        household_data.append({
+            "household_id": h.household_id,
+            "household_name": h.name,
+            "room_number": h.room_number,
+            "status": h.status.value,
+            "num_services": household_services,
+            "total_revenue": household_revenue,
+            "pending_invoices": invoice_status_map.get("pending", 0),
+            "paid_invoices": invoice_status_map.get("paid", 0),
+            "overdue_invoices": invoice_status_map.get("overdue", 0),
+        })
+    
+    return {
+        "total_households": total_households,
+        "active_households": active_households,
+        "inactive_households": inactive_households,
+        "invoices_by_status": invoice_status_map,
+        "households": household_data
+    }

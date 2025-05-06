@@ -13,3 +13,4 @@ asyncpg
 black
 python-dotenv
 bcrypt
+apscheduler
