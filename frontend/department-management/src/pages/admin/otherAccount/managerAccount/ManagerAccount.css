@@ -1,0 +1,75 @@
+/* Nút Thêm quản lý */
+.add-manager-btn {
+    background-color: #b2ebe7;
+    color: rgb(16, 14, 14);
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-bottom: 20px;
+    transition: background-color 0.3s;
+  }
+  
+  .add-manager-btn:hover {
+    background-color: #45a049;
+  }
+  
+  /* Overlay và Popup Form */
+  .popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .popup-form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+  }
+  
+  .popup-form h3 {
+    text-align: center;
+  }
+  
+  .popup-form form div {
+    margin-bottom: 10px;
+  }
+  
+  .popup-form input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  
+  .popup-form button {
+    width: 48%;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .popup-form button:hover {
+    background-color: #45a049;
+  }
+  
+  .popup-form button[type="button"] {
+    background-color: #f44336;
+  }
+  
+  .popup-form button[type="button"]:hover {
+    background-color: #e53935;
+  }
+  

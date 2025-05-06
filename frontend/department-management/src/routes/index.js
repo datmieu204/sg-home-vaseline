@@ -11,6 +11,15 @@ import HouseholdDashboard from '../pages/admin/dashboard/householdDashboard';
 import Dashboard from '../pages/admin/dashboard';
 
 import AdminAccount from '../pages/admin/account';
+import OtherAccount from '../pages/admin/otherAccount';
+import HouseholdAccount from '../pages/admin/otherAccount/householdAccount';
+import ManagerAccount from '../pages/admin/otherAccount/managerAccount';  
+import StaffAccount from '../pages/admin/otherAccount/staffAccount';
+
+
+import Tasks from '../pages/admin/tasks';
+import ManagerTasks from '../pages/admin/tasks/tasks_manager';
+import StaffTasks from '../pages/admin/tasks/tasks_staff';
 
 function AppRoutes() {
   const routes = [
@@ -38,8 +47,23 @@ function AppRoutes() {
             { path: 'householdDashboard', element: <HouseholdDashboard /> },
           ]
         },
-        // { path: 'users', element: <UserManagement /> },
-        // { path: 'reports', element: <ReportsPage /> },
+        {
+          path: 'otherAccount',
+          element: <OtherAccount />,
+          children: [
+            {path: 'householdAccount', element: <HouseholdAccount />},
+            {path: 'managerAccount', element: <ManagerAccount />},
+            {path: 'staffAccount', element: <StaffAccount />},
+          ]
+        },
+        {
+          path: 'tasks',
+          element: <Tasks />,
+          children: [
+            {path: 'managerTasks', element: <ManagerTasks />},
+            {path: 'staffTasks', element: <StaffTasks />},
+          ]
+        },
       ],
     },
   ];

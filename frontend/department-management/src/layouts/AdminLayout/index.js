@@ -1,14 +1,14 @@
 // src/layouts/AdminLayout.jsx
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import AdminSideMenu from '../../components/AdminSideMenu.js';
+import AdminSideMenu from '../../components/AdminSideMenu/index.js';
 
 const AdminLayout = () => {
   const user = JSON.parse(localStorage.getItem('user'));
 
   return (
     <div style={{ display: 'flex' }}>
-      
+
       <AdminSideMenu />
 
       <div style={{ flex: 1, padding: '20px' }}>

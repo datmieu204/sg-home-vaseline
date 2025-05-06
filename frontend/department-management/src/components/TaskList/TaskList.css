@@ -1,0 +1,35 @@
+.task-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .task-card {
+    border: 1px solid #ddd;
+    border-left: 6px solid #2196f3;
+    background-color: #f9f9f9;
+    padding: 16px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+  
+  .task-card:hover {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .task-card.completed {
+    border-left-color: #4caf50;
+    background-color: #e8f5e9;
+  }
+  
+  .task-card.in_progress {
+    border-left-color: #ff9800;
+    background-color: #fff3e0;
+  }
+  
+  .no-tasks {
+    text-align: center;
+    font-style: italic;
+    color: #888;
+  }
+  

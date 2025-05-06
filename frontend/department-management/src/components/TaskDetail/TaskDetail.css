@@ -1,0 +1,59 @@
+/* src/components/TaskDetail.css */
+.task-detail-container {
+    max-width: 800px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', sans-serif;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  .task-name {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+  }
+  
+  .task-info {
+    line-height: 1.7;
+    font-size: 16px;
+    color: #444;
+  }
+  
+  .task-info p {
+    margin-bottom: 12px;
+  }
+  
+  .task-info strong {
+    color: #222;
+    width: 140px;
+    display: inline-block;
+  }
+  
+  .back-btn {
+    background-color: #3498db;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+  }
+  
+  .back-btn:hover {
+    background-color: #2980b9;
+  }
+  
+  /* Optional animation */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  

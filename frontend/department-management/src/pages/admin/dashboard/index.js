@@ -1,30 +1,19 @@
 import React from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
-import AdminDashboardButtons from '../../../components/AdminDashboardButtons'; 
+import AdminDashboardButtons from '../../../components/AdminTopButtons'; 
 
 const Dashboard = () => {
   const navigate = useNavigate();
 
-  const handleEmployeeDashboard = () => {
-    navigate('employeeDashboard');
-  };
-
-  const handleServiceDashboard = () => {
-    navigate('serviceDashboard');
-  };
-
-  const handleHouseholdDashboard = () => {
-    navigate('householdDashboard');
-  };
+  const buttons = [
+    { label: 'Quản lý Nhân viên', onClick: () => navigate('employeeDashboard'), className: 'employee' },
+    { label: 'Quản lý Dịch vụ', onClick: () => navigate('serviceDashboard'), className: 'service' },
+    { label: 'Quản lý Hộ cư dân', onClick: () => navigate('householdDashboard'), className: 'household' },
+  ];
 
   return (
     <div>
-      <AdminDashboardButtons
-        handleEmployeeDashboard={handleEmployeeDashboard}
-        handleServiceDashboard={handleServiceDashboard}
-        handleHouseholdDashboard={handleHouseholdDashboard}
-      />
-
+      <AdminDashboardButtons buttons={buttons} />
       <Outlet /> {/* chỗ render route con */}
     </div>
   );

@@ -14,8 +14,9 @@ const AdminSideMenu = () => {
       <h3>Menu</h3>
       <ul style={{ listStyle: 'none', padding: 5, margin: 5, gap: 5 }}>
         <li><Link to="account">Tài khoản</Link></li>
-        <li><Link to="reports">Báo cáo</Link></li>
+        <li><Link to="otherAccount">Tài khoản khác</Link></li>
         <li><Link to="dashboard">Dashboard</Link></li>
+        <li><Link to="tasks">Nhiệm vụ</Link></li>
       </ul>
     </div>
   );

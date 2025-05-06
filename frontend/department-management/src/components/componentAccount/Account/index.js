@@ -15,27 +15,40 @@ const Account = ({ profile, onConfirm }) => {
   };
 
   const handleConfirm = () => {
-    // Kiểm tra mật khẩu và nhập lại mật khẩu
     if (formData.password && formData.password !== formData.confirmPassword) {
       alert("Mật khẩu không khớp!");
       return;
     }
 
-    // Tạo đối tượng mới với các trường thay đổi
     const updatedData = {};
 
-    Object.keys(formData).forEach((key) => {
-      if (formData[key] !== profile[key]) {  // So sánh giá trị cũ và mới
-        updatedData[key] = formData[key];    // Chỉ cập nhật những trường thay đổi
-      }
-    });
+    if (formData.employee_name && formData.employee_name !== profile.employee_name)
+      updatedData.employee_name = formData.employee_name;
 
-    // Nếu có trường nào thay đổi, gọi hàm onConfirm để cập nhật
-    if (Object.keys(updatedData).length > 0 && onConfirm) {
-      onConfirm(updatedData);
+    if (formData.username && formData.username !== profile.username)
+      updatedData.username = formData.username;
+
+    if (formData.phone && formData.phone !== profile.phone)
+      updatedData.phone = formData.phone;
+
+    if (formData.address && formData.address !== profile.address)
+      updatedData.address = formData.address;
+
+    if (profile.status) {
+      updatedData.status = profile.status;
     }
 
-    setEditMode(false);  // Đóng chế độ chỉnh sửa sau khi xác nhận
+    if (formData.password) {
+      updatedData.password = formData.password;
+    }
+
+    onConfirm(updatedData);
+    setEditMode(false);
+    setFormData(prev => ({
+      ...prev,
+      password: '',
+      confirmPassword: ''
+    }));
   };
 
   return (
@@ -46,9 +59,18 @@ const Account = ({ profile, onConfirm }) => {
             <h2 className="name">{formData.employee_name}</h2>
             <p className="position">{formData.position}</p>
           </div>
-          <button className="edit-btn" onClick={() => setEditMode(!editMode)}>
+          <button
+            className="edit-btn"
+            onClick={() => {
+              if (editMode) {
+                setFormData(profile); 
+              }
+              setEditMode(!editMode);
+            }}
+          >
             ✏️ {editMode ? 'Hủy' : 'Chỉnh sửa'}
           </button>
+
         </div>
         <div className="form-group">
           <label>Tên đầy đủ</label>
@@ -66,8 +88,7 @@ const Account = ({ profile, onConfirm }) => {
             type="text"
             name="position"
             value={formData.position}
-            onChange={handleChange}
-            disabled={!editMode}
+            disabled
           />
         </div>
         <div className="form-row">
@@ -87,8 +108,7 @@ const Account = ({ profile, onConfirm }) => {
               type="date"
               name="begin_date"
               value={formData.begin_date}
-              onChange={handleChange}
-              disabled={!editMode}
+              disabled
             />
           </div>
         </div>

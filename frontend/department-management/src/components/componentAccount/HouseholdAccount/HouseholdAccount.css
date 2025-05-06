@@ -1,0 +1,56 @@
+.household-account-container {
+    margin: 20px auto;
+    padding: 24px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    max-width: 600px;
+  }
+  
+  .household-account-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .household-name {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 8px;
+  }
+  
+  .household-info {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .info-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+    color: #374151;
+  }
+  
+  .info-item label {
+    font-weight: 500;
+    color: #6b7280;
+  }
+
+  .disable-btn {
+    margin-top: 20px;
+    padding: 10px 16px;
+    background-color: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+  .disable-btn:hover {
+    background-color: #b91c1c;
+  }
+  
+  
