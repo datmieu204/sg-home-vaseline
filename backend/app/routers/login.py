@@ -22,7 +22,7 @@ class LoginRequest(BaseModel):
 class LoginResponse(BaseModel):
     user_id: str  # employee_id hoặc household_id
     username: str
-    user_type: UserRole
+    role: UserRole
 
 
 @login_router.post("/login", response_model=LoginResponse)
@@ -46,7 +46,7 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
             raise HTTPException(status_code=404, detail="Employee not found or inactive")
 
         # admin hoặc staff hoặc manager
-        user_type = (
+        role = (
             UserRole.admin
             if employee.position in [EmployeePosition.head_manager]
             else UserRole.manager
@@ -57,7 +57,7 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
         return {
             "user_id": account_employee.employee_id,
             "username": account_employee.username,
-            "user_type": user_type
+            "role": role
         }
 
     # Kiểm tra trong bảng AccountHousehold
@@ -78,7 +78,7 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
         return {
             "user_id": account_household.household_id,
             "username": account_household.username,
-            "user_type": UserRole.household
+            "role": UserRole.household
         }
 
     raise HTTPException(status_code=401, detail="Invalid username or password")

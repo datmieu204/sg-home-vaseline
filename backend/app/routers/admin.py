@@ -33,12 +33,12 @@ class AdminIDRequest(BaseModel):
     employee_id: str
 
 @admin_router.get("/profile", response_model=AdminProfileSchema)
-def get_admin_profile(admin_id_request: AdminIDRequest, db: Session = Depends(get_db)):
+def get_admin_profile(employee_id: str, db: Session = Depends(get_db)):
     """
     Lấy thông tin profile của admin dựa trên employee_id được cung cấp.
     """
     employee = db.query(Employee).filter(
-        Employee.employee_id == admin_id_request.employee_id,
+        Employee.employee_id == employee_id,
         Employee.position.in_([EmployeePosition.head_manager])
     ).first()
 
@@ -69,32 +69,27 @@ def get_admin_profile(admin_id_request: AdminIDRequest, db: Session = Depends(ge
 # Update profile admin
 
 class AdminProfileUpdateSchema(BaseModel):
-    employee_name: str
-    username: str
-    password: str
-    phone: str
-    address: str
-    status: EmployeeStatus
+    employee_name: Optional[str] = None
+    username: Optional[str] = None
+    password: Optional[str] = None
+    phone: Optional[str] = None
+    address: Optional[str] = None
+    status: Optional[EmployeeStatus] = None
 
 @admin_router.put("/profile", response_model=AdminProfileSchema)
 def update_admin_profile(
     updated_data: AdminProfileUpdateSchema,
-    admin_id_request: AdminIDRequest,
+    employee_id: str,
     db: Session = Depends(get_db)
 ):
-    """
-    Cập nhật thông tin profile của admin dựa trên employee_id=admin được cung cấp khi đăng nhập.
-    """
-    # Tìm employee
     employee = db.query(Employee).filter(
-        Employee.employee_id == admin_id_request.employee_id,
+        Employee.employee_id == employee_id,
         Employee.position == EmployeePosition.head_manager
     ).first()
 
     if not employee:
         raise HTTPException(status_code=404, detail="Admin not found or not authorized")
 
-    # Tìm account
     account = db.query(AccountEmployee).filter(
         AccountEmployee.employee_id == employee.employee_id
     ).first()
@@ -102,14 +97,22 @@ def update_admin_profile(
     if not account:
         raise HTTPException(status_code=404, detail="Account not found for this admin")
 
-    employee.employee_name = updated_data.employee_name
-    employee.phone = updated_data.phone
-    employee.address = updated_data.address
-    employee.status = updated_data.status
-    employee.begin_date = date.today()  
+    # Chỉ cập nhật nếu có giá trị mới
+    if updated_data.employee_name is not None:
+        employee.employee_name = updated_data.employee_name
+    if updated_data.phone is not None:
+        employee.phone = updated_data.phone
+    if updated_data.address is not None:
+        employee.address = updated_data.address
+    if updated_data.status is not None:
+        employee.status = updated_data.status
 
-    account.username = updated_data.username
-    account.password = updated_data.password  
+    employee.begin_date = date.today()  # Giữ nguyên như logic cũ
+
+    if updated_data.username is not None:
+        account.username = updated_data.username
+    if updated_data.password is not None:
+        account.password = updated_data.password
 
     db.commit()
     db.refresh(employee)
@@ -127,28 +130,41 @@ def update_admin_profile(
     }
 
 
+
 # -------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------\
 # TASKS
 
 @admin_router.get("/tasks/managers")
-def get_manager_tasks(db: Session = Depends(get_db)):
+def get_manager_tasks(employee_id: str, db: Session = Depends(get_db)):
     """
-    Lấy danh sách công việc mà assigner là head_manager và assignee là manager
+    Lấy danh sách công việc do head_manager (employee_id) giao cho các manager
     """
     EmployeeAssigner = aliased(Employee, name="employees_assigner")
     EmployeeAssignee = aliased(Employee, name="employees_assignee")
 
     tasks = db.query(Task)\
         .join(EmployeeAssigner, Task.assigner_id == EmployeeAssigner.employee_id)\
-        .filter(EmployeeAssigner.position == EmployeePosition.head_manager)\
+        .filter(
+            EmployeeAssigner.position == EmployeePosition.head_manager,
+            EmployeeAssigner.employee_id == employee_id
+        )\
         .join(EmployeeAssignee, Task.assignee_id == EmployeeAssignee.employee_id)\
         .filter(EmployeeAssignee.position == EmployeePosition.manager)\
         .all()
 
-    task_list = [{"name_task": task.name_task, "deadline": task.deadline, "status": task.status.value, "assignee_id": task.assignee_id} for task in tasks]
+    task_list = [
+        {
+            "task_id": task.task_id,
+            "name_task": task.name_task,
+            "deadline": task.deadline,
+            "status": task.status.value,
+            "assignee_id": task.assignee_id
+        } for task in tasks
+    ]
 
     return {"tasks": task_list}
+
     
 
 @admin_router.get("/tasks/staffs")
@@ -167,7 +183,15 @@ def get_staff_tasks(db: Session = Depends(get_db)):
         .filter(EmployeeAssignee.position == EmployeePosition.staff)\
         .all()
     
-    task_list = [{"name_task": task.name_task, "deadline": task.deadline, "status": task.status.value, "assignee_id": task.assignee_id} for task in tasks]
+    task_list = [
+        {
+            "task_id": task.task_id,
+            "name_task": task.name_task, 
+            "deadline": task.deadline, 
+            "status": task.status.value, 
+            "assignee_id": task.assignee_id
+        } 
+        for task in tasks]
 
     return {"tasks": task_list}
     

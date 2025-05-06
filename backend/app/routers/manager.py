@@ -800,3 +800,79 @@ def get_invoice_detail(invoice_id: str, employee_id: str, db: Session = Depends(
         status=invoice.status,
         details=[InvoiceDetailResponse.from_orm(detail) for detail in invoice_details]
     )
+
+# ------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------
+# View list incidents of a manager (have department_id)
+
+@manager_router.get("/incidents/")
+def get_manager_incidents(employee_id: str, db: Session = Depends(get_db)):
+    """
+    Lấy danh sách sự cố mà manager chịu trách nhiệm
+    """
+    # Kiểm tra employee_id có tồn tại và có position là manager
+    manager = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.manager
+    ).first()
+
+    if not manager:
+        raise HTTPException(status_code=404, detail="Manager not found or not a manager")
+
+    # Query incidents mà responsible_id là employee_id
+    incidents = db.query(Incident).filter(
+        Incident.responsible_id == employee_id
+    ).all()
+
+    incident_list = [
+        {
+            "incident_id": incident.incident_id,
+            "incident_name": incident.incident_name,
+            "report_time": incident.report_time,
+            "reporter_id": incident.reporter_id,
+            "description": incident.description,
+            "status": incident.status.value
+        }
+        for incident in incidents
+    ]
+
+    return {"incidents": incident_list}
+
+# ------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------
+
+# View incident detail of a manager (have department_id)
+@manager_router.get("/incidents/{incident_id}")
+def get_incident_detail(
+    incident_id: str,
+    employee_id: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Lấy thông tin chi tiết sự cố mà manager chịu trách nhiệm
+    """
+    # Kiểm tra employee_id có tồn tại và có position là manager
+    manager = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.manager
+    ).first()
+
+    if not manager:
+        raise HTTPException(status_code=404, detail="Manager not found or not a manager")
+
+    # Query sự cố theo incident_id
+    incident = db.query(Incident).filter(
+        Incident.incident_id == incident_id
+    ).first()
+
+    if not incident:
+        raise HTTPException(status_code=404, detail="Incident not found")
+
+    return {
+        "incident_id": incident.incident_id,
+        "incident_name": incident.incident_name,
+        "report_time": incident.report_time,
+        "reporter_id": incident.reporter_id,
+        "description": incident.description,
+        "status": incident.status.value
+    }

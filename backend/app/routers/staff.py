@@ -198,7 +198,6 @@ def get_task_detail(employee_id: str, task_id: str, db: Session = Depends(get_db
     task = db.query(Task).filter(
         Task.task_id == task_id,
         Task.assignee_id == employee_id,
-        Task.status == TaskStatus.in_progress
     ).first()
 
     if not task:
