@@ -1,3 +1,6 @@
 /pttk
 
 /.env
+
+
+**/__pycache__/

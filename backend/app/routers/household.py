@@ -138,75 +138,7 @@ def get_notification_by_id(notification_id: str, db: Session = Depends(get_db)):
     }
 
     return response
-    # Get current date for comparison
-    current_date = date.today()
-
-    # Query overdue, unpaid invoices
-    overdue_invoices = (
-        db.query(Invoice)
-        .filter(
-            Invoice.due_date <= current_date,
-            Invoice.status != InvoiceStatus.paid  # Not paid
-        )
-        .all()
-    )
-
-    if not overdue_invoices:
-        return {"message": "No overdue invoices found", "notifications_created": 0}
-
-    # Track created notifications
-    notifications_created = 0
-    created_notifications = []
-
-    for invoice in overdue_invoices:
-        # Verify household exists
-        household = db.query(Household).filter(Household.household_id == invoice.household_id).first()
-        if not household:
-            continue  # Skip if household doesn't exist
-
-        # Check for existing notification for this invoice
-        existing_notification = (
-            db.query(Notification)
-            .filter(
-                Notification.invoice_id == invoice.invoice_id,
-                Notification.message.ilike(f"%overdue%")  # Case-insensitive check for "overdue"
-            )
-            .first()
-        )
-
-        if existing_notification:
-            continue  # Skip if notification already exists
-
-        # Generate unique notification_id
-        notification_id = f"NOT{uuid.uuid4().hex[:8]}"  # Example: NOT12345678
-
-        # Create notification
-        notification = Notification(
-            notification_id=notification_id,
-            invoice_id=invoice.invoice_id,
-            household_id=invoice.household_id,
-            payment_id=None,  # No payment yet
-            message=f"Invoice {invoice.invoice_id} is overdue. Please pay ${invoice.amount} by {invoice.due_date}."
-        )
-
-        db.add(notification)
-        notifications_created += 1
-        created_notifications.append({
-            "notification_id": notification.notification_id,
-            "invoice_id": notification.invoice_id,
-            "household_id": notification.household_id,
-            "message": notification.message
-        })
-
-    # Commit changes to the database
-    db.commit()
-
-    return {
-        "message": f"Created {notifications_created} notifications for overdue invoices",
-        "notifications_created": notifications_created,
-        "notifications": created_notifications
-    }
-
+    
 
 @household_router.get("/services")
 def get_all_services(db: Session = Depends(get_db)):
