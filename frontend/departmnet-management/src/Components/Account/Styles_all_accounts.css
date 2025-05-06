@@ -1,0 +1,91 @@
+/* Common styles for all account types */
+.account-form-container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.account-section {
+  background-color: #fff9f2;
+  border-radius: 8px;
+  padding: 25px;
+  margin-bottom: 30px;
+}
+
+.account-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.form-left, .form-right {
+  flex: 1;
+  min-width: 300px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 16px;
+  color: #f89236;
+  margin-bottom: 8px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.form-value {
+  padding: 12px 0;
+  font-size: 16px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.cancel-btn, .save-btn {
+  padding: 10px 25px;
+  border-radius: 50px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background-color: white;
+  border: 1px solid #f89236;
+  color: #f89236;
+}
+
+.save-btn {
+  background-color: #f89236;
+  color: white;
+  border: none;
+}
+
+.login-section {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 25px;
+}
+
+.login-section h3 {
+  color: #f89236;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+
+.full-width {
+  width: 100%;
+}

@@ -1,0 +1,54 @@
+.service-item {
+  background-color: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border: 1px solid #f0f0f0;
+}
+
+.service-title {
+  color: #f89236;
+  font-size: 24px;
+  margin: 0 0 15px 0;
+}
+
+.service-description {
+  color: #333;
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 25px;
+}
+
+.service-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+}
+
+.detail-btn, .register-btn {
+  padding: 12px 25px;
+  font-size: 16px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.detail-btn {
+  background-color: white;
+  color: #f89236;
+  border: 1px solid #f89236;
+}
+
+.detail-btn:hover {
+  background-color: #fff9f2;
+}
+
+.register-btn {
+  background-color: #f89236;
+  color: white;
+  border: none;
+}
+
+.register-btn:hover {
+  background-color: #e57d20;
+}

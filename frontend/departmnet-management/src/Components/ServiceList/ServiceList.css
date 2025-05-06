@@ -1,0 +1,55 @@
+.service-page {
+  padding: 25px;
+  width: 95%;
+  height: 90%;
+  overflow-y: auto;
+  background-color: #ffecda;
+  margin-top: 25px;;
+}
+
+.service-container {
+  width: 95%;
+  padding: 20px;
+}
+
+.service-tabs {
+  display: flex;
+  margin-bottom: 25px;
+  border-bottom: 1px solid #eee;
+  background-color: white;
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+}
+
+.tab-button {
+  padding: 15px 30px;
+  font-size: 18px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex: 1;
+  text-align: center;
+  color: #666;
+  transition: all 0.3s;
+}
+
+.tab-button:hover {
+  background-color: #fff9f2;
+}
+
+.tab-button.active {
+  background-color: #f89236;
+  color: white;
+  font-weight: 500;
+}
+
+.service-content {
+  background-color: #fff9f2;
+}
+
+.service-list, .my-service-list {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  padding: 25px;
+}
