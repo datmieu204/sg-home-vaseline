@@ -1,7 +1,7 @@
 import React from 'react';
 import './ServiceDetail.css';
 
-const ServiceDetail = ({ service, onClose }) => {
+const ServiceDetail = ({ service, onClose, onRegister }) => {
   const { title, description, cost, duration, availability, requirements, benefits } = service;
 
   // Extract information from the service description
@@ -76,7 +76,9 @@ const ServiceDetail = ({ service, onClose }) => {
         </div>
         <div className="service-detail-actions">
           <button className="close-btn" onClick={onClose}>Đóng</button>
-          <button className="register-btn">Đăng ký</button>
+          {onRegister && (
+            <button className="register-btn" onClick={onRegister}>Đăng ký</button>
+          )}
         </div>
       </div>
     </div>

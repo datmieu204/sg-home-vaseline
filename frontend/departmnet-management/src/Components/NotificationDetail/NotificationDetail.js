@@ -55,7 +55,6 @@ const NotificationDetail = ({ notification, onClose }) => {
         </div>
         <div className="notification-detail-actions">
           <button className="close-btn" onClick={onClose}>Đóng</button>
-          <button className="delete-btn">Xóa</button>
         </div>
       </div>
     </div>

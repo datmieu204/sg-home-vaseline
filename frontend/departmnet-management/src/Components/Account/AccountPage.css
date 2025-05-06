@@ -1,8 +1,8 @@
 .account-page {
-  width: 100%;
+  width: 95%;
   padding: 20px;
   background-color: #fff9f2;
-  height: calc(100vh - 80px);
+  height: 95%;
   overflow-y: auto;
 }
 
@@ -11,6 +11,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
+  width: 100%;
 }
 
 .user-avatar-section {
@@ -34,7 +35,7 @@
 }
 
 .avatar-icon {
-  font-size: 60px;
+  font-size: 100px;
   color: #f89236;
 }
 
@@ -44,13 +45,13 @@
 }
 
 .user-name {
-  font-size: 32px; /* Increased text size */
+  font-size: 45px; /* Increased text size */
   color: #f89236;
   margin: 0 0 5px 0;
 }
 
 .user-role {
-  font-size: 24px; /* Increased text size */
+  font-size: 30px; /* Increased text size */
   margin: 0;
   color: #333;
 }
@@ -69,7 +70,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 16px;
+  font-size: 25px;
   cursor: pointer;
   transition: background-color 0.3s;
 }
@@ -190,7 +191,7 @@
 }
 
 .form-control {
-  width: 100%;
+  width: 90%;
   padding: 12px 15px;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -218,7 +219,7 @@
 .cancel-btn, .save-btn {
   padding: 10px 25px;
   border-radius: 30px;
-  font-size: 16px;
+  font-size: 20px;
   cursor: pointer;
 }
 

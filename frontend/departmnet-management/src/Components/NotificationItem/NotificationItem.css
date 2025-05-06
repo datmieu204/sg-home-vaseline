@@ -1,26 +1,20 @@
 .notification-item {
-  display: flex;
-  background-color: white;
+  background-color: #fff;
   border-radius: 8px;
-  padding: 25px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  transition: all 0.3s;
-  border: 2px solid transparent;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: flex-start;
+  transition: all 0.3s ease;
+}
+
+.notification-item:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .notification-item.unread {
-  border: 3px solid #ff4d4f;
-  border-radius: 8px;
-}
-
-.notification-select {
-  padding-right: 20px;
-}
-
-.notification-select input {
-  width: 22px;
-  height: 22px;
-  cursor: pointer;
+  border-left: 4px solid #f89236;
 }
 
 .notification-content {
@@ -28,16 +22,14 @@
 }
 
 .notification-title {
-  font-size: 22px;
-  margin: 0 0 15px 0;
-  color: #f89236;
-  font-weight: 600;
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  color: #333;
 }
 
 .notification-message {
-  margin: 0 0 20px 0;
-  font-size: 18px;
-  color: #333;
+  margin: 0 0 12px 0;
+  color: #555;
   line-height: 1.5;
 }
 
@@ -45,44 +37,31 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 5px;
+  padding-top: 10px;
+  border-top: 1px solid #f1f1f1;
 }
 
 .notification-time {
-  font-size: 16px;
-  color: #666;
+  color: #888;
+  font-size: 14px;
 }
 
 .notification-actions {
   display: flex;
-  gap: 15px;
-}
-
-.detail-btn, .delete-btn {
-  padding: 10px 25px;
-  border-radius: 50px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.3s;
-  font-weight: 500;
+  gap: 8px;
 }
 
 .detail-btn {
-  background-color: white;
+  background: none;
   border: 1px solid #f89236;
   color: #f89236;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
 }
 
 .detail-btn:hover {
-  background-color: #ffecda;
-}
-
-.delete-btn {
-  background-color: #f89236;
-  border: none;
-  color: white;
-}
-
-.delete-btn:hover {
-  background-color: #e57d20;
+  background-color: rgba(248, 146, 54, 0.1);
 }

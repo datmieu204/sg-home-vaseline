@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './NotificationItem.css';
 import NotificationDetail from '../NotificationDetail/NotificationDetail';
 
-const NotificationItem = ({ notification, isSelected, onSelect, onRead, onDelete }) => {
+const NotificationItem = ({ notification, onRead }) => {
   const { id, title, message, time, isRead } = notification;
   const [showDetail, setShowDetail] = useState(false);
   
@@ -22,13 +22,7 @@ const NotificationItem = ({ notification, isSelected, onSelect, onRead, onDelete
   return (
     <>
       <div className={`notification-item ${isRead ? '' : 'unread'}`}>
-        <div className="notification-select">
-          <input 
-            type="checkbox" 
-            checked={isSelected}
-            onChange={onSelect}
-          />
-        </div>
+        {/* Removed checkbox selection */}
         
         <div className="notification-content">
           <h3 className="notification-title">{title}</h3>
@@ -37,7 +31,6 @@ const NotificationItem = ({ notification, isSelected, onSelect, onRead, onDelete
             <span className="notification-time">Thời gian: {time}</span>
             <div className="notification-actions">
               <button className="detail-btn" onClick={handleDetail}>Chi tiết</button>
-              <button className="delete-btn" onClick={onDelete}>Xóa</button>
             </div>
           </div>
         </div>

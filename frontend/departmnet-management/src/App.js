@@ -6,11 +6,12 @@ import ReportList from './Components/ReportList/ReportList';
 import NotificationList from './Components/NotificationList/NotificationList';
 import ServiceList from './Components/ServiceList/ServiceList';
 import AccountPage from './Components/Account/AccountPage';
+import { ServicesProvider } from './contexts/ServicesContext';
 
 // Create a wrapper component that handles role changes and navigation
 const AppContent = () => {
   // In a real app, you would get this from authentication
-  const [userRole, setUserRole] = useState('leader'); // 'admin', 'resident', 'employee'
+  const [userRole, setUserRole] = useState('resident'); // 'admin', 'resident', 'employee'
   const navigate = useNavigate();
   const location = useLocation();
   const initialRender = useRef(true);
@@ -36,65 +37,69 @@ const AppContent = () => {
   }, [userRole, navigate, location.pathname]);
 
   return (
-    <Routes>
-      {/* Default route redirects to account page */}
-      <Route path="/" element={<Navigate to="/account" replace />} />
-      
-      {/* Account routes */}
-      <Route path="/account" element={
-        <MainLayout role={userRole}>
-          <AccountPage userRole={userRole} />
-        </MainLayout>
-      } />
-      
-      {/* Task routes */}
-      <Route path="/tasks" element={
-        <MainLayout role={userRole}>
-          <TaskList />
-        </MainLayout>
-      } />
-      
-      {/* Reports route */}
-      <Route path="/reports" element={
-        <MainLayout role={userRole}>
-          <ReportList />
-        </MainLayout>
-      } />
-      
-      {/* Notifications route */}
-      <Route path="/notifications" element={
-        <MainLayout role={userRole}>
-          <NotificationList />
-        </MainLayout>
-      } />
-      
-      {/* Services route */}
-      <Route path="/services" element={
-        <MainLayout role={userRole}>
-          <ServiceList />
-        </MainLayout>
-      } />
+    <>
+      <Routes>
+        {/* Default route redirects to account page */}
+        <Route path="/" element={<Navigate to="/account" replace />} />
+        
+        {/* Account routes */}
+        <Route path="/account" element={
+          <MainLayout role={userRole}>
+            <AccountPage userRole={userRole} />
+          </MainLayout>
+        } />
+        
+        {/* Task routes */}
+        <Route path="/tasks" element={
+          <MainLayout role={userRole}>
+            <TaskList />
+          </MainLayout>
+        } />
+        
+        {/* Reports route */}
+        <Route path="/reports" element={
+          <MainLayout role={userRole}>
+            <ReportList />
+          </MainLayout>
+        } />
+        
+        {/* Notifications route */}
+        <Route path="/notifications" element={
+          <MainLayout role={userRole}>
+            <NotificationList />
+          </MainLayout>
+        } />
+        
+        {/* Services route */}
+        <Route path="/services" element={
+          <MainLayout role={userRole}>
+            <ServiceList />
+          </MainLayout>
+        } />
 
-      {/* Add more routes based on your menu structure */}
-      <Route path="/tasks/employees" element={
-        <MainLayout role={userRole}>
-          <div>Employee Tasks Content</div>
-        </MainLayout>
-      } />
+        {/* Add more routes based on your menu structure */}
+        <Route path="/tasks/employees" element={
+          <MainLayout role={userRole}>
+            <div>Employee Tasks Content</div>
+          </MainLayout>
+        } />
 
-      <Route path="/accounts/employees" element={
-        <MainLayout role={userRole}>
-          <div>Employee Accounts Content</div>
-        </MainLayout>
-      } />
-    </Routes>
+        <Route path="/accounts/employees" element={
+          <MainLayout role={userRole}>
+            <div>Employee Accounts Content</div>
+          </MainLayout>
+        } />
+      </Routes>
+    </>
   );
 };
 
 const App = () => {
   return (
     <BrowserRouter>
-      <AppContent />
+      <ServicesProvider>
+        <AppContent />
+      </ServicesProvider>
     </BrowserRouter>
   );
 };

@@ -1,10 +1,19 @@
 import React, { useState } from 'react';
 import './ServiceItem.css';
 import ServiceDetail from '../ServiceDetail/ServiceDetail';
+import ServiceRegistrationForm from '../ServiceRegistrationForm/ServiceRegistrationForm';
 
 const ServiceItem = ({ service }) => {
   const { title, description } = service;
   const [showDetail, setShowDetail] = useState(false);
+  const [showRegistrationForm, setShowRegistrationForm] = useState(false);
+  
+  // Mock user account for demo
+  const mockUserAccount = {
+    fullName: 'Nguyễn Thị Thanh Lam',
+    phoneNumber: '+84 868109250',
+    apartmentNumber: '666',
+  };
   
   const handleViewDetails = () => {
     setShowDetail(true);
@@ -15,8 +24,7 @@ const ServiceItem = ({ service }) => {
   };
   
   const handleRegister = () => {
-    // In a real app, this would handle the service registration
-    console.log('Register for', title);
+    setShowRegistrationForm(true);
   };
   
   return (
@@ -24,7 +32,7 @@ const ServiceItem = ({ service }) => {
       <div className="service-item">
         <h2 className="service-title">{title}</h2>
         <p className="service-description">
-          {description.length > 150 
+          {description && description.length > 150 
             ? `${description.substring(0, 150)}...` 
             : description}
         </p>
@@ -38,6 +46,15 @@ const ServiceItem = ({ service }) => {
         <ServiceDetail 
           service={service} 
           onClose={handleCloseDetail} 
+          onRegister={handleRegister}
+        />
+      )}
+      
+      {showRegistrationForm && (
+        <ServiceRegistrationForm
+          service={service}
+          onClose={() => setShowRegistrationForm(false)}
+          userAccount={mockUserAccount}
         />
       )}
     </>

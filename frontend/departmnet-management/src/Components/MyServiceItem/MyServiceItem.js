@@ -1,72 +1,79 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import './MyServiceItem.css';
-import ServiceDetail from '../ServiceDetail/ServiceDetail';
+import { FiX, FiCheck, FiAlertCircle } from 'react-icons/fi';
+import { ServicesContext } from '../../contexts/ServicesContext';
 
 const MyServiceItem = ({ service }) => {
-  const { title, registerDate, endDate, quantity } = service;
-  const [showDetail, setShowDetail] = useState(false);
+  const { id, title, registerDate, endDate, quantity, paymentStatus } = service;
   
-  const handleViewDetails = () => {
-    setShowDetail(true);
-  };
+  // Use local state to track status for immediate UI update
+  const [currentStatus, setCurrentStatus] = useState(service.status || 'active');
   
-  const handleCloseDetail = () => {
-    setShowDetail(false);
-  };
+  // Get updateServiceStatus function from context
+  const { updateServiceStatus } = useContext(ServicesContext);
   
   const handleCancel = () => {
-    // In a real app, this would handle service cancellation
-    console.log('Cancel service', title);
+    if (window.confirm('Bạn có chắc chắn muốn hủy đăng ký dịch vụ này?')) {
+      // Update local state immediately for UI feedback
+      setCurrentStatus('cancel');
+      
+      // Update the context/global state
+      updateServiceStatus(id, 'cancel');
+      
+      console.log("Service canceled:", id);
+    }
   };
-  
-  const handleExtend = () => {
-    // In a real app, this would handle service extension
-    console.log('Extend service', title);
-  };
-  
-  // Prepare extended service info for detail view
-  const extendedService = {
-    ...service,
-    description: `Chi tiết về dịch vụ ${title} mà bạn đã đăng ký.`,
-    status: 'Đang hoạt động',
-    registeredUsers: quantity,
-    paymentStatus: 'Đã thanh toán',
-    paymentMethod: 'Chuyển khoản ngân hàng',
-    transactionId: 'TX-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
-  };
-  
+
   return (
-    <>
-      <div className="my-service-item">
-        <h2 className="service-title">{title}</h2>
-        <div className="service-details">
-          <div className="detail-row">
-            <span className="detail-label">Ngày đăng ký:</span>
-            <span className="detail-value">{registerDate}</span>
-          </div>
-          <div className="detail-row">
-            <span className="detail-label">Ngày kết thúc:</span>
-            <span className="detail-value">{endDate}</span>
-          </div>
-          <div className="detail-row">
-            <span className="detail-label">Số lượng:</span>
-            <span className="detail-value">{quantity}</span>
-          </div>
+    <div className={`my-service-item ${currentStatus}`}>
+      <div className="service-status-indicator">
+        {currentStatus === 'active' && (
+          <span className="status active">
+            <FiCheck /> Đang sử dụng
+          </span>
+        )}
+        {currentStatus === 'cancel' && (
+          <span className="status cancel">
+            <FiX /> Đã hủy
+          </span>
+        )}
+        {paymentStatus === 'Chờ thanh toán' && (
+          <span className="status pending">
+            <FiAlertCircle /> Chờ thanh toán
+          </span>
+        )}
+      </div>
+      <h2 className="service-title">{title}</h2>
+      <div className="service-details">
+        <div className="detail-row">
+          <span className="detail-label">Ngày đăng ký:</span>
+          <span className="detail-value">{registerDate}</span>
         </div>
-        <div className="service-actions">
-          <button className="detail-btn" onClick={handleViewDetails}>Chi tiết</button>
-          <button className="cancel-btn" onClick={handleCancel}>Hủy đăng ký</button>
-          <button className="extend-btn" onClick={handleExtend}>Gia hạn</button>
+        <div className="detail-row">
+          <span className="detail-label">Ngày kết thúc:</span>
+          <span className="detail-value">{endDate}</span>
         </div>
+        <div className="detail-row">
+          <span className="detail-label">Số lượng:</span>
+          <span className="detail-value">{quantity}</span>
+        </div>
+        {paymentStatus && (
+          <div className="detail-row">
+            <span className="detail-label">Trạng thái thanh toán:</span>
+            <span className={`detail-value payment-${paymentStatus === 'Đã thanh toán' ? 'paid' : 'pending'}`}>
+              {paymentStatus}
+            </span>
+          </div>
+        )}
       </div>
       
-      {showDetail && (
-        <ServiceDetail 
-          service={extendedService} 
-          onClose={handleCloseDetail} 
-        />
+      {/* Only show cancel button for active services */}
+      {currentStatus === 'active' && (
+        <div className="service-actions">
+          <button className="cancel-btn" onClick={handleCancel}>Hủy đăng ký</button>
+        </div>
       )}
-    </>
+    </div>
   );
 };
 

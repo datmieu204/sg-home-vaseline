@@ -124,28 +124,7 @@ const NotificationList = () => {
   return (
     <div className="notification-page">
       <div className="notification-container">
-        <div className="notification-header">
-          <div className="notification-controls">
-            <div className="select-all">
-              <input 
-                type="checkbox" 
-                id="select-all" 
-                checked={selectedNotifications.length === notifications.length && notifications.length > 0}
-                onChange={handleSelectAll}
-              />
-              <label htmlFor="select-all">Tất cả</label>
-            </div>
-            
-            {selectedNotifications.length > 0 && (
-              <button 
-                className="delete-selected-btn"
-                onClick={handleDeleteSelected}
-              >
-                Xóa các mục đã chọn
-              </button>
-            )}
-          </div>
-          
+        <div className="notification-header">          
           <div className="notification-filters">
             <div className="filter-dropdown">
               <button className="filter-button" onClick={toggleFilterOptions}>
