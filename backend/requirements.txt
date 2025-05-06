@@ -14,3 +14,4 @@ black
 python-dotenv
 bcrypt
 psycopg2
+apscheduler

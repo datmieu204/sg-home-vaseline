@@ -10,7 +10,7 @@ import AccountPage from './Components/Account/AccountPage';
 // Create a wrapper component that handles role changes and navigation
 const AppContent = () => {
   // In a real app, you would get this from authentication
-  const [userRole, setUserRole] = useState('leader'); // 'admin', 'resident', 'employee'
+  const [userRole, setUserRole] = useState('resident'); // 'admin', 'resident', 'employee'
   const navigate = useNavigate();
   const location = useLocation();
   const initialRender = useRef(true);
