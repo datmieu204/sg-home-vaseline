@@ -1,0 +1,255 @@
+.account-page {
+  width: 100%;
+  padding: 20px;
+  background-color: #fff9f2;
+  height: calc(100vh - 80px);
+  overflow-y: auto;
+}
+
+.account-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.user-avatar-section {
+  display: flex;
+  align-items: center;
+}
+
+.user-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: #fff;
+  margin-right: 20px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 3px solid #f89236;
+  box-shadow: 0 0 0 5px rgba(248, 146, 54, 0.2);
+}
+
+.avatar-icon {
+  font-size: 60px;
+  color: #f89236;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: 32px; /* Increased text size */
+  color: #f89236;
+  margin: 0 0 5px 0;
+}
+
+.user-role {
+  font-size: 24px; /* Increased text size */
+  margin: 0;
+  color: #333;
+}
+
+/* Edit button and dropdown */
+.edit-options-container {
+  position: relative;
+}
+
+.edit-profile-btn {
+  background-color: #f89236;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.edit-profile-btn:hover {
+  background-color: #e57d1f;
+}
+
+.edit-dropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+  z-index: 100;
+  width: 200px;
+}
+
+.edit-option {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  font-size: 14px;
+  gap: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.edit-option:hover {
+  background-color: #f5f5f5;
+}
+
+.close-dropdown {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  font-size: 16px;
+  color: #666;
+}
+
+/* Two-column layout */
+.account-content {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+}
+
+.account-column {
+  flex: 1;
+  background-color: #ffecda;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.column-header {
+  background-color: #f89236;
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.column-header h2 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 500;
+}
+
+.column-icon {
+  font-size: 30px;
+}
+
+.column-content {
+  padding: 20px;
+}
+
+/* Form elements */
+.info-container,
+.login-info,
+.password-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-row {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+}
+
+.form-group {
+  flex: 1;
+  margin-bottom: 10px;
+}
+
+.form-group.full-width {
+  width: 100%;
+}
+
+.form-group label {
+  display: block;
+  color: #f89236;
+  font-size: 25px; /* Increased text size */
+  font-weight: bold;;
+  margin-bottom: 8px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 25px; /* Increased text size */
+}
+
+.form-value {
+  background-color: #fff9f2;
+  padding: 12px 15px;
+  border-radius: 15px;
+  font-size: 25px; /* Increased text size */
+  border: 3px solid #f89236; /* Added border as requested */
+  min-height: 48px; /* Increased height for larger text */
+  line-height: 1.5;
+}
+
+/* Buttons */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  gap: 12px;
+}
+
+.cancel-btn, .save-btn {
+  padding: 10px 25px;
+  border-radius: 30px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background-color: white;
+  border: 1px solid #f89236;
+  color: #f89236;
+}
+
+.save-btn {
+  background-color: #f89236;
+  color: white;
+  border: none;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 18px;
+  color: #666;
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+  .account-content {
+    flex-direction: column;
+  }
+  
+  .form-row {
+    flex-direction: column;
+  }
+}

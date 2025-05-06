@@ -5,11 +5,12 @@ import TaskList from './Components/TaskList/TaskList';
 import ReportList from './Components/ReportList/ReportList';
 import NotificationList from './Components/NotificationList/NotificationList';
 import ServiceList from './Components/ServiceList/ServiceList';
+import AccountPage from './Components/Account/AccountPage';
 
 // Create a wrapper component that handles role changes and navigation
 const AppContent = () => {
   // In a real app, you would get this from authentication
-  const [userRole, setUserRole] = useState('resident'); // or 'employee'
+  const [userRole, setUserRole] = useState('leader'); // 'admin', 'resident', 'employee'
   const navigate = useNavigate();
   const location = useLocation();
   const initialRender = useRef(true);
@@ -42,7 +43,7 @@ const AppContent = () => {
       {/* Account routes */}
       <Route path="/account" element={
         <MainLayout role={userRole}>
-          <div>Account Page Content</div>
+          <AccountPage userRole={userRole} />
         </MainLayout>
       } />
       

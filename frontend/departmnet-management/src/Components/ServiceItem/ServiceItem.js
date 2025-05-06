@@ -1,12 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './ServiceItem.css';
+import ServiceDetail from '../ServiceDetail/ServiceDetail';
 
 const ServiceItem = ({ service }) => {
   const { title, description } = service;
+  const [showDetail, setShowDetail] = useState(false);
   
   const handleViewDetails = () => {
-    // In a real app, this would open a modal with service details
-    console.log('View details for', title);
+    setShowDetail(true);
+  };
+  
+  const handleCloseDetail = () => {
+    setShowDetail(false);
   };
   
   const handleRegister = () => {
@@ -15,14 +20,27 @@ const ServiceItem = ({ service }) => {
   };
   
   return (
-    <div className="service-item">
-      <h2 className="service-title">{title}</h2>
-      <p className="service-description">{description}</p>
-      <div className="service-actions">
-        <button className="detail-btn" onClick={handleViewDetails}>Chi tiết</button>
-        <button className="register-btn" onClick={handleRegister}>Đăng ký</button>
+    <>
+      <div className="service-item">
+        <h2 className="service-title">{title}</h2>
+        <p className="service-description">
+          {description.length > 150 
+            ? `${description.substring(0, 150)}...` 
+            : description}
+        </p>
+        <div className="service-actions">
+          <button className="detail-btn" onClick={handleViewDetails}>Chi tiết</button>
+          <button className="register-btn" onClick={handleRegister}>Đăng ký</button>
+        </div>
       </div>
-    </div>
+      
+      {showDetail && (
+        <ServiceDetail 
+          service={service} 
+          onClose={handleCloseDetail} 
+        />
+      )}
+    </>
   );
 };
 

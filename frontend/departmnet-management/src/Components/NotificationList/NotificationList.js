@@ -14,24 +14,51 @@ const NotificationList = () => {
     const mockNotifications = [
       {
         id: 1,
-        title: 'Thông báo đóng tiền điện tháng 04/2025',
-        message: 'Đóng tiền điện hộ cái đi hết tháng rồi đó...',
+        title: 'Thông báo đóng tiền điện thành công tháng 04/2025',
+        message: `Kính gửi Quý khách hàng,
+        Chúng tôi xin thông báo rằng khoản thanh toán tiền điện của Quý khách đã được thực hiện thành công. Dưới đây là thông tin chi tiết:
+        • Số hợp đồng/Khách hàng: HD2025-1234
+        • Kỳ thanh toán: 04/2025
+        • Số tiền thanh toán: 1,250,000 VND
+        • Ngày thanh toán: 25/04/2025
+        • Phương thức thanh toán: Chuyển khoản
+        • Mã giao dịch: GD-123456789
+        Cảm ơn Quý khách đã thanh toán đúng hạn. Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ với chúng tôi qua hotline 1900-1234 hoặc email support@schome.com.
+        Trân trọng,`,
         time: '25/04/2025 lúc 08:00',
         isRead: false,
         type: 'billing'
       },
       {
         id: 2,
-        title: 'Thông báo đóng tiền nước tháng 04/2025',
-        message: 'Đóng tiền nước hộ cái đi hết tháng rồi đó...',
+        title: 'Thông báo đóng tiền nước thành công tháng 04/2025',
+        message: `Kính gửi Quý khách hàng,
+        Chúng tôi xin thông báo rằng khoản thanh toán tiền nước của Quý khách đã được thực hiện thành công. Dưới đây là thông tin chi tiết:
+        • Số hợp đồng/Khách hàng: HDN2025-5678
+        • Kỳ thanh toán: 04/2025
+        • Số tiền thanh toán: 450,000 VND
+        • Ngày thanh toán: 25/04/2025
+        • Phương thức thanh toán: Tiền mặt
+        • Mã giao dịch: GD-98765432
+        Cảm ơn Quý khách đã thanh toán đúng hạn. Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ với chúng tôi qua hotline 1900-1234 hoặc email support@schome.com.
+        Trân trọng,`,
         time: '25/04/2025 lúc 08:00',
         isRead: false,
         type: 'billing'
       },
       {
         id: 3,
-        title: 'Thông báo đóng tiền điện tháng 03/2025',
-        message: 'Đóng tiền điện hộ cái đi hết tháng rồi đó...',
+        title: 'Thông báo đóng tiền điện thành công tháng 03/2025',
+        message: `Kính gửi Quý khách hàng,
+        Chúng tôi xin thông báo rằng khoản thanh toán tiền điện của Quý khách đã được thực hiện thành công. Dưới đây là thông tin chi tiết:
+        • Số hợp đồng/Khách hàng: HD2025-1234
+        • Kỳ thanh toán: 03/2025
+        • Số tiền thanh toán: 1,180,000 VND
+        • Ngày thanh toán: 25/03/2025
+        • Phương thức thanh toán: Ví điện tử
+        • Mã giao dịch: GD-345678912
+        Cảm ơn Quý khách đã thanh toán đúng hạn. Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ với chúng tôi qua hotline 1900-1234 hoặc email support@schome.com.
+        Trân trọng,`,
         time: '25/03/2025 lúc 08:00',
         isRead: true,
         type: 'billing'
