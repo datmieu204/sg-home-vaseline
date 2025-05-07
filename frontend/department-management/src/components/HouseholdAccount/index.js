@@ -91,29 +91,28 @@ const HouseholdAccount = ({ profile, onConfirm }) => {
       </div>
       <div className="account-right">
         <div className="form-group">
-          <label>ID Hộ gia đình</label>
-          <p className="household-id">{formData.id}</p>
+          <label>Tên tài khoản</label>
         </div>
-        <div className="form-group">
-          <label>Tên đăng nhập</label>
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            disabled={!editMode}
-          />
-        </div>
-        <div className="form-group">
-          <label>Mật khẩu</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            disabled={!editMode}
-          />
-        </div>
+        {editMode && (
+          <>
+            <div className="form-group">
+              <label>Mật khẩu</label>
+              <input
+                type="password"
+                name="password"
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>Nhập lại mật khẩu</label>
+              <input
+                type="password"
+                name="confirmPassword"
+                onChange={handleChange}
+              />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
