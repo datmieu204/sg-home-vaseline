@@ -1,23 +1,25 @@
+// src/layouts/AdminLayout.jsx
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import TopHeader from '../../components/Header/Header';
-import NavBar from '../../components/NavBar';
-import './AdminLayout.css';
+import MenuBar from '../../components/MenuBar';
 
-function AdminLayout() {
+const AdminLayout = () => {
+  const user = JSON.parse(localStorage.getItem('user'));
+
   return (
-    <div className="App admin-app" >
-      <div>
-        <TopHeader />
-      </div>
-      <div className="navbar-container" style={{backgroundColor: '#303c54'}}>
-        <NavBar />
-        <div className="admin-content" style={{backgroundColor: '#303c54'}}>
-          <Outlet />
+    <div style={{ display: 'flex' }}>
+      
+      <MenuBar role = "leader"/>
+
+      <div style={{ flex: 1, padding: '20px' }}>
+        <div style={{ marginBottom: '20px' }}>
+          <p>Xin chào: {user?.username}</p>
         </div>
+      
+        <Outlet />
       </div>
     </div>
   );
-}
+};
 
 export default AdminLayout;

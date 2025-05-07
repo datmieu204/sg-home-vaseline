@@ -1,15 +1,22 @@
-// src/App.js
 import React from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import AppRoutes from './routes';
+import LoginLayout from './layouts/LoginLayout';
+import LoginPage from './pages/login_page';
+
+import AdminLayout from './layouts/AdminLayout';
+import EmployeeDashboard from './pages/admin/dashboard/employeeDashboard';
+import ServiceDashboard from './pages/admin/dashboard/serviceDashboard';
+import HouseholdDashboard from './pages/admin/dashboard/householdDashboard';
+import Dashboard from './pages/admin/dashboard';
+import AdminAccount from './pages/admin/account';
 import './App.css';
-import Header from './components/Header/Header';
-import HeroSection from './components/HeroSection/HeroSection';
 
 function App() {
   return (
-    <div className="App">
-      <Header />
-      <HeroSection />
-    </div>
+    <Router>
+      <AppRoutes />
+    </Router>
   );
 }
 
