@@ -5,10 +5,6 @@ const Account = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Tạm thời vì khôm đăng nhập được gruh
-  // const user = JSON.parse(localStorage.getItem('user'));
-  // const householdId = user?.user_id;
-
   const householdId = 'HH001';
 
   useEffect(() => {
@@ -34,16 +30,19 @@ const Account = () => {
 
   const handleUpdate = (formData) => {
     const updateData = {
-      id: profile.id, // không thay đổi
-      name: formData.name, // chỉ chỉnh sửa trường này
-      number_of_members: formData.number_of_members, // chỉ chỉnh sửa trường này
-      phone: formData.phone, // chỉ chỉnh sửa trường này
-      room_number: formData.room_number, // chỉ chỉnh sửa trường này
-      status: 'active' // chỉ chỉnh sửa trường này (giữ trạng thái là 'active')
+      id: profile.id,
+      name: formData.name,
+      number_of_members: formData.number_of_members,
+      phone: formData.phone,
+      room_number: formData.room_number,
+      status: 'active',
+      account: formData.account,
+      username: formData.username,
+      password: formData.password
     };
 
-    fetch(`http://127.0.0.1:8000/household/profile?household_id=${householdId}`, {
-      method: 'PUT',
+    fetch(`http://127.0.0.1:8000/household/profile/modify?household_id=${householdId}`, {
+      method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updateData),
     })

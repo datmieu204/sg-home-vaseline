@@ -82,6 +82,7 @@ const HouseholdAccount = ({ profile, onConfirm }) => {
             />
           </div>
         </div>
+        
         {editMode && (
           <button className="confirm-btn" onClick={handleConfirm}>
             ✅ Xác nhận
@@ -92,6 +93,26 @@ const HouseholdAccount = ({ profile, onConfirm }) => {
         <div className="form-group">
           <label>ID Hộ gia đình</label>
           <p className="household-id">{formData.id}</p>
+        </div>
+        <div className="form-group">
+          <label>Tên đăng nhập</label>
+          <input
+            type="text"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            disabled={!editMode}
+          />
+        </div>
+        <div className="form-group">
+          <label>Mật khẩu</label>
+          <input
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            disabled={!editMode}
+          />
         </div>
       </div>
     </div>
