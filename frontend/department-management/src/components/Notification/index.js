@@ -81,17 +81,6 @@ const Notification = ({ householdId }) => {
     );
   };
 
-  const handleDelete = (id) => {
-    setNotifications((prev) => prev.filter((notification) => notification.notification_id !== id));
-  };
-
-  const handleDeleteSelected = () => {
-    setNotifications((prev) =>
-      prev.filter((notification) => !selectedIds.includes(notification.notification_id))
-    );
-    setSelectedIds([]);
-  };
-
   const handleSortNewest = () => {
     const sorted = [...notifications].sort((a, b) => new Date(b.time) - new Date(a.time));
     setNotifications(sorted);
@@ -128,36 +117,9 @@ const Notification = ({ householdId }) => {
         </div>
       ) : (
         <>
-          <div className="notifications-header">
-            <div>
-              <input
-                type="checkbox"
-                onChange={(e) =>
-                  setSelectedIds(e.target.checked ? notifications.map((n) => n.notification_id) : [])
-                }
-                checked={selectedIds.length === notifications.length && notifications.length > 0}
-              />
-              <span>Tất cả</span>
-              <button className="delete-selected-btn" onClick={handleDeleteSelected} disabled={selectedIds.length === 0}>
-                Xóa các mục đã chọn
-              </button>
-            </div>
-            <div className="filter-options">
-              <select>
-                <option value="">Lọc theo ngày</option>
-              </select>
-              <button onClick={handleSortNewest}>Mới nhất</button>
-              <button onClick={handleSortOldest}>Cũ nhất</button>
-            </div>
-          </div>
           <div className="notifications-list">
             {notifications.map((notification) => (
               <div className={`notification-item ${!notification.isPaid ? 'unpaid' : ''}`} key={notification.notification_id}>
-                <input
-                  type="checkbox"
-                  checked={selectedIds.includes(notification.notification_id)}
-                  onChange={() => handleSelect(notification.notification_id)}
-                />
                 <div className="notification-content">
                   <h3 className="notification-title">{notification.title}</h3>
                   <p className="notification-subtext">{notification.subtext}</p>
@@ -165,7 +127,6 @@ const Notification = ({ householdId }) => {
                 </div>
                 <div className="notification-actions">
                   <button className="detail-btn" onClick={() => handleDetails(notification.notification_id)}>Chi tiết</button>
-                  <button className="delete-btn" onClick={() => handleDelete(notification.notification_id)}>Xóa</button>
                 </div>
               </div>
             ))}
