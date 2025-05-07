@@ -23,6 +23,7 @@ class LoginResponse(BaseModel):
     user_id: str  # employee_id hoặc household_id
     username: str
     role: UserRole
+    department_id: Optional[str] = None  # Chỉ dành cho nhân viên (admin, manager, staff)
 
 
 @login_router.post("/login", response_model=LoginResponse)
@@ -54,10 +55,16 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
             else UserRole.staff
         )
 
+
+        department_id = None
+        if role in [UserRole.manager, UserRole.staff]:
+            department_id = employee.department_id
+
         return {
             "user_id": account_employee.employee_id,
             "username": account_employee.username,
-            "role": role
+            "role": role,
+            "department_id": department_id
         }
 
     # Kiểm tra trong bảng AccountHousehold

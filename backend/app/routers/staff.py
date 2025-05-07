@@ -218,7 +218,7 @@ class IncidentResponse(BaseModel):
     class Config:
         from_attributes = True
 
-@staff_router.get("/incidents/reported", response_model=List[IncidentResponse])
+@staff_router.get("/incidents", response_model=List[IncidentResponse])
 def get_reported_incidents(employee_id: str, db: Session = Depends(get_db)):
     """
     Lấy danh sách sự cố được báo cáo bởi nhân viên (position = staff) dựa trên employee_id.
@@ -240,6 +240,107 @@ def get_reported_incidents(employee_id: str, db: Session = Depends(get_db)):
     return [IncidentResponse.from_orm(incident) for incident in incidents]
 
 # --------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+# View incident detail of a staff
+
+class IncidentDetailResponse(BaseModel):
+    incident_id: str
+    incident_name: str
+    responsible_id: str
+    report_time: datetime
+    description: Optional[str]
+    status: IncidentStatus
+
+    class Config:
+        from_attributes = True
+
+
+@staff_router.get("/incidents/{incident_id}", response_model=IncidentDetailResponse)
+def get_incident_detail(
+    employee_id: str,
+    incident_id: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Lấy thông tin chi tiết của sự cố dựa trên incident_id.
+    """
+    # Xác thực employee có tồn tại và là staff
+    employee = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.staff
+    ).first()
+
+    if not employee:
+        raise HTTPException(status_code=404, detail="Staff not found or not valid position")
+
+    # Lấy thông tin chi tiết của incident
+    incident = db.query(Incident).filter(
+        Incident.incident_id == incident_id,
+        Incident.reporter_id == employee_id
+    ).first()
+
+    if not incident:
+        raise HTTPException(status_code=404, detail="Incident not found or not reported by this staff")
+
+    return IncidentDetailResponse.from_orm(incident)
+
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Update status of an incident of a staff
+
+class IncidentStatus(str, Enum):
+    in_progress = "in_progress"
+    resolved = "resolved"
+
+class IncidentStatusUpdateRequest(BaseModel):
+    status: IncidentStatus
+    description: Optional[str]
+    class Config:
+        from_attributes = True
+
+@staff_router.put("/incidents/{incident_id}", response_model=IncidentResponse)
+def update_incident_status(
+    employee_id: str,
+    incident_id: str,
+    incident_data: IncidentStatusUpdateRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Cập nhật trạng thái của sự cố được báo cáo bởi nhân viên (chỉ cho phép in_progress -> resolved).
+    """
+
+    # 1. Xác thực employee tồn tại và là staff
+    employee = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.staff
+    ).first()
+
+    if not employee:
+        raise HTTPException(status_code=404, detail="Staff not found or not valid position")
+
+    # 2. Tìm incident do nhân viên đó báo cáo
+    incident = db.query(Incident).filter(
+        Incident.incident_id == incident_id,
+        Incident.reporter_id == employee_id
+    ).first()
+
+    if not incident:
+        raise HTTPException(status_code=404, detail="Incident not found or not reported by this staff")
+
+    # 3. Ràng buộc trạng thái: không cho chuyển từ resolved -> in_progress
+    if incident.status == IncidentStatus.resolved and incident_data.status == IncidentStatus.in_progress:
+        raise HTTPException(status_code=400, detail="Cannot revert status from resolved to in_progress")
+
+    # 4. Cập nhật trạng thái và mô tả (nếu có)
+    incident.status = incident_data.status
+    if incident_data.description is not None:
+        incident.description = incident_data.description
+
+    db.commit()
+    db.refresh(incident)
+
+    return IncidentResponse.from_orm(incident)
+
 # --------------------------------------------------------------------------
 # Add incident of a staff
 

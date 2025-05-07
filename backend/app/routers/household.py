@@ -159,7 +159,7 @@ def get_all_services(db: Session = Depends(get_db)):
 
     return response
 
-@household_router.get("/services/{service_id}")
+@household_router.get("/services/get/{service_id}")
 def get_service_by_id(service_id: str, db: Session = Depends(get_db)):
     # Query the service
     service = db.query(Service).filter(Service.service_id == service_id).first()
@@ -187,9 +187,10 @@ def get_my_registered_services(household_id: str, db: Session = Depends(get_db))
     if not household:
         raise HTTPException(status_code=404, detail="Household not found")
 
-    # Query registered services for the household
+    # Join ServiceRegistration with Service
     registered_services = (
-        db.query(ServiceRegistration)
+        db.query(ServiceRegistration, Service)
+        .join(Service, ServiceRegistration.service_id == Service.service_id)
         .filter(ServiceRegistration.household_id == household_id)
         .all()
     )
@@ -197,14 +198,15 @@ def get_my_registered_services(household_id: str, db: Session = Depends(get_db))
     # Build the response
     response = [
         {
-            "service_registration_id": service_registration.service_registration_id,
-            "service_id": service_registration.service_id,
-            "status": service_registration.status.value,  # Convert Enum to string
-            "registration_date": service_registration.registration_date,
-            "service_name": service_registration.service.service_name,
-            "price": service_registration.service.price
+            "service_registration_id": sr.service_registration_id,
+            "service_id": sr.service_id,
+            "status": sr.status.value,
+            "start_date": sr.start_date,
+            "end_date": sr.end_date,
+            "service_name": s.service_name,
+            "price": s.price
         }
-        for service_registration in registered_services
+        for sr, s in registered_services
     ]
 
     return response

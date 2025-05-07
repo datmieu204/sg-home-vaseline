@@ -439,6 +439,9 @@ class StaffAccountResponse(BaseModel):
     address: str
     status: EmployeeStatus
     begin_date: date
+    department_id: str
+    account_id: str
+    position: EmployeePosition
     username: str
 
     class Config:
@@ -481,7 +484,10 @@ def get_staff_accounts(
                 address=staff.address,
                 status=staff.status,
                 begin_date=staff.begin_date,
-                username=account.username
+                username=account.username,
+                department_id=staff.department_id,
+                account_id=account.account_id,
+                position=staff.position
             ))
 
     return staff_accounts
@@ -497,20 +503,22 @@ class StaffAccountDetailResponse(BaseModel):
     address: str
     status: EmployeeStatus
     begin_date: date
+    department_id: str
+    position: EmployeePosition
     username: str
 
     class Config:
         from_attributes = True
 
 
-@manager_router.get("/accounts/staffs/{employee_id}", response_model=StaffAccountDetailResponse)
+@manager_router.get("/accounts/staffs/{account_id}", response_model=StaffAccountDetailResponse)
 def get_staff_account_detail(
-    employee_id: str,
+    account_id: str,
     manager_id: str,
     db: Session = Depends(get_db)
 ):
     """
-    Lấy thông tin chi tiết tài khoản của nhân viên dưới quyền của manager.
+    Lấy thông tin chi tiết tài khoản của nhân viên dưới quyền của manager (dựa vào account_id).
     """
     manager = db.query(Employee).filter(
         Employee.employee_id == manager_id,
@@ -521,8 +529,15 @@ def get_staff_account_detail(
     if not manager:
         raise HTTPException(status_code=404, detail="Manager not found or not active")
 
+    account = db.query(AccountEmployee).filter(
+        AccountEmployee.account_id == account_id
+    ).first()
+
+    if not account:
+        raise HTTPException(status_code=404, detail="Account not found")
+
     staff = db.query(Employee).filter(
-        Employee.employee_id == employee_id,
+        Employee.employee_id == account.employee_id,
         Employee.position == EmployeePosition.staff,
         Employee.status == EmployeeStatus.active
     ).first()
@@ -530,22 +545,18 @@ def get_staff_account_detail(
     if not staff:
         raise HTTPException(status_code=404, detail="Staff not found or not active")
 
-    account = db.query(AccountEmployee).filter(
-        AccountEmployee.employee_id == staff.employee_id
-    ).first()
-
-    if not account:
-        raise HTTPException(status_code=404, detail="Account not found for this staff")
-
     return StaffAccountDetailResponse(
         employee_id=staff.employee_id,
         employee_name=staff.employee_name,
         phone=staff.phone,
         address=staff.address,
+        department_id=staff.department_id,
+        position=staff.position,
         status=staff.status,
         begin_date=staff.begin_date,
         username=account.username
     )
+
 
 # ---------------------------------------------------------------------------
 # ---------------------------------------------------------------------------
