@@ -32,10 +32,6 @@ const RegisteredServices = () => {
     alert(`Hủy đăng ký dịch vụ ${serviceId} - Chức năng đang phát triển.`);
   };
 
-  const handleExtendSubscription = (serviceId) => {
-    alert(`Gia hạn dịch vụ ${serviceId} - Chức năng đang phát triển.`);
-  };
-
   if (isLoading) {
     return <p className="rs-loading-text">Đang tải...</p>;
   }
@@ -54,7 +50,6 @@ const RegisteredServices = () => {
           <p className="rs-service-detail"><strong>Số lượt:</strong> 3</p>
           <div className="rs-button-group">
             <button className="rs-cancel-button" onClick={() => handleCancelSubscription(service.service_id)}>Hủy đăng ký</button>
-            <button className="rs-extend-button" onClick={() => handleExtendSubscription(service.service_id)}>Gia hạn</button>
           </div>
         </div>
       ))}
