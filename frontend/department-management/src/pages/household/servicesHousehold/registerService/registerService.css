@@ -1,0 +1,120 @@
+.services-container {
+    padding: 16px;
+    background-color: #f9f4ef;
+    position: relative;
+}
+
+.services-list {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.service-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background-color: white;
+    border: 2px solid #f28500;
+    padding: 16px;
+    border-radius: 22px;
+}
+
+.service-content {
+    flex: 1;
+}
+
+.service-title {
+    margin: 0;
+    font-size: 16px;
+    color: #f28500;
+}
+
+.service-description {
+    margin: 4px 0 0 0;
+    font-size: 14px;
+    color: #000000;
+}
+
+.service-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.service-actions button {
+    background-color: #ffffff;
+    color: #f28500;
+    border: 2px solid #f28500;
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.service-actions .register-btn {
+    background-color: #f28500;
+    color: white;
+}
+
+.service-actions button:hover {
+    background-color: #f28500;
+    color: white;
+}
+
+.service-details-content {
+    background-color: white;
+    padding: 20px;
+    border: 2px solid #f28500;
+    border-radius: 22px;
+}
+
+.service-details-title {
+    margin: 0 0 16px 0;
+    font-size: 20px;
+    color: #f28500;
+}
+
+.service-details-content p {
+    margin: 8px 0;
+    font-size: 16px;
+    color: #000;
+}
+
+.service-details-content p strong {
+    color: #f28500;
+}
+
+.service-details-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.back-btn {
+    background-color: #ffffff;
+    color: #f28500;
+    border: 2px solid #f28500;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.back-btn:hover {
+    background-color: #f28500;
+    color: white;
+}
+
+.register-btn {
+    background-color: #f28500;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.register-btn:hover {
+    background-color: #f28500;
+    color: white;
+}

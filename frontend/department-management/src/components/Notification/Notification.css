@@ -1,0 +1,240 @@
+/* Notification Details Section */
+.notification-details {
+    background-color: white;
+    padding: 20px;
+    border: 2px solid #f28500;
+    border-radius: 22px;
+    margin-top: 16px;
+}
+
+.notification-details-title {
+    font-size: 20px;
+    color: #f28500;
+    margin-bottom: 16px;
+}
+
+.notification-details h3 {
+    margin-top: 20px; /* Add spacing above the "Dịch vụ" title */
+    margin-bottom: 16px; /* Add spacing below the "Dịch vụ" title */
+    font-size: 18px;
+    color: #f28500;
+}
+
+.notification-details ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 16px; /* Add spacing above the list of services */
+}
+
+.notification-details ul li {
+    margin-bottom: 16px; /* Add spacing between each service item */
+    padding: 12px;
+    background-color: #f9f9f9;
+    border: 2px solid #f28500;
+    border-radius: 8px;
+}
+
+.back-btn {
+    background-color: #ffffff;
+    color: #f28500;
+    border: 2px solid #f28500;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-top: 24px; /* Add spacing above the back button */
+}
+
+.back-btn:hover {
+    background-color: #f28500;
+    color: white;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    color: white;
+    font-size: 16px;
+}
+
+/* Notification List Section (No Changes) */
+.notifications-container {
+    padding: 16px;
+    background-color: #f9f4ef;
+}
+
+.notifications-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.notifications-header input[type='checkbox'] {
+    margin-right: 8px;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f28500;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.notifications-header input[type='checkbox']:checked {
+    background-color: #f28500;
+    border: 2px solid #f28500;
+    position: relative;
+}
+
+.notifications-header input[type='checkbox']:checked::after {
+    content: '\2713'; /* Unicode for checkmark */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 14px;
+}
+
+.notifications-header span {
+    margin-right: 16px;
+}
+
+.delete-selected-btn {
+    background-color: #f28500;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.delete-selected-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.delete-selected-btn:hover:not(:disabled) {
+    background-color: #f28500;
+    color: white;
+}
+
+.filter-options select,
+.filter-options button {
+    margin-left: 8px;
+    background-color: #ffffff;
+    border: 2px solid #f28500;
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.filter-options select {
+    background-color: #f28500;
+    color: #ffffff;
+}
+
+.filter-options button:hover {
+    background-color: #f28500;
+    color: white;
+}
+
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.notification-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background-color: white;
+    border: 2px solid #ddd;
+    padding: 16px;
+    border-radius: 8px;
+}
+
+.notification-item.unpaid {
+    border: 2px solid red;
+}
+
+.notification-item input[type='checkbox'] {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f28500;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.notification-item input[type='checkbox']:checked {
+    background-color: #f28500;
+    border: 2px solid #f28500;
+    position: relative;
+}
+
+.notification-item input[type='checkbox']:checked::after {
+    content: '\2713'; /* Unicode for checkmark */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 14px;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-title {
+    margin: 0;
+    font-size: 16px;
+    color: #f28500;
+}
+
+.notification-subtext {
+    margin: 4px 0 0 0;
+    font-size: 14px;
+    color: #000000;
+}
+
+.notification-time {
+    margin: 4px 0 0 0;
+    font-size: 14px;
+    color: #000000;
+}
+
+.notification-actions button {
+    background-color: #ffffff;
+    color: #f28500;
+    border: 2px solid #f28500;
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.notification-actions button:hover {
+    background-color: #f28500;
+    color: white;
+}
+
+.notification-actions .delete-btn {
+    margin-left: 8px;
+    background-color: #f28500;
+    color: white;
+}
+
+.notification-actions .delete-btn:hover {
+    background-color: #f28500;
+    color: white;
+}

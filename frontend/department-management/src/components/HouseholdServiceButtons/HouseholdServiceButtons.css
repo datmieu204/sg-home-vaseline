@@ -1,0 +1,36 @@
+.button-container {
+  display: flex;
+  width: 100%;
+  padding-bottom: 20px;
+}
+
+.service-button {
+  flex: 1;
+  padding: 16px 0;
+  font-size: 18px;
+  background-color: #ffffff;
+  border: 2px solid #f28500;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
+  margin: 0 4px;
+  box-shadow: 0 2px 4px rgba(242, 133, 0, 0.2); /* Subtle shadow for depth */
+}
+
+.service-button:hover {
+  background-color: #f28500;
+  color: white;
+  box-shadow: 0 4px 8px rgba(242, 133, 0, 0.4); /* Stronger shadow on hover */
+}
+
+.registerService,
+.myService {
+  border: 2px solid #f28500; /* Ensure border is visible */
+}
+
+.registerService:hover,
+.myService:hover {
+  background-color: #f28500;
+  color: white;
+}
