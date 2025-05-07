@@ -43,13 +43,13 @@ const MenuBar = ({ role }) => {
       { name: 'Tài khoản', icon: <FaUser />, path: 'account' },
       { name: 'Nhiệm vụ', icon: <FaClipboardList />, path: 'tasks' },
       { name: 'Báo cáo sự cố', icon: <FaChartLine />, path: 'incidents' },
-      { name: 'Xác nhận thanh toán', icon: <FaReceipt />, path: 'payment-confirmation' },
+      { name: 'Xác nhận thanh toán', icon: <FaReceipt />, path: 'payment' },
     ],
     staffRECEP: [
       { name: 'Tài khoản', icon: <FaUser />, path: 'account' },
       { name: 'Nhiệm vụ', icon: <FaClipboardList />, path: 'tasks' },
       { name: 'Báo cáo sự cố', icon: <FaChartLine />, path: 'incidents' },
-      { name: 'Dịch vụ', icon: <FaReceipt />, path: 'payment' },
+      { name: 'Dịch vụ', icon: <FaReceipt />, path: 'services' },
     ],
     household: [
       { name: 'Tài khoản', icon: <FaUser />, path: 'account' },
