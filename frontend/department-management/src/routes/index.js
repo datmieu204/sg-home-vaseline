@@ -30,6 +30,9 @@ import ManagerOtherTasks1 from '../pages/manager/otherTasks';
 import ManagerIncidents1 from '../pages/manager/incidents';
 
 
+import StaffLayout from '../layouts/StaffLayout';
+import StaffAccount2 from '../pages/staff/account';
+import StaffTasks2 from '../pages/staff/tasks';
 
 function AppRoutes() {
   const routes = [
@@ -85,6 +88,15 @@ function AppRoutes() {
         { path: 'tasks', element: <ManagerTasks1 /> },
         { path: 'otherTasks', element: <ManagerOtherTasks1 /> },
         { path: 'incidents', element: <ManagerIncidents1 /> },
+      ],
+    },
+    {
+      path: '/staff',
+      element: <StaffLayout />,
+      children: [
+        { path: 'account', element: <StaffAccount2 /> },
+        { path: 'services', element: <StaffTasks2 /> },
+        // { path: 'notifications', element: <NotificationsPage2 /> },
       ],
     }
   
