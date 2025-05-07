@@ -87,7 +87,7 @@ const Account = ({ profile, onConfirm }) => {
           <input
             type="text"
             name="position"
-            value={formData.position}
+            value={formData.department_id ? `${formData.position} ${formData.department_id}` : formData.position}
             disabled
           />
         </div>

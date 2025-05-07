@@ -33,7 +33,13 @@ const LoginPage = () => {
       } else if (data.role === 'manager') {
         navigate('/manager');
       } else if (data.role === 'staff') {
-        navigate('/staff');
+        if (data.department_id === 'ACCT') {
+          navigate('/staffACCT');
+        } else if (data.department_id === 'RECEP') {
+          navigate('/staffRECEP');
+        } else {
+          navigate('/staff');
+        }
       } else if (data.role === 'household') {
         navigate('/household');
       } else {
