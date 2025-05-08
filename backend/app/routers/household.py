@@ -7,6 +7,7 @@ from app.models.service_registration import ServiceRegistrationStatus
 from datetime import date, datetime
 import uuid
 from dateutil.relativedelta import relativedelta
+from pydantic import BaseModel, Field
 from sqlalchemy import and_
 from typing import Optional
 
@@ -26,33 +27,53 @@ def get_profile(household_id: str ,db: Session = Depends(get_db)):
         "status": household.status,
     }
 
-@household_router.patch("/profile/modify")
-def modify_profile(household_id: str, name: Optional[str] = None, phone: Optional[str] = None, room_number: Optional[str] = None, status: Optional[HouseholdStatus] = None, username: Optional[str] = None, password: Optional[str] = None, db: Session = Depends(get_db)):
+# ------------------------------------------------------------------------
+# Update household profile
+
+class UpdateProfileRequest(BaseModel):
+    name: Optional[str] = None
+    phone: Optional[str] = None
+    room_number: Optional[str] = None
+    status: Optional[HouseholdStatus] = None
+    username: Optional[str] = None
+    password: Optional[str] = None
+
+
+@household_router.patch("/profile")
+def modify_profile(
+    update_data: UpdateProfileRequest,
+    household_id: str,
+    db: Session = Depends(get_db)
+):
+
     household = db.query(Household).filter(Household.household_id == household_id).first()
     if not household:
         raise HTTPException(status_code=404, detail="Household not found")
     
-    if name:
-        household.name = name
-    if phone:
-        household.phone = phone
-    if room_number:
-        household.room_number = room_number
-    if status:
-        household.status = status
+    # Update household fields
+    if update_data.name:
+        household.name = update_data.name
+    if update_data.phone:
+        household.phone = update_data.phone
+    if update_data.room_number:
+        household.room_number = update_data.room_number
+    if update_data.status:
+        household.status = update_data.status
 
+    # Update account fields
     account_household = db.query(AccountHousehold).filter(AccountHousehold.household_id == household_id).first()
     if not account_household:
         raise HTTPException(status_code=404, detail="Account for household not found")
     
-    if username:
-        account_household.username = username
-    if password:
-        account_household.password = password
+    if update_data.username:
+        account_household.username = update_data.username
+    if update_data.password:
+        account_household.password = update_data.password
 
     db.commit()
     db.refresh(household)
     db.refresh(account_household)
+    
     return {
         "id": household.household_id,
         "name": household.name,
@@ -64,6 +85,45 @@ def modify_profile(household_id: str, name: Optional[str] = None, phone: Optiona
         "username": account_household.username,
         "password": account_household.password
     }
+
+# @household_router.patch("/profile/modify")
+# def modify_profile(household_id: str, name: Optional[str] = None, phone: Optional[str] = None, room_number: Optional[str] = None, status: Optional[HouseholdStatus] = None, username: Optional[str] = None, password: Optional[str] = None, db: Session = Depends(get_db)):
+#     household = db.query(Household).filter(Household.household_id == household_id).first()
+#     if not household:
+#         raise HTTPException(status_code=404, detail="Household not found")
+    
+#     if name:
+#         household.name = name
+#     if phone:
+#         household.phone = phone
+#     if room_number:
+#         household.room_number = room_number
+#     if status:
+#         household.status = status
+
+#     account_household = db.query(AccountHousehold).filter(AccountHousehold.household_id == household_id).first()
+#     if not account_household:
+#         raise HTTPException(status_code=404, detail="Account for household not found")
+    
+#     if username:
+#         account_household.username = username
+#     if password:
+#         account_household.password = password
+
+#     db.commit()
+#     db.refresh(household)
+#     db.refresh(account_household)
+#     return {
+#         "id": household.household_id,
+#         "name": household.name,
+#         "number_of_members": household.number_of_members,
+#         "phone": household.phone,
+#         "room_number": household.room_number,
+#         "status": household.status,
+#         "account": account_household.account_id,
+#         "username": account_household.username,
+#         "password": account_household.password
+#     }
 
 
 @household_router.get("/notifications")

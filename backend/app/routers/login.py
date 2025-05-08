@@ -85,7 +85,8 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
         return {
             "user_id": account_household.household_id,
             "username": account_household.username,
-            "role": UserRole.household
+            "role": UserRole.household,
+            "department_id": None  
         }
 
     raise HTTPException(status_code=401, detail="Invalid username or password")

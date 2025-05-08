@@ -11,7 +11,7 @@ class HouseholdStatus(enum.Enum):
 class Household(Base):
     __tablename__ = "households"
     #
-    household_id = Column(String, primary_key=True, index=True, autoincrement=True, nullable=False)
+    household_id = Column(String, primary_key=True, index=True, nullable=False)
     number_of_members = Column(Integer, nullable=False)
     name = Column(String, nullable=False)
     phone = Column(String, nullable=False)

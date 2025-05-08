@@ -743,3 +743,236 @@ def confirm_payment(
         status=invoice.status.value,
         message=message_text
     )
+
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
+# View list account household of a staff have department_id = RECEP
+
+class AccountHouseholdResponse(BaseModel):
+    household_id: str
+    account_id: str
+    name: str
+    room_number: str
+
+    class Config:
+        from_attributes = True
+
+
+@staff_router.get("/accounts/household", response_model=List[AccountHouseholdResponse])
+def get_accounts(employee_id: str, db: Session = Depends(get_db)):
+    """
+    Lấy danh sách tài khoản hộ gia đình (chỉ cho nhân viên staff thuộc phòng RECEP).
+    """
+    employee = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.staff,
+        Employee.department_id == 'RECEP',
+        Employee.status == EmployeeStatus.active
+    ).first()
+
+    if not employee:
+        raise HTTPException(status_code=403, detail="Unauthorized: Not an active staff in RECEP")
+
+    accounts = db.query(AccountHousehold).all()
+
+    households = db.query(Household).all()
+
+    household_dict = {household.household_id: household for household in households}
+
+    account_dict = {account.household_id: account for account in accounts}
+
+    household_accounts = [AccountHouseholdResponse(
+        household_id=household_id,
+        account_id=account.account_id,
+        name=household_dict[household_id].name,
+        room_number=household_dict[household_id].room_number
+    ) for household_id, account in account_dict.items()]
+
+    return household_accounts
+
+
+    
+
+
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+
+# View account household detail of a staff have department_id = RECEP
+
+class AccountHouseholdDetailResponse(BaseModel):
+    household_id: str
+    username: str
+    password: str
+    name: str
+    number_of_members: int
+    phone: str
+    status: HouseholdStatus
+
+    class Config:
+        from_attributes = True
+
+
+@staff_router.get("/accounts/household/{account_id}", response_model=AccountHouseholdDetailResponse)
+def get_account_detail(
+    employee_id: str,
+    account_id: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Lấy thông tin chi tiết tài khoản hộ gia đình (chỉ cho nhân viên staff thuộc phòng RECEP).
+    """
+    employee = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.staff,
+        Employee.department_id == 'RECEP',
+        Employee.status == EmployeeStatus.active
+    ).first()
+
+    if not employee:
+        raise HTTPException(status_code=403, detail="Unauthorized: Not an active staff in RECEP")
+
+    account = db.query(AccountHousehold).filter(AccountHousehold.account_id == account_id).first()
+    if not account:
+        raise HTTPException(status_code=404, detail="Account not found")
+
+    household = db.query(Household).filter(Household.household_id == account.household_id).first()
+    if not household:
+        raise HTTPException(status_code=404, detail="Household not found")
+
+    return AccountHouseholdDetailResponse(
+        household_id=account.household_id,
+        username=account.username,
+        password=account.password,
+        name=household.name,
+        number_of_members=household.number_of_members,
+        phone=household.phone,
+        status=household.status
+    )
+
+# ---------------------------------------------------------------------------
+# --------------------------------------------------------------------------
+
+# Disable account household of a staff have department_id = RECEP
+
+@staff_router.put("/accounts/household/{account_id}/disable", response_model=AccountHouseholdDetailResponse)
+def disable_account(
+    employee_id: str,
+    account_id: str,
+    db: Session = Depends(get_db)
+):
+
+    """
+    Vô hiệu hóa tài khoản hộ gia đình (chỉ cho nhân viên staff thuộc phòng RECEP).
+    """
+    employee = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.staff,
+        Employee.department_id == 'RECEP',
+        Employee.status == EmployeeStatus.active
+    ).first()
+
+    if not employee:
+        raise HTTPException(status_code=403, detail="Unauthorized: Not an active staff in RECEP")
+
+    account = db.query(AccountHousehold).filter(AccountHousehold.account_id == account_id).first()
+    if not account:
+        raise HTTPException(status_code=404, detail="Account not found")
+
+    household = db.query(Household).filter(Household.household_id == account.household_id).first()
+    if not household:
+        raise HTTPException(status_code=404, detail="Household not found")
+
+    household.status = HouseholdStatus.inactive
+
+    db.commit()
+    db.refresh(household)
+
+    return AccountHouseholdDetailResponse(
+        household_id=account.household_id,
+        username=account.username,
+        password=account.password,
+        name=household.name,
+        number_of_members=household.number_of_members,
+        phone=household.phone,
+        status=household.status
+    )
+
+
+
+
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+
+# Add account household of a staff have department_id = RECEP
+
+class AccountHouseholdCreateRequest(BaseModel):
+    username: str
+    password: str
+    name: str
+    number_of_members: int
+    room_number: str
+    phone: str
+
+    class Config:
+        from_attributes = True
+
+
+@staff_router.post("/accounts/household", response_model=AccountHouseholdDetailResponse)
+def create_account(
+    employee_id: str,
+    account_data: AccountHouseholdCreateRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Tạo tài khoản hộ gia đình mới (chỉ cho nhân viên staff thuộc phòng RECEP).
+    """
+    employee = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.staff,
+        Employee.department_id == 'RECEP',
+        Employee.status == EmployeeStatus.active
+    ).first()
+
+    if not employee:
+        raise HTTPException(status_code=403, detail="Unauthorized: Not an active staff in RECEP")
+
+    new_household_id = f'HH' + str(db.query(Household).count() + 1)
+
+    new_household = Household(
+        household_id=new_household_id,
+        name=account_data.name,
+        number_of_members=account_data.number_of_members,
+        phone=account_data.phone,
+        room_number=account_data.room_number,
+        status=HouseholdStatus.active
+    )
+
+    db.add(new_household)
+    db.commit()
+    db.refresh(new_household)
+
+
+    new_account_id = f'ACC' + str(db.query(AccountHousehold).count() + 1)
+
+    new_account = AccountHousehold(
+        account_id=new_account_id,
+        household_id=new_household_id,
+        username=account_data.username,
+        password=account_data.password
+    )
+
+    db.add(new_account)
+    db.commit()
+    db.refresh(new_account)
+
+    return AccountHouseholdDetailResponse(
+        household_id=new_household.household_id,
+        username=new_account.username,
+        password=new_account.password,
+        name=new_household.name,
+        room_number=new_household.room_number,
+        number_of_members=new_household.number_of_members,
+        phone=new_household.phone,
+        status=new_household.status
+    )
