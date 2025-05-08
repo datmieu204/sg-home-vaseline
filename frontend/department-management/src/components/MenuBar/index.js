@@ -47,6 +47,7 @@ const MenuBar = ({ role }) => {
     ],
     staffRECEP: [
       { name: 'Tài khoản', icon: <FaUser />, path: 'account' },
+      { name: 'Tài khoản Hộ cư dân', icon: <FaUserFriends />, path: 'otherAccount' },
       { name: 'Nhiệm vụ', icon: <FaClipboardList />, path: 'tasks' },
       { name: 'Báo cáo sự cố', icon: <FaChartLine />, path: 'incidents' },
       { name: 'Dịch vụ', icon: <FaReceipt />, path: 'services' },
@@ -54,7 +55,15 @@ const MenuBar = ({ role }) => {
     household: [
       { name: 'Tài khoản', icon: <FaUser />, path: 'account' },
       { name: 'Thông báo', icon: <FaBell />, path: 'notifications' },
-      { name: 'Dịch vụ', icon: <FaConciergeBell />, path: 'services' },
+      { 
+        name: 'Dịch vụ', 
+        icon: <FaConciergeBell />, 
+        path: 'services',
+        subItems: [
+          { name: 'Đăng ký dịch vụ', path: 'registerService' },
+          { name: 'Quản lý dịch vụ', path: 'myService' },
+        ],
+      },
     ],
   };
 

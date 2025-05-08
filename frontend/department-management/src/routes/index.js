@@ -38,6 +38,17 @@ import StaffTasks2 from '../pages/staff/tasks';
 import StaffService2 from '../pages/staff/serviceRecep';
 import StaffIncidents2 from '../pages/staff/incidents';
 import StaffPayment2 from '../pages/staff/paymentConfirm';
+import OtherAccount2 from '../pages/staff/otherAccount';
+
+
+import HouseholdLayout from '../layouts/HouseholdLayout';
+import HouseholdAccount1 from '../pages/household/account';
+import Notification from '../pages/household/notificationHousehold';
+import ServiceHousehold from '../pages/household/servicesHousehold';
+import MyService from '../pages/household/servicesHousehold/myService';
+import RegisterService from '../pages/household/servicesHousehold/registerService';
+
+
 
 function AppRoutes() {
   const routes = [
@@ -112,6 +123,7 @@ function AppRoutes() {
         { path: 'tasks', element: <StaffTasks2 /> },
         { path: 'services', element: <StaffService2 /> },
         { path: 'incidents', element: <StaffIncidents2 /> },
+        { path: 'otherAccount', element: <OtherAccount2 /> }
       ],
     },
     {
@@ -122,6 +134,22 @@ function AppRoutes() {
         { path: 'tasks', element: <StaffTasks2 /> },
         { path: 'incidents', element: <StaffIncidents2 /> },
         { path: 'payment', element: <StaffPayment2 /> },
+      ],
+    },
+    {
+      path: '/household',
+      element: <HouseholdLayout />,
+      children: [
+        { path: 'account', element: <HouseholdAccount1 /> },
+        { path: 'notifications', element: <Notification /> },
+        { 
+          path: 'services',
+          element: <ServiceHousehold />,
+          children: [
+            { path: 'myService', element: <MyService /> },
+            { path: 'registerService', element: <RegisterService /> },
+          ],
+        },
       ],
     }
   

@@ -1,0 +1,111 @@
+.account-container {
+    display: flex;
+    gap: 40px;
+    padding: 30px;
+    background-color: #fff0e6;
+    border-radius: 16px;
+    max-width: 1200px;
+    margin: auto;
+    font-size: 18px;
+  }
+  
+  .account-left,
+  .account-right {
+    flex: 1;
+    background-color: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .account-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  
+  .name {
+    color: #f28500;
+    font-size: 28px;
+    margin: 0;
+  }
+  
+  .position {
+    margin: 4px 0 0;
+    font-size: 18px;
+    color: #555;
+  }
+  
+  .edit-btn,
+  .confirm-btn {
+    background-color: #f28500;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .edit-btn:hover,
+  .confirm-btn:hover {
+    background-color: #d96e00;
+  }
+  
+  .confirm-btn {
+    margin-top: 20px;
+    width: 100%;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+  }
+  
+  .form-group label {
+    font-weight: bold;
+    color: #f28500;
+    margin-bottom: 6px;
+  }
+  
+  .form-group input {
+    padding: 12px;
+    border: 1.5px solid #f28500;
+    border-radius: 8px;
+    font-size: 16px;
+  }
+  
+  .form-row {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .username {
+    font-size: 18px;
+    padding: 8px 0;
+    color: #333;
+  }
+  .form-group select {
+    padding: 12px;
+    border: 1.5px solid #f28500;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: white;
+    color: #333;
+    appearance: none; /* Ẩn giao diện mặc định của trình duyệt */
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 50 L70 100 L120 50' stroke='%23f28500' stroke-width='15' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+  }
+  
+  .form-group select:focus {
+    outline: none;
+    border-color: #d96e00;
+    box-shadow: 0 0 5px rgba(242, 133, 0, 0.5);
+  }
+  
