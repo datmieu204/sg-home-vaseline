@@ -3,13 +3,13 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import MenuBar from '../../components/MenuBar';
 
-const AdminLayout = () => {
+const ManagerLayout = () => {
   const user = JSON.parse(localStorage.getItem('user'));
 
   return (
     <div style={{ display: 'flex' }}>
 
-      <MenuBar role='admin' />
+      <MenuBar role='manager' />
 
       <div style={{ flex: 1, padding: '20px' }}>
         <div style={{ marginBottom: '20px' }}>
@@ -22,4 +22,4 @@ const AdminLayout = () => {
   );
 };
 
-export default AdminLayout;
+export default ManagerLayout;

@@ -1,0 +1,15 @@
+/* Tasks container styles */
+.tasks-container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: white;
+  height: fit-content;
+}
+
+/* Style for tab content area */
+.tab-content {
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+}

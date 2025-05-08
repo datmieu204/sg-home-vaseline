@@ -1,0 +1,43 @@
+.emp-tasks-container {
+  padding: 24px;
+  width: 100%;
+  height: fit-content;
+  min-height: 860px;
+  margin: auto;
+  background-color: white;
+  border: 5px solid #f89236;
+  border-top: none;
+}
+
+.task-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.loading {
+  text-align: center;
+  font-size: 18px;
+  color: #666;
+  padding: 40px;
+}
+
+.filters {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.filters select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+/* Additional styles for the table view */
+.list-items {
+  background: white;
+}
