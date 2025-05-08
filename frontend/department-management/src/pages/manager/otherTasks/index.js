@@ -217,7 +217,7 @@ const ManagerOtherTasks1 = () => {
           <TaskList tasks={filteredTasks} onTaskClick={handleSelectTask} />
 
           {showForm && (
-            <div className="popup-form">
+            <div className="popup-form-manager">
               <div className="popup-content">
                 <h3>Thêm nhiệm vụ mới</h3>
                 <form onSubmit={handleSubmit}>

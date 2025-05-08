@@ -1,75 +1,141 @@
-/* Nút Thêm quản lý */
+.emp-account-container {
+  width: 100%;
+  height: fit-content;
+  min-height: 860px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 5px solid #f89236;
+  border-top: none;
+}
+
+.manager-header {
+  display: flex;
+  padding: 20px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.search-container {
+  flex: 1;
+  margin-right: 20px;
+  max-width: 600px;
+}
+
 .add-manager-btn {
-    background-color: #b2ebe7;
-    color: rgb(16, 14, 14);
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    margin-bottom: 20px;
-    transition: background-color 0.3s;
-  }
-  
-  .add-manager-btn:hover {
-    background-color: #45a049;
-  }
-  
-  /* Overlay và Popup Form */
-  .popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .popup-form {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    width: 400px;
-  }
-  
-  .popup-form h3 {
-    text-align: center;
-  }
-  
-  .popup-form form div {
-    margin-bottom: 10px;
-  }
-  
-  .popup-form input {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-  }
-  
-  .popup-form button {
-    width: 48%;
-    padding: 10px;
-    margin-top: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-  }
-  
-  .popup-form button:hover {
-    background-color: #45a049;
-  }
-  
-  .popup-form button[type="button"] {
-    background-color: #f44336;
-  }
-  
-  .popup-form button[type="button"]:hover {
-    background-color: #e53935;
-  }
-  
+  background-color: #f89236;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 12px 24px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.add-manager-btn:hover {
+  background-color: #e67e22;
+}
+
+.emp-list-section {
+  background-color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  background-color: #fff5ec;
+  padding: 15px 20px;
+  border-bottom: 1px solid #ffe0c0;
+}
+
+.dropdown-icon {
+  color: #f89236;
+  margin-right: 10px;
+  font-size: 20px;
+}
+
+.back-btn {
+  background-color: #f89236;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 16px;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-form {
+  background-color: white;
+  border-radius: 8px;
+  padding: 25px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.popup-form h3 {
+  color: #f89236;
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.popup-form form div {
+  margin-bottom: 15px;
+}
+
+.popup-form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.popup-form input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.popup-form button {
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.popup-form button:first-child {
+  background-color: #f89236;
+  color: white;
+  border: none;
+}
+
+.popup-form button:last-child {
+  background-color: white;
+  color: #666;
+  border: 1px solid #ddd;
+}

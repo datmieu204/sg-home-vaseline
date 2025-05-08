@@ -66,7 +66,6 @@ const AdminAccount = () => {
 
   return (
     <div>
-      <h1 style={{ textAlign: 'center', color: '#f28500' }}>Trang tài khoản Admin</h1>
       <Account profile={profile} onConfirm={handleUpdate} />
     </div>
   );

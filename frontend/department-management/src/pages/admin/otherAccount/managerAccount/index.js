@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import EmployeeList from '../../../../components/componentAccount/EmployeeList';
 import OtherAccount from '../../../../components/componentAccount/OtherAccount';
+import SearchBar from '../../../../components/SearchBar/SearchBar';
 import './ManagerAccount.css'; 
 
 const ManagerAccount = () => {
   const [accounts, setAccounts] = useState([]);
+  const [filteredAccounts, setFilteredAccounts] = useState([]);
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
@@ -26,6 +28,7 @@ const ManagerAccount = () => {
       })
       .then((data) => {
         setAccounts(data.accounts);
+        setFilteredAccounts(data.accounts);
         setLoading(false);
       })
       .catch((err) => {
@@ -34,6 +37,18 @@ const ManagerAccount = () => {
       });
   }, []);
 
+  const handleSearch = (term) => {
+    if (!term || !term.trim()) {
+      setFilteredAccounts(accounts);
+      return;
+    }
+    
+    const filtered = accounts.filter(account => 
+      (account.employee_name && account.employee_name.toLowerCase().includes(term.toLowerCase())) || 
+      (account.username && account.username.toLowerCase().includes(term.toLowerCase()))
+    );
+    setFilteredAccounts(filtered);
+  };
 
   const handleDisableAccount = () => {
     if (!selectedAccount) return;
@@ -65,7 +80,6 @@ const ManagerAccount = () => {
       });
   };
   
-
   const handleSelectAccount = (accountId) => {
     fetch(`http://127.0.0.1:8000/admin/accounts/managers/${accountId}`)
       .then((res) => {
@@ -85,7 +99,6 @@ const ManagerAccount = () => {
       });
   };
   
-
   const handleBackToList = () => {
     setSelectedAccount(null); 
   };
@@ -136,6 +149,7 @@ const ManagerAccount = () => {
           .then((res) => res.json())
           .then((data) => {
             setAccounts(data.accounts);
+            setFilteredAccounts(data.accounts);
             setLoading(false);
           })
           .catch((err) => {
@@ -152,7 +166,7 @@ const ManagerAccount = () => {
   if (loading) return <p>Đang tải dữ liệu...</p>;
 
   return (
-    <div>
+    <div className="emp-account-container">
       {selectedAccount ? (
         <div>
           <button onClick={handleBackToList} className="back-btn">
@@ -162,14 +176,30 @@ const ManagerAccount = () => {
         </div>
       ) : (
         <div>
-          <button onClick={handleShowPopup} className="add-manager-btn">
-            Thêm quản lý
-          </button>
-          <EmployeeList
-            title="Danh sách tài khoản Manager"
-            employees={accounts}
-            onRowClick={handleSelectAccount}
-          />
+          <div className="manager-header">
+            <div className="search-container">
+              <SearchBar 
+                placeholder="Tìm kiếm theo tên..." 
+                onSearch={handleSearch} 
+              />
+            </div>
+            
+            <button onClick={handleShowPopup} className="add-manager-btn">
+              Thêm quản lý mới
+            </button>
+          </div>
+          
+          <div className="emp-list-section">
+            <div className="section-header">
+              <span className="dropdown-icon">▼</span>
+              <h2 className="table-title">Tất cả Trưởng Bộ phận</h2>
+            </div>
+            
+            <EmployeeList
+              employees={filteredAccounts}
+              onRowClick={handleSelectAccount}
+            />
+          </div>
         </div>
       )}
 
@@ -233,7 +263,7 @@ const ManagerAccount = () => {
                   required
                 />
               </div>
-              <div>
+              <div className="popup-buttons">
                 <button type="button" onClick={handleAddManager}>Lưu</button>
                 <button type="button" onClick={handleClosePopup}>Hủy</button>
               </div>
@@ -246,5 +276,3 @@ const ManagerAccount = () => {
 };
 
 export default ManagerAccount;
-
-

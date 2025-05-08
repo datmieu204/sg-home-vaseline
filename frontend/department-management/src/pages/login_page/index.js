@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './LoginPage.css';
 import { useNavigate } from 'react-router-dom';
+import logo from '../../assets/logo_text.png';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -33,13 +34,7 @@ const LoginPage = () => {
       } else if (data.role === 'manager') {
         navigate('/manager');
       } else if (data.role === 'staff') {
-        if (data.department_id === 'ACCT') {
-          navigate('/staffACCT');
-        } else if (data.department_id === 'RECEP') {
-          navigate('/staffRECEP');
-        } else {
-          navigate('/staff');
-        }
+        navigate('/staff');
       } else if (data.role === 'household') {
         navigate('/household');
       } else {
@@ -54,8 +49,11 @@ const LoginPage = () => {
   return (
     <div className="login-container">
       <div className="login-form">
-        <div className="logo">VNHOME</div>
-        <h2 className="login-title">Đăng nhập</h2>
+        <div className="logo">
+          <img src={logo} alt="VNHOME Logo" className="logo-image" />
+        </div>
+        <h2 className="login-title">"Nâng tầm cuộc sống</h2>
+        <h2 className="login-title">Chung cư của sự tiện nghi"</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="username">Tên đăng nhập</label>

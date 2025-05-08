@@ -1,0 +1,141 @@
+/* Notification.css */
+
+.notification-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .notification-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+  }
+  
+  .notification-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .notification-item {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 12px;
+    background-color: #f8f9fa;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+  }
+  
+  .notification-item:hover {
+    background-color: #e9ecef;
+  }
+  
+  .notification-message {
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  
+  .notification-time {
+    color: #666;
+    font-size: 14px;
+  }
+  
+  .detail-box {
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #fffefc;
+  }
+  
+  .back-button {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .back-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .service-list {
+    padding-left: 20px;
+    margin-top: 8px;
+  }
+  
+  .service-list li {
+    margin-bottom: 4px;
+  }
+  /* Thêm vào cuối file hoặc giữa các section */
+
+.search-input {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+  .notification-detail {
+    padding: 20px;
+    background-color: #f9fafb;
+    border-radius: 12px;
+  }
+  
+  .detail-card {
+    background-color: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+  
+  .detail-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 16px;
+  }
+  
+  .detail-info p {
+    margin: 6px 0;
+    font-size: 15px;
+  }
+  
+  .detail-info span {
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .service-section {
+    margin-top: 20px;
+  }
+  
+  .service-section h4 {
+    font-size: 17px;
+    margin-bottom: 10px;
+  }
+  
+  .service-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  
+  .service-table th,
+  .service-table td {
+    padding: 10px 12px;
+    border: 1px solid #e0e0e0;
+    text-align: left;
+  }
+  
+  .service-table th {
+    background-color: #f0f0f0;
+  }
+  

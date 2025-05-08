@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Account.css';
+import {FiUser, FiEdit2} from 'react-icons/fi';
 
 const Account = ({ profile, onConfirm }) => {
   const [editMode, setEditMode] = useState(false);
@@ -53,12 +54,16 @@ const Account = ({ profile, onConfirm }) => {
 
   return (
     <div className="account-container">
-      <div className="account-left">
-        <div className="account-header">
-          <div>
-            <h2 className="name">{formData.employee_name}</h2>
-            <p className="position">{formData.position}</p>
-          </div>
+      <div className="account-header">
+        <div className="user-avatar-section">
+            <div className="user-avatar">
+              <FiUser className="avatar-icon" />
+            </div>
+            <div>
+              <h2 className="name">{formData.employee_name}</h2>
+              <p className="position">{formData.position}</p>
+            </div>
+        </div>
           <button
             className="edit-btn"
             onClick={() => {
@@ -68,91 +73,94 @@ const Account = ({ profile, onConfirm }) => {
               setEditMode(!editMode);
             }}
           >
-            ✏️ {editMode ? 'Hủy' : 'Chỉnh sửa'}
+            <FiEdit2 /> {editMode ? 'Hủy' : 'Chỉnh sửa'}
           </button>
 
-        </div>
-        <div className="form-group">
-          <label>Tên đầy đủ</label>
-          <input
-            type="text"
-            name="employee_name"
-            value={formData.employee_name}
-            onChange={handleChange}
-            disabled={!editMode}
-          />
-        </div>
-        <div className="form-group">
-          <label>Chức vụ</label>
-          <input
-            type="text"
-            name="position"
-            value={formData.department_id ? `${formData.position} ${formData.department_id}` : formData.position}
-            disabled
-          />
-        </div>
-        <div className="form-row">
+      </div>
+      <div className="information-container">
+        <div className="account-left">
           <div className="form-group">
-            <label>Số điện thoại</label>
+            <label>Tên đầy đủ</label>
             <input
               type="text"
-              name="phone"
-              value={formData.phone}
+              name="employee_name"
+              value={formData.employee_name}
               onChange={handleChange}
               disabled={!editMode}
             />
           </div>
           <div className="form-group">
-            <label>Ngày bắt đầu</label>
+            <label>Chức vụ</label>
             <input
-              type="date"
-              name="begin_date"
-              value={formData.begin_date}
+              type="text"
+              name="position"
+              value={formData.department_id ? `${formData.position} ${formData.department_id}` : formData.position}
               disabled
             />
           </div>
-        </div>
-        <div className="form-group">
-          <label>Địa chỉ</label>
-          <input
-            type="text"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            disabled={!editMode}
-          />
-        </div>
-        {editMode && (
-          <button className="confirm-btn" onClick={handleConfirm}>
-            ✅ Xác nhận
-          </button>
-        )}
-      </div>
-      <div className="account-right">
-        <div className="form-group">
-          <label>Tên người dùng</label>
-          <p className="username">{formData.username}</p>
-        </div>
-        {editMode && (
-          <>
+          <div className="form-row">
             <div className="form-group">
-              <label>Mật khẩu</label>
+              <label>Số điện thoại</label>
               <input
-                type="password"
-                name="password"
+                type="text"
+                name="phone"
+                value={formData.phone}
                 onChange={handleChange}
+                disabled={!editMode}
               />
             </div>
             <div className="form-group">
-              <label>Nhập lại mật khẩu</label>
+              <label>Ngày bắt đầu</label>
               <input
-                type="password"
-                name="confirmPassword"
-                onChange={handleChange}
+                type="date"
+                name="begin_date"
+                value={formData.begin_date}
+                disabled
               />
             </div>
-          </>
-        )}
+          </div>
+          <div className="form-group">
+            <label>Địa chỉ</label>
+            <input
+              type="text"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              disabled={!editMode}
+            />
+          </div>
+          {editMode && (
+            <button className="confirm-btn" onClick={handleConfirm}>
+              Xác nhận
+            </button>
+          )}
+        </div>
+        <div className="account-right">
+          <div className="form-group">
+            <label>Tên người dùng</label>
+            <p className="username">{formData.username}</p>
+          </div>
+          {editMode && (
+            <>
+              <div className="form-group">
+                <label>Mật khẩu</label>
+                <input
+                  type="password"
+                  name="password"
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="form-group">
+                <label>Nhập lại mật khẩu</label>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  onChange={handleChange}
+                />
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

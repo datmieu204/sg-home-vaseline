@@ -52,6 +52,7 @@ const ManagerTasks = () => {
       });
   }, []);
 
+  // 19 hours ago
   useEffect(() => {
     fetch('http://127.0.0.1:8000/admin/accounts/managers')
       .then((res) => {
@@ -59,7 +60,7 @@ const ManagerTasks = () => {
         return res.json();
       })
       .then((data) => {
-        setAccounts(data.accounts); // vẫn giữ nguyên vì response có field 'accounts'
+        setAccounts(data.accounts); 
       })
       .catch((err) => {
         console.error('Lỗi khi tải tài khoản:', err);
@@ -112,6 +113,7 @@ const ManagerTasks = () => {
   };
 
 
+  // 19 hours ago
   const handleSubmitNewTask = () => {
     const userData = localStorage.getItem('user');
     if (!userData) return alert('Không tìm thấy người dùng');
@@ -155,7 +157,6 @@ const ManagerTasks = () => {
           deadline: '',
           description: ''
         });
-        // Tải lại danh sách
         const reloadUser = JSON.parse(localStorage.getItem('user'));
         fetch(`http://127.0.0.1:8000/admin/tasks/managers?employee_id=${reloadUser.user_id}`)
           .then(res => res.json())
@@ -198,7 +199,7 @@ const ManagerTasks = () => {
                 <option key={i} value={i + 1}>Tháng {i + 1}</option>
               ))}
             </select>
-
+              
             <select value={yearFilter} onChange={(e) => setYearFilter(e.target.value)}>
               <option value="">Tất cả năm</option>
               {Array.from(new Set(tasks.map(t => new Date(t.deadline).getFullYear()))).map((year) => (
@@ -207,6 +208,7 @@ const ManagerTasks = () => {
             </select>
           </div>
 
+            
           <div className="add-task-button-wrapper">
             <button className="add-task-button" onClick={() => setShowAddModal(true)}>
               + Thêm nhiệm vụ
@@ -240,7 +242,7 @@ const ManagerTasks = () => {
                 ))}
               </select>
 
-
+              
               <input
                 type="datetime-local"
                 placeholder="Thời gian giao"

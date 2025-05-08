@@ -1,0 +1,54 @@
+.list-item {
+  padding: 25px; /* Increased padding */
+  border: 2px solid #e1e9ff;
+}
+
+.item-title {
+  font-size: 25px; /* Increased font size */
+  font-weight: bold;
+  margin-bottom: 15px; /* Increased margin */
+}
+
+.item-details {
+  display: flex;
+  align-items: center;
+}
+
+.status-badge {
+  padding: 8px 20px; /* Increased padding */
+  border-radius: 20px;
+  font-size: 16px; /* Increased font size */
+  font-weight: bold;
+}
+
+.status-badge.open {
+  background-color: rgba(248, 146, 54, 0.1);
+  color: #f89236;
+}
+
+.status-badge.closed {
+  background-color: rgba(82, 196, 26, 0.1);
+  color: #52c41a;
+}
+
+.status-badge.pending {
+  background-color: rgba(250, 173, 20, 0.1);
+  color: #faad14;
+}
+
+.separator {
+  margin: 0 15px; /* Increased margin */
+  color: #d9d9d9;
+  font-size: 16px; /* Increased font size */
+}
+
+.deadline-label {
+  color: #999;
+  margin-right: 8px; /* Increased margin */
+  font-size: 16px; /* Increased font size */
+}
+
+.deadline-value {
+  font-weight: 500;
+  font-size: 16px; /* Increased font size */
+}

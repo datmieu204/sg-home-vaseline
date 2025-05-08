@@ -2,7 +2,6 @@ import React from 'react';
 import './MenuBar.css';
 import { Link, useLocation } from 'react-router-dom';
 
-// Icons import
 import { 
   FaUser, 
   FaClipboardList, 
@@ -14,9 +13,7 @@ import {
   FaReceipt
 } from 'react-icons/fa';
 
-// Import the logo directly
-import logo from '../../assets/white_logo.png'; // You'll need to create this assets folder
-
+import logo from '../../assets/white_logo.png'; 
 const MenuBar = ({ role }) => {
   const location = useLocation();
   
@@ -80,9 +77,7 @@ const MenuBar = ({ role }) => {
       
       <div className="menu-items">
         {items.map((item, index) => {
-          // Check if this menu item is active
-          const isActive = location.pathname === item.path || 
-                          (item.path !== '/account' && location.pathname.startsWith(item.path));
+          const isActive = location.pathname.endsWith(item.path);
           
           return (
             <Link 

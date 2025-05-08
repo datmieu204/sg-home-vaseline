@@ -71,7 +71,6 @@ const StaffAccount2 = () => {
 
   return (
     <div>
-      <h1 style={{ textAlign: 'center', color: '#28a745' }}>Trang tài khoản Nhân viên</h1>
       <Account profile={profile} onConfirm={handleUpdate} />
     </div>
   );
