@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session, aliased
+from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.models import Employee, Household, Task, EmployeePosition, TaskStatus, EmployeeStatus, HouseholdStatus, AccountHousehold, AccountEmployee, DepartmentType, Incident, IncidentStatus, Service, ServiceStatus, Invoice, InvoiceDetail, InvoiceStatus, Notification, Payment, PaymentMethod
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from datetime import datetime, date
-from typing import List, Dict
+from typing import List
 from enum import Enum
 from typing import Optional
 
@@ -64,7 +64,6 @@ def get_staff_profile(employee_id: str, db: Session = Depends(get_db)):
         department_id=employee.department_id,
     )
 
-# --------------------------------------------------------------------------
 # --------------------------------------------------------------------------
 # Update staff profile
 
@@ -135,7 +134,6 @@ def update_staff_profile(employee_id: str, staff_profile: StaffProfileUpdate, db
     )
 
 # --------------------------------------------------------------------------
-# --------------------------------------------------------------------------
 # View staff tasks
 
 
@@ -173,7 +171,6 @@ def get_staff_tasks(employee_id: str, db: Session = Depends(get_db)):
     return [TaskResponse.from_orm(task) for task in tasks]
 
 # --------------------------------------------------------------------------
-# --------------------------------------------------------------------------
 # View task details of a staff
 
 class TaskDetailResponse(BaseModel):
@@ -205,7 +202,6 @@ def get_task_detail(employee_id: str, task_id: str, db: Session = Depends(get_db
 
     return TaskDetailResponse.from_orm(task)
 
-# --------------------------------------------------------------------------
 # --------------------------------------------------------------------------
 class IncidentResponse(BaseModel):
     incident_id: str
@@ -239,7 +235,6 @@ def get_reported_incidents(employee_id: str, db: Session = Depends(get_db)):
 
     return [IncidentResponse.from_orm(incident) for incident in incidents]
 
-# --------------------------------------------------------------------------
 # --------------------------------------------------------------------------
 # View incident detail of a staff
 
@@ -284,7 +279,6 @@ def get_incident_detail(
 
     return IncidentDetailResponse.from_orm(incident)
 
-# ---------------------------------------------------------------------------
 # ---------------------------------------------------------------------------
 # Update status of an incident of a staff
 
@@ -393,7 +387,6 @@ def create_incident_report(
 
 
 # --------------------------------------------------------------------------
-# --------------------------------------------------------------------------
 # View Service of a staff have department_id = RECEP 
 
 class ServiceResponse(BaseModel):
@@ -426,7 +419,6 @@ def view_services(employee_id: str, db: Session = Depends(get_db)):
     return [ServiceResponse.from_orm(service) for service in services]
 
 
-# ---------------------------------------------------------------------------
 # ---------------------------------------------------------------------------
 # View service detail of a staff have department_id = RECEP
 
@@ -469,7 +461,6 @@ def get_service_detail(
 
 
 
-# -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 # Update service of a staff have department_id = RECEP 
 
@@ -520,7 +511,6 @@ def update_service(
     return ServiceResponse.from_orm(service)
 
 # -----------------------------------------------------------------------------
-# -----------------------------------------------------------------------------
 # Create service of a staff have department_id = RECEP
 
 class ServiceCreateRequest(BaseModel):
@@ -567,8 +557,6 @@ def create_service(
     return ServiceResponse.from_orm(new_service)
 
 # -----------------------------------------------------------------------------
-# -----------------------------------------------------------------------------
-
 # View list invoice of a staff have department_id = ACCT
 
 class InvoiceResponse(BaseModel):
@@ -604,8 +592,6 @@ def get_invoices(employee_id: str, db: Session = Depends(get_db)):
     return [InvoiceResponse.from_orm(invoice) for invoice in invoices]
 
 # ---------------------------------------------------------------------------
-# ---------------------------------------------------------------------------
-
 # View invoice detail of a staff have department_id = ACCT
 
 class InvoiceDetailResponse(BaseModel):
@@ -669,8 +655,6 @@ def get_invoice_detail(invoice_id: str, employee_id: str, db: Session = Depends(
     )
 
 # ---------------------------------------------------------------------------
-# ---------------------------------------------------------------------------
-
 # Confirm invoice of a staff have department_id = ACCT
 
 class ConfirmPaymentResponse(BaseModel):
@@ -745,8 +729,6 @@ def confirm_payment(
     )
 
 # -----------------------------------------------------------------------------
-# -----------------------------------------------------------------------------
-
 # View list account household of a staff have department_id = RECEP
 
 class AccountHouseholdResponse(BaseModel):
@@ -791,13 +773,7 @@ def get_accounts(employee_id: str, db: Session = Depends(get_db)):
 
     return household_accounts
 
-
-    
-
-
 # ---------------------------------------------------------------------------
-# ---------------------------------------------------------------------------
-
 # View account household detail of a staff have department_id = RECEP
 
 class AccountHouseholdDetailResponse(BaseModel):
@@ -850,9 +826,7 @@ def get_account_detail(
         status=household.status
     )
 
-# ---------------------------------------------------------------------------
 # --------------------------------------------------------------------------
-
 # Disable account household of a staff have department_id = RECEP
 
 @staff_router.put("/accounts/household/{account_id}/disable", response_model=AccountHouseholdDetailResponse)
@@ -899,11 +873,7 @@ def disable_account(
     )
 
 
-
-
 # ---------------------------------------------------------------------------
-# ---------------------------------------------------------------------------
-
 # Add account household of a staff have department_id = RECEP
 
 class AccountHouseholdCreateRequest(BaseModel):

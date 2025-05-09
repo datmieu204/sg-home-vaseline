@@ -13,7 +13,6 @@ from sqlalchemy import func
 admin_router = APIRouter(prefix="/admin", tags=["admin"])
 
 # -----------------------------------------------------------------------------
-# -----------------------------------------------------------------------------
 # PROFILE ADMIN
 
 class AdminProfileSchema(BaseModel):
@@ -107,7 +106,7 @@ def update_admin_profile(
     if updated_data.status is not None:
         employee.status = updated_data.status
 
-    employee.begin_date = date.today()  # Giữ nguyên như logic cũ
+    employee.begin_date = date.today() 
 
     if updated_data.username is not None:
         account.username = updated_data.username
@@ -130,8 +129,6 @@ def update_admin_profile(
     }
 
 
-
-# -------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------\
 # TASKS
 
@@ -195,7 +192,6 @@ def get_staff_tasks(db: Session = Depends(get_db)):
 
     return {"tasks": task_list}
     
-# -------------------------------------------------------------------------------
 
 class TaskSchema(BaseModel):
     task_id: str
@@ -258,6 +254,9 @@ def get_staff_task_by_id(task_id: str, db: Session = Depends(get_db)):
 # --------------------------------------------------------------------------
 
 def get_tasks_by_head_manager_department(db: Session, department: DepartmentType):
+    """
+    Lấy danh sách công việc mà assigner là head_manager và assignee là manager và department_id của manager là department
+    """
     EmployeeAssigner = aliased(Employee, name="employees_assigner")
     EmployeeAssignee = aliased(Employee, name="employees_assignee")
 
@@ -388,7 +387,6 @@ def create_manager_task(
     return new_task
 
 # -----------------------------------------------------------------------------
-# -----------------------------------------------------------------------------
 # TÀI KHOẢN VÀ PROFILE MANAGER
 
 
@@ -411,7 +409,7 @@ def get_manager_accounts(db: Session = Depends(get_db)):
             "employee_id": employee.employee_id,
             "employee_name": employee.employee_name,
             "department_id": employee.department_id,
-            "position": employee.position.value,  # convert enum to string
+            "position": employee.position.value, 
         
         }
         account_list.append(account_info)
@@ -507,7 +505,6 @@ def create_manager_account(manager: ManagerCreate, db: Session = Depends(get_db)
     }
 
 # ------------------------------------------------------------------------
-# ------------------------------------------------------------------------
 # TÀI KHOẢN VÀ PROFILE STAFF
 
 @admin_router.get("/accounts/staffs")
@@ -529,7 +526,7 @@ def get_staff_accounts(db: Session = Depends(get_db)):
             "employee_id": employee.employee_id,
             "employee_name": employee.employee_name,
             "department_id": employee.department_id,
-            "position": employee.position.value,  # convert enum to string
+            "position": employee.position.value,
         
         }
         account_list.append(account_info)
@@ -571,7 +568,6 @@ def get_staff_account_by_id(account_id: str, db: Session = Depends(get_db)):
     return {"account": account_info}
 
 
-# ------------------------------------------------------------------------
 # ------------------------------------------------------------------------
 # TÀI KHOẢN VÀ PROFILE HOUSEHOLD
 
@@ -627,8 +623,6 @@ def get_household_account_by_id(account_id: str, db: Session = Depends(get_db)):
 
     return {"account": account_info}
 
-
-# ----------------------------------------------------------------------
 # ----------------------------------------------------------------------
 # DISABLE ACCOUNT MANAGER AND STAFF
 
@@ -733,7 +727,6 @@ def disable_household_account(account_id: str, db: Session = Depends(get_db)):
     }
 
 # ----------------------------------------------------------------------
-# ----------------------------------------------------------------------
 # DASHBOARD
 
 @admin_router.get("/dashboard/services")
@@ -792,10 +785,6 @@ def get_service_dashboard(db: Session = Depends(get_db)):
         "services": service_data
     }
 
-# ----------------------------------------------------------------------
-# ----------------------------------------------------------------------
-
-# EMPLOYEE
 
 @admin_router.get("/dashboard/employees")
 def get_employee_dashboard(db: Session = Depends(get_db)):
@@ -861,8 +850,7 @@ def get_employee_dashboard(db: Session = Depends(get_db)):
         "employees": employee_data
     }
 
-#-----------------------------------------------------------------------------------
-#-----------------------------------------------------------------------------------
+
 
 @admin_router.get("/dashboard/households")
 def get_household_dashboard(db: Session = Depends(get_db)):

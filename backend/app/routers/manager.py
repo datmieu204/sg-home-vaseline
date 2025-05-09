@@ -1,16 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session, aliased
+from sqlalchemy.orm import Session
 from app.core.database import get_db
-from app.models import Employee, Household, Task, EmployeePosition, TaskStatus, EmployeeStatus, HouseholdStatus, AccountHousehold, AccountEmployee, DepartmentType, Incident, IncidentStatus, Service, ServiceStatus, Invoice, InvoiceDetail, InvoiceStatus, Notification, Payment, PaymentMethod
-from pydantic import BaseModel, Field
+from app.models import Employee, Task, EmployeePosition, TaskStatus, EmployeeStatus, AccountEmployee, DepartmentType, Incident, Service, ServiceStatus, Invoice, InvoiceDetail, InvoiceStatus
+from pydantic import BaseModel
 from datetime import datetime, date
-from typing import List, Dict
-from enum import Enum
+from typing import List
 from typing import Optional
 
 manager_router = APIRouter(prefix="/manager", tags=["manager"])
 
-# ---------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 # Manager Profile
 
 class ManagerIDRequest(BaseModel):
@@ -64,8 +63,7 @@ def get_manager_profile(employee_id: str, db: Session = Depends(get_db)):
         department_id=employee.department_id,
     )
 
-# --------------------------------------------------------------------------
-# --------------------------------------------------------------------------
+# -----------------------------------------------------------------------------------
 # Update Manager Profile
 
 class UpdateManagerProfile(BaseModel):
@@ -141,13 +139,12 @@ def update_manager_profile(
         department_id=DepartmentType(employee.department_id),
     )
 
-# --------------------------------------------------------------------------
-# --------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # View Task List for Manager
 
 class TaskListResponse(BaseModel):
     task_id: str
-    task_name: str
+    name_task: str
     assigner_id: str
     assignee_id: str
     status: TaskStatus
@@ -185,7 +182,7 @@ def get_tasks(
     return [
         TaskListResponse(
             task_id=task.task_id,
-            task_name=task.name_task,
+            name_task=task.name_task,
             assigner_id=task.assigner_id,
             assignee_id=task.assignee_id,
             status=task.status,
@@ -201,7 +198,7 @@ def get_tasks(
 
 class TaskDetailResponse(BaseModel):
     task_id: str
-    task_name: str
+    name_task: str
     assigner_id: str
     assigner_name: str
     assignee_id: str
@@ -255,7 +252,7 @@ def get_task_detail(
 
     return TaskDetailResponse(
         task_id=task.task_id,
-        task_name=task.name_task,
+        name_task=task.name_task,
         assigner_id=task.assigner_id,
         assigner_name=assigner.employee_name,
         assignee_id=task.assignee_id,
@@ -296,7 +293,7 @@ def get_tasks_staffs(
     return [
         TaskListResponse(
             task_id=task.task_id,
-            task_name=task.name_task,
+            name_task=task.name_task,
             assigner_id=task.assigner_id,
             assignee_id=task.assignee_id,
             status=task.status,
@@ -349,7 +346,7 @@ def get_task_staff_detail(
         raise HTTPException(status_code=404, detail="Assigner or assignee not found")
     return TaskDetailResponse(
         task_id=task.task_id,
-        task_name=task.name_task,
+        name_task=task.name_task,
         assigner_id=task.assigner_id,
         assigner_name=assigner.employee_name,
         assignee_id=task.assignee_id,
@@ -360,12 +357,11 @@ def get_task_staff_detail(
         description=task.description
     )
 
-# -----------------------------------------------------------------------------
-# -----------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 # Add Task for Staff
 
 class AddTaskRequest(BaseModel):
-    task_name: str
+    name_task: str
     assignee_id: str
     deadline: Optional[datetime] = None
     description: Optional[str] = None
@@ -402,7 +398,7 @@ def add_task_for_staff(
 
     new_task = Task(
         task_id=new_task_id,
-        name_task=task_data.task_name,
+        name_task=task_data.name_task,
         assigner_id=employee_id,
         assignee_id=task_data.assignee_id,
         status=TaskStatus.in_progress,
@@ -417,7 +413,7 @@ def add_task_for_staff(
 
     return TaskDetailResponse(
         task_id=new_task.task_id,
-        task_name=new_task.name_task,
+        name_task=new_task.name_task,
         assigner_id=new_task.assigner_id,
         assigner_name=manager.employee_name,
         assignee_id=new_task.assignee_id,
@@ -428,8 +424,7 @@ def add_task_for_staff(
         description=new_task.description
     )
 
-# -----------------------------------------------------------------------------
-# -----------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 # View List Accounts of Staffs of Manager
 
 class StaffAccountResponse(BaseModel):
@@ -492,7 +487,6 @@ def get_staff_accounts(
 
     return staff_accounts
 
-# -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 # View Account Detail of Staffs of Manager
 
@@ -558,7 +552,6 @@ def get_staff_account_detail(
     )
 
 
-# ---------------------------------------------------------------------------
 # ---------------------------------------------------------------------------
 # Add Account for Staffs of Manager
 
@@ -634,7 +627,6 @@ def add_staff_account(
     )
 
 # ---------------------------------------------------------------------------
-# ---------------------------------------------------------------------------
 # View Service of a manager have department_id = RECEP
 
 
@@ -668,7 +660,6 @@ def view_services(employee_id: str, db: Session = Depends(get_db)):
     return [ServiceResponse.from_orm(service) for service in services]
 
 
-# ---------------------------------------------------------------------------
 # ---------------------------------------------------------------------------
 # View service detail of a manager have department_id = RECEP
 
@@ -712,7 +703,6 @@ def get_service_detail(
 
 
 # ---------------------------------------------------------------------------
-# ---------------------------------------------------------------------------
 # View list invoice of a manager have department_id = ACCT
 
 class InvoiceResponse(BaseModel):
@@ -748,8 +738,6 @@ def get_invoices(employee_id: str, db: Session = Depends(get_db)):
     return [InvoiceResponse.from_orm(invoice) for invoice in invoices]
 
 # ---------------------------------------------------------------------------
-# ---------------------------------------------------------------------------
-
 # View invoice detail of a manager have department_id = ACCT
 
 class InvoiceDetailResponse(BaseModel):
@@ -813,7 +801,6 @@ def get_invoice_detail(invoice_id: str, employee_id: str, db: Session = Depends(
     )
 
 # ------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------
 # View list incidents of a manager (have department_id)
 
 @manager_router.get("/incidents/")
@@ -850,9 +837,8 @@ def get_manager_incidents(employee_id: str, db: Session = Depends(get_db)):
     return {"incidents": incident_list}
 
 # ------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------
-
 # View incident detail of a manager (have department_id)
+
 @manager_router.get("/incidents/{incident_id}")
 def get_incident_detail(
     incident_id: str,

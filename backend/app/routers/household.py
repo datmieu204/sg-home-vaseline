@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, aliased
 from app.core.database import get_db
 from app.models import Employee, Household, InvoiceDetail, AccountHousehold, Service, Payment,ServiceRegistration, HouseholdStatus, Notification
-from app.models.invoice import Invoice, InvoiceStatus
+from app.models.invoice import Invoice
 from app.models.service_registration import ServiceRegistrationStatus
-from datetime import date, datetime
+from datetime import datetime
 import uuid
 from dateutil.relativedelta import relativedelta
 from pydantic import BaseModel, Field
@@ -15,6 +15,9 @@ household_router = APIRouter(prefix="/household", tags=["household"])
 
 @household_router.get("/profile")
 def get_profile(household_id: str ,db: Session = Depends(get_db)):
+    """
+    Get household profile by household_id.
+    """
     household = db.query(Household).filter(Household.household_id == household_id).first()
     if not household:
         raise HTTPException(status_code=404, detail="Household not found")
@@ -45,7 +48,9 @@ def modify_profile(
     household_id: str,
     db: Session = Depends(get_db)
 ):
-
+    """
+    Update household profile by household_id.
+    """
     household = db.query(Household).filter(Household.household_id == household_id).first()
     if not household:
         raise HTTPException(status_code=404, detail="Household not found")
@@ -128,6 +133,9 @@ def modify_profile(
 
 @household_router.get("/notifications")
 def get_all_notifications(household_id: str, db: Session = Depends(get_db)):
+    """
+    Get all notifications for a household.
+    """
     # Check if household exists
     household = db.query(Household).filter(Household.household_id == household_id).first()
     if not household:
@@ -154,6 +162,9 @@ def get_all_notifications(household_id: str, db: Session = Depends(get_db)):
 
 @household_router.get("/notifications/{notification_id}")
 def get_notification_by_id(notification_id: str, db: Session = Depends(get_db)):
+    """
+    Get a specific notification by ID.
+    """
     # Query the notification with joined Invoice, Payment, and Employee data
     notification_data = (
         db.query(Notification, Invoice, Payment, Employee)
@@ -189,7 +200,6 @@ def get_notification_by_id(notification_id: str, db: Session = Depends(get_db)):
             for invoice_detail, service in invoice_details
         ]
 
-    # Build the response
     response = {
         "message": notification.message,
         "payment_date": payment.date if payment else None,
@@ -202,6 +212,9 @@ def get_notification_by_id(notification_id: str, db: Session = Depends(get_db)):
 
 @household_router.get("/services")
 def get_all_services(db: Session = Depends(get_db)):
+    """
+    Get all services.
+    """
     # Query all services
     services = db.query(Service).all()
 
@@ -221,6 +234,9 @@ def get_all_services(db: Session = Depends(get_db)):
 
 @household_router.get("/services/get/{service_id}")
 def get_service_by_id(service_id: str, db: Session = Depends(get_db)):
+    """
+    Get a specific service by ID.
+    """
     # Query the service
     service = db.query(Service).filter(Service.service_id == service_id).first()
 
@@ -242,6 +258,9 @@ def get_service_by_id(service_id: str, db: Session = Depends(get_db)):
 
 @household_router.get("/services/myregister")
 def get_my_registered_services(household_id: str, db: Session = Depends(get_db)):
+    """
+    Get all registered services for a household.
+    """
     # Check if household exists
     household = db.query(Household).filter(Household.household_id == household_id).first()
     if not household:
@@ -276,6 +295,9 @@ def cancel_service_registration(
     service_registration_id: int,
     db: Session = Depends(get_db)
 ):
+    """
+    Cancel a service registration by ID.
+    """
     # Tìm đăng ký dịch vụ
     service_registration = db.query(ServiceRegistration).filter(
         ServiceRegistration.service_registration_id == service_registration_id
@@ -310,6 +332,9 @@ def register_service(
     quantity: int,
     db: Session = Depends(get_db)
 ):
+    """
+    Register a service for a household.
+    """
     # Validate household exists
     household = db.query(Household).filter(Household.household_id == household_id).first()
     if not household:
