@@ -5,6 +5,7 @@ from app.models import Employee, Task, EmployeePosition, TaskStatus, EmployeeSta
 from pydantic import BaseModel
 from datetime import datetime, date
 from typing import List
+from enum import Enum
 from typing import Optional
 
 manager_router = APIRouter(prefix="/manager", tags=["manager"])
@@ -872,4 +873,124 @@ def get_incident_detail(
         "reporter_id": incident.reporter_id,
         "description": incident.description,
         "status": incident.status.value
+    }
+
+# ------------------------------------------------------------------------------------
+# Update status of task for manager
+class TaskResponse(BaseModel):
+    task_id: str
+    name_task: str
+    assigner_id: str
+    assignee_id: str
+    assigned_time: datetime
+    description: Optional[str] = None
+    deadline: Optional[datetime] = None
+    status: TaskStatus
+
+    class Config:
+        from_attributes = True
+
+class UpdateTaskStatusRequest(BaseModel):
+    status: TaskStatus
+
+    class Config:
+        from_attributes = True
+
+@manager_router.put("/tasks/{task_id}/status", response_model=TaskResponse)
+def update_task_status(
+    task_id: str,
+    employee_id: str,
+    request: UpdateTaskStatusRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Cập nhật trạng thái của task (cho manager).
+    """
+
+    employee = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.manager,
+        Employee.status == EmployeeStatus.active
+    ).first()
+
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found or not a manager")
+
+    task = db.query(Task).filter(Task.task_id == task_id).first()
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    task.status = request.status
+
+    time_finished = datetime.now()
+
+    if time_finished <= task.deadline:
+        task.description = "Hoàn thành đúng hạn lúc " + str(time_finished)
+    else:
+        task.description = "Hoàn thành quá hạn lúc " + str(time_finished)
+
+    db.commit()
+    db.refresh(task)
+
+    return TaskResponse.from_orm(task)
+
+
+# ------------------------------------------------------------------------------------
+# Update status of incident for manager
+class IncidentStatus(str, Enum):
+    in_progress = "in_progress"
+    resolved = "resolved"
+
+class IncidentStatusUpdateRequest(BaseModel):
+    status: IncidentStatus
+    description: Optional[str]
+    class Config:
+        from_attributes = True
+
+@manager_router.put("/incidents/{incident_id}/update_status")
+def update_incident_status(
+    incident_id: str,
+    employee_id: str,
+    request: IncidentStatusUpdateRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Cập nhật trạng thái của sự cố (cho manager).
+    """
+    # Kiểm tra employee_id có tồn tại và có position là manager
+    manager = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.manager
+    ).first()
+
+    if not manager:
+        raise HTTPException(status_code=404, detail="Manager not found or not a manager")
+
+    # Query sự cố theo incident_id
+    # Chỉ cho phép manager cập nhật sự cố mà mình chịu trách nhiệm
+    incident = db.query(Incident).filter(
+        Incident.incident_id == incident_id,
+        Incident.responsible_id == employee_id
+    ).first()
+
+    if not incident:
+        raise HTTPException(status_code=404, detail="Incident not found or not assigned to this manager")
+
+    if incident.status == IncidentStatus.resolved and request.status == IncidentStatus.in_progress:
+        raise HTTPException(status_code=400, detail="Cannot revert to in_progress status from resolved")
+    
+    incident.status = request.status
+    if request.description is not None:
+        incident.description = request.description
+    
+    db.commit()
+    db.refresh(incident)
+
+    return {
+        "incident_id": incident.incident_id,
+        "incident_name": incident.incident_name,
+        "reporter_id": incident.reporter_id,
+        "report_time": incident.report_time,
+        "status": incident.status.value,
+        "description": incident.description
     }

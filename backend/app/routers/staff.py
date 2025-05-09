@@ -162,7 +162,6 @@ def get_staff_tasks(employee_id: str, db: Session = Depends(get_db)):
     """
     tasks = db.query(Task).filter(
         Task.assignee_id == employee_id,
-        Task.status == TaskStatus.in_progress
     ).all()
 
     if not tasks:
@@ -782,6 +781,7 @@ class AccountHouseholdDetailResponse(BaseModel):
     password: str
     name: str
     number_of_members: int
+    room_number: str
     phone: str
     status: HouseholdStatus
 
@@ -823,7 +823,8 @@ def get_account_detail(
         name=household.name,
         number_of_members=household.number_of_members,
         phone=household.phone,
-        status=household.status
+        status=household.status,
+        room_number=household.room_number
     )
 
 # --------------------------------------------------------------------------
@@ -946,3 +947,50 @@ def create_account(
         phone=new_household.phone,
         status=new_household.status
     )
+
+# ---------------------------------------------------------------------------
+# Update status of task for a staff have department_id = STAFF
+
+
+class TaskStatusUpdateRequest(BaseModel):
+    status: TaskStatus
+    class Config:
+        from_attributes = True
+
+@staff_router.put("/tasks/{task_id}/update_status", response_model=TaskResponse)
+def update_task_status(
+    employee_id: str,
+    task_id: str,
+    task_data: TaskStatusUpdateRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Cập nhật trạng thái của task (chỉ cho nhân viên staff).
+    """
+    employee = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.staff,
+        Employee.status == EmployeeStatus.active
+    ).first()
+
+    if not employee:
+        raise HTTPException(status_code=403, detail="Unauthorized: Not an active staff in STAFF")
+
+    task = db.query(Task).filter(Task.task_id == task_id).first()
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    task.status = task_data.status
+
+    time_finished = datetime.now()
+
+    if time_finished <= task.deadline:
+        task.description = "Hoàn thành đúng hạn lúc " + str(time_finished)
+    else:
+        task.description = "Hoàn thành quá hạn lúc " + str(time_finished)
+
+
+    db.commit()
+    db.refresh(task)
+
+    return TaskResponse.from_orm(task)
