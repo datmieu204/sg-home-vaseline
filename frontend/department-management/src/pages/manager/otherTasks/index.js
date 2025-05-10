@@ -1,28 +1,38 @@
 import React, { useEffect, useState } from 'react';
-import TaskList from '../../../components/TaskList';
+import ListContainer from '../../../components/ListContainer/ListContainer';
 import TaskDetail from '../../../components/TaskDetail';
-import './ManagerOtherTasks1.css';
 
-const ManagerOtherTasks1 = () => {
+const ManagerOtherTasks = () => {
   const [tasks, setTasks] = useState([]);
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [monthFilter, setMonthFilter] = useState('');
-  const [yearFilter, setYearFilter] = useState('');
+  const [filters, setFilters] = useState({
+    'Trạng thái': 'all',
+    'Tháng': '',
+    'Năm': ''
+  });
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
-  const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({
-    task_name: '',
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newTask, setNewTask] = useState({
+    name_task: '',
     assignee_id: '',
     deadline: '',
     description: ''
   });
+  const [submitting, setSubmitting] = useState(false);
   const [staffs, setStaffs] = useState([]);
-  const [staffLoading, setStaffLoading] = useState(true);
-  const [successMessage, setSuccessMessage] = useState(''); // Thêm state thông báo thành công
+
+  // Sorting function - newest to oldest
+  const sortTasksByDate = (tasksToSort) => {
+    return [...tasksToSort].sort((a, b) => {
+      // Convert deadlines to dates for comparison (newer ones first)
+      const dateA = a.deadline ? new Date(a.deadline) : new Date(0);
+      const dateB = b.deadline ? new Date(b.deadline) : new Date(0);
+      return dateB - dateA; // Newest first
+    });
+  };
 
   const getEmployeeId = () => {
     const userData = localStorage.getItem('user');
@@ -35,7 +45,8 @@ const ManagerOtherTasks1 = () => {
     }
   };
 
-  const fetchTasks = () => {
+  // Load tasks
+  useEffect(() => {
     const employeeId = getEmployeeId();
     if (!employeeId) {
       alert('Không tìm thấy thông tin người dùng.');
@@ -44,87 +55,102 @@ const ManagerOtherTasks1 = () => {
     }
 
     fetch(`http://127.0.0.1:8000/manager/tasks_staffs?employee_id=${employeeId}`)
-      .then(res => {
-        if (!res.ok) throw new Error('Không thể tải danh sách nhiệm vụ');
+      .then((res) => {
+        if (!res.ok) throw new Error('Không thể tải danh sách công việc');
         return res.json();
       })
-      .then(data => {
-        setTasks(data);
+      .then((data) => {
+        const sortedTasks = sortTasksByDate(data || []);
+        setTasks(sortedTasks);
+        setFilteredTasks(sortedTasks);
         setLoading(false);
       })
-      .catch(err => {
-        console.error('Lỗi khi tải danh sách nhiệm vụ:', err);
-        alert('Không thể tải danh sách nhiệm vụ');
+      .catch((err) => {
+        console.error('Lỗi khi tải dữ liệu:', err);
         setLoading(false);
       });
-  };
+  }, []);
 
-  const fetchStaffs = () => {
+  // Load staffs for assignee selection
+  useEffect(() => {
     const managerId = getEmployeeId();
     if (!managerId) {
-      alert('Không tìm thấy thông tin người dùng.');
-      setStaffLoading(false);
       return;
     }
 
     fetch(`http://127.0.0.1:8000/manager/accounts/staffs?employee_id=${managerId}`)
-      .then(res => res.json())
-      .then(data => {
-        setStaffs(Array.isArray(data) ? data : []);
-        setStaffLoading(false);
+      .then((res) => {
+        if (!res.ok) throw new Error('Không thể tải danh sách nhân viên');
+        return res.json();
       })
-      .catch(err => {
+      .then((data) => {
+        setStaffs(Array.isArray(data) ? data : []);
+      })
+      .catch((err) => {
         console.error('Lỗi khi tải danh sách nhân viên:', err);
-        setStaffLoading(false);
       });
-  };
-
-  useEffect(() => {
-    fetchTasks();
-    fetchStaffs();
   }, []);
 
+  // Apply filters
+  const handleFilter = (filterType, value) => {
+    // Update filter state
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      [filterType]: value
+    }));
+  };
+
+  // Apply filters when filter state changes
   useEffect(() => {
     let filtered = [...tasks];
 
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(task => task.status === statusFilter);
+    // Apply status filter
+    if (filters['Trạng thái'] && filters['Trạng thái'] !== 'all') {
+      filtered = filtered.filter(task => task.status === filters['Trạng thái']);
     }
 
-    if (monthFilter) {
-      filtered = filtered.filter(task => new Date(task.deadline).getMonth() + 1 === parseInt(monthFilter));
+    // Apply month filter
+    if (filters['Tháng']) {
+      filtered = filtered.filter(task => 
+        task.deadline && new Date(task.deadline).getMonth() + 1 === parseInt(filters['Tháng'])
+      );
     }
 
-    if (yearFilter) {
-      filtered = filtered.filter(task => new Date(task.deadline).getFullYear() === parseInt(yearFilter));
+    // Apply year filter
+    if (filters['Năm']) {
+      filtered = filtered.filter(task => 
+        task.deadline && new Date(task.deadline).getFullYear() === parseInt(filters['Năm'])
+      );
     }
 
-    setFilteredTasks(filtered);
-  }, [tasks, statusFilter, monthFilter, yearFilter]);
+    // Always maintain newest-to-oldest sorting
+    setFilteredTasks(sortTasksByDate(filtered));
+  }, [tasks, filters]);
 
-  useEffect(() => {
-    const employeeId = getEmployeeId();
-    if (selectedTaskId && employeeId) {
-      setDetailLoading(true);
-      fetch(`http://127.0.0.1:8000/manager/tasks_staffs/${selectedTaskId}?employee_id=${employeeId}`)
-        .then(res => {
-          if (!res.ok) throw new Error('Không thể tải chi tiết nhiệm vụ');
-          return res.json();
-        })
-        .then(data => {
-          setSelectedTask(data);
-          setDetailLoading(false);
-        })
-        .catch(err => {
-          console.error('Lỗi khi tải chi tiết nhiệm vụ:', err);
-          alert('Không thể tải chi tiết nhiệm vụ');
-          setDetailLoading(false);
-        });
-    }
-  }, [selectedTaskId]);
+  // Search functionality
+  const handleSearch = (searchTerm) => {
+    const term = searchTerm.toLowerCase();
+    const filtered = tasks.filter(task => 
+      task.name_task.toLowerCase().includes(term) ||
+      (task.description && task.description.toLowerCase().includes(term))
+    );
+    setFilteredTasks(sortTasksByDate(filtered));
+  };
 
-  const handleSelectTask = (taskId) => {
-    setSelectedTaskId(taskId);
+  // Format tasks for ListItem component
+  const formatTasksForListItems = () => {
+    return filteredTasks.map(task => ({
+      id: task.task_id,
+      title: task.name_task,
+      statusText: task.status === 'completed' ? 'Hoàn thành' : task.status === 'in_progress' ? 'Đang xử lý' : 'Chưa bắt đầu',
+      statusType: task.status === 'completed' ? 'closed' : 'open',
+      deadline: task.deadline ? new Date(task.deadline).toLocaleDateString('vi-VN') : 'Không có hạn',
+      deadlineLabel: 'Hạn chót:'
+    }));
+  };
+
+  const handleItemClick = (id) => {
+    setSelectedTaskId(id);
   };
 
   const handleBackToList = () => {
@@ -132,143 +158,153 @@ const ManagerOtherTasks1 = () => {
     setSelectedTask(null);
   };
 
-  const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // Load task details when a task is selected
+  useEffect(() => {
     const employeeId = getEmployeeId();
-    if (!employeeId) return;
-
-    // Kiểm tra xem assignee_id có hợp lệ không
-    const validAssignee = staffs.find(staff => staff.employee_id === formData.assignee_id);
-    if (!validAssignee) {
-      alert("Nhân viên được chỉ định không hợp lệ.");
-      return;
+    if (selectedTaskId && employeeId) {
+      setDetailLoading(true);
+      fetch(`http://127.0.0.1:8000/manager/tasks_staffs/${selectedTaskId}?employee_id=${employeeId}`)
+        .then((res) => {
+          if (!res.ok) throw new Error('Không thể tải chi tiết công việc');
+          return res.json();
+        })
+        .then((data) => {
+          setSelectedTask(data);
+          setDetailLoading(false);
+        })
+        .catch((err) => {
+          console.error('Lỗi khi tải chi tiết:', err);
+          setDetailLoading(false);
+        });
     }
+  }, [selectedTaskId]);
 
-    // Gửi dữ liệu đến server
+  // Add new task functionality
+  const handleSubmitNewTask = () => {
+    const employeeId = getEmployeeId();
+    if (!employeeId) return alert('Không tìm thấy người dùng');
+  
+    const { name_task, assignee_id, deadline, description } = newTask;
+    if (!name_task || !assignee_id || !deadline || !description) {
+      return alert('Vui lòng điền đầy đủ thông tin');
+    }
+  
+    setSubmitting(true);
+  
     fetch(`http://127.0.0.1:8000/manager/tasks_staffs?employee_id=${employeeId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        task_name: formData.task_name,
-        assignee_id: formData.assignee_id,
-        deadline: formData.deadline,
-        description: formData.description
+        name_task,
+        assignee_id,
+        deadline,
+        description
       })
     })
       .then(res => {
-        if (!res.ok) throw new Error('Không thể tạo nhiệm vụ mới');
+        if (!res.ok) throw new Error('Thêm nhiệm vụ thất bại');
         return res.json();
       })
       .then(() => {
-        setShowForm(false);
-        setFormData({ task_name: '', assignee_id: '', deadline: '', description: '' });
-        fetchTasks(); // Cập nhật lại danh sách nhiệm vụ sau khi thêm
-        setSuccessMessage('Nhiệm vụ đã được thêm thành công!'); // Thêm thông báo thành công
-        setTimeout(() => setSuccessMessage(''), 3000); // Ẩn thông báo sau 3 giây
+        setShowAddModal(false);
+        setNewTask({
+          name_task: '',
+          assignee_id: '',
+          deadline: '',
+          description: ''
+        });
+        
+        // Reload tasks after adding a new one
+        const reloadUser = getEmployeeId();
+        fetch(`http://127.0.0.1:8000/manager/tasks_staffs?employee_id=${reloadUser}`)
+          .then(res => res.json())
+          .then(data => {
+            const sortedTasks = sortTasksByDate(data || []);
+            setTasks(sortedTasks);
+            setFilteredTasks(sortedTasks);
+          });
       })
-      .catch(err => {
-        console.error('Lỗi khi tạo nhiệm vụ:', err);
-        alert('Không thể tạo nhiệm vụ');
-      });
+      .catch(err => alert(err.message))
+      .finally(() => setSubmitting(false));
   };
 
-  if (loading) return <p className="loading">Đang tải danh sách nhiệm vụ...</p>;
+  // Filter configuration
+  const filterConfig = {
+    initialFilters: filters,
+    showStatusFilter: true,
+    showMonthFilter: true,
+    showYearFilter: true
+  };
+
+  if (loading) return <p className="loading">Đang tải danh sách công việc...</p>;
 
   return (
-    <div className="manager-tasks-container">
+    <div className="manager-other-tasks-container">
       {selectedTaskId ? (
         detailLoading ? (
-          <p className="loading">Đang tải chi tiết nhiệm vụ...</p>
+          <p className="loading">Đang tải chi tiết công việc...</p>
         ) : (
           <TaskDetail task={selectedTask} onBack={handleBackToList} />
         )
       ) : (
         <>
-          <h2 className="task-title">Danh sách nhiệm vụ giao cho nhân viên</h2>
 
-          <div className="filters">
-            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-              <option value="all">Tất cả trạng thái</option>
-              <option value="completed">Hoàn thành</option>
-              <option value="in_progress">Đang xử lý</option>
-            </select>
-
-            <select value={monthFilter} onChange={(e) => setMonthFilter(e.target.value)}>
-              <option value="">Tất cả tháng</option>
-              {[...Array(12)].map((_, i) => (
-                <option key={i} value={i + 1}>Tháng {i + 1}</option>
-              ))}
-            </select>
-
-            <select value={yearFilter} onChange={(e) => setYearFilter(e.target.value)}>
-              <option value="">Tất cả năm</option>
-              {Array.from(new Set(tasks.map(t => new Date(t.deadline).getFullYear()))).map((year) => (
-                <option key={year} value={year}>{year}</option>
-              ))}
-            </select>
-
-            <button onClick={() => setShowForm(true)}>+ Thêm nhiệm vụ</button>
+          <div className="add-task-button-wrapper">
+            <button className="add-task-button" onClick={() => setShowAddModal(true)}>
+              + Thêm nhiệm vụ
+            </button>
           </div>
 
-          <TaskList tasks={filteredTasks} onTaskClick={handleSelectTask} />
+          <ListContainer 
+            title="Danh sách nhiệm vụ giao cho nhân viên" 
+            items={formatTasksForListItems()} 
+            rawTasks={tasks} // Pass the original tasks for filter generation
+            searchPlaceholder="Tìm kiếm công việc..." 
+            filterConfig={filterConfig}
+            onSearch={handleSearch}
+            onFilter={handleFilter}
+            onItemClick={handleItemClick}
+          />
 
-          {showForm && (
-            <div className="popup-form-manager">
-              <div className="popup-content">
+          {showAddModal && (
+            <div className="modal-overlay">
+              <div className="modal">
                 <h3>Thêm nhiệm vụ mới</h3>
-                <form onSubmit={handleSubmit}>
-                  <input
-                    type="text"
-                    name="task_name"
-                    placeholder="Tên nhiệm vụ"
-                    value={formData.task_name}
-                    onChange={handleChange}
-                    required
-                  />
-
-                  <select
-                    name="assignee_id"
-                    value={formData.assignee_id}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">-- Chọn nhân viên --</option>
-                    {staffs.map((staff) => (
-                      <option key={staff.employee_id} value={staff.employee_id}>
-                        {staff.employee_name} ({staff.username})
-                      </option>
-                    ))}
-                  </select>
-
-                  <input
-                    type="datetime-local"
-                    name="deadline"
-                    value={formData.deadline}
-                    onChange={handleChange}
-                    required
-                  />
-
-                  <textarea
-                    name="description"
-                    placeholder="Mô tả"
-                    value={formData.description}
-                    onChange={handleChange}
-                    required
-                  ></textarea>
-                  <div className="form-buttons">
-                    <button type="submit">Lưu</button>
-                    <button type="button" onClick={() => setShowForm(false)}>Hủy</button>
-                  </div>
-                </form>
-
-                {/* Hiển thị thông báo thành công trong popup */}
-                {successMessage && (
-                  <div className="success-message">{successMessage}</div>
-                )}
+                <input
+                  type="text"
+                  placeholder="Tên nhiệm vụ"
+                  value={newTask.name_task}
+                  onChange={(e) => setNewTask({ ...newTask, name_task: e.target.value })}
+                />
+                <select
+                  value={newTask.assignee_id}
+                  onChange={(e) => setNewTask({ ...newTask, assignee_id: e.target.value })}
+                >
+                  <option value="">Chọn nhân viên</option>
+                  {staffs.map((staff) => (
+                    <option key={staff.employee_id} value={staff.employee_id}>
+                      {staff.employee_name} ({staff.employee_id})
+                    </option>
+                  ))}
+                </select>
+                
+                <input
+                  type="datetime-local"
+                  placeholder="Deadline"
+                  value={newTask.deadline}
+                  onChange={(e) => setNewTask({ ...newTask, deadline: e.target.value })}
+                />
+                <textarea
+                  placeholder="Mô tả nhiệm vụ"
+                  value={newTask.description}
+                  onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+                />
+                <div className="modal-actions">
+                  <button onClick={handleSubmitNewTask} disabled={submitting} style={{ backgroundColor:'#f89236', color:'white', fontSize:'16px'}}>
+                    {submitting ? 'Đang gửi...' : 'Gửi'}
+                  </button>
+                  <button onClick={() => setShowAddModal(false) } style={{ backgroundColor:'white', color:'black', fontSize:'16px'}}>Hủy</button>
+                </div>
               </div>
             </div>
           )}
@@ -278,4 +314,4 @@ const ManagerOtherTasks1 = () => {
   );
 };
 
-export default ManagerOtherTasks1;
+export default ManagerOtherTasks;

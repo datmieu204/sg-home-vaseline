@@ -4,7 +4,7 @@
   padding: 30px;
   background-color: white;
   border-radius: 16px;
-  width: 90%;
+  width: 60%;
   height: fit-content;
   margin: auto;
   font-size: 18px;
@@ -20,7 +20,7 @@
 }
 
 .account-left {
-  width: 70%;
+  /* width: 70%; */
   height: fit-content;
   background-color: #ffecda;
   padding: 24px;
@@ -40,18 +40,18 @@
   display: flex;
   align-items: center;
   justify-content: space-around;
-  padding: 20px;
+  padding: 10px;
 }
 
 .name {
   color: #f28500;
-  font-size: 40px;
+  font-size: 35px;
   margin: 0;
 }
 
 .position {
   margin: 4px 0 0;
-  font-size: 30px;
+  font-size: 25px;
   color: #555;
 }
 
@@ -63,7 +63,7 @@
   padding: 10px 20px;
   border-radius: 25px;
   cursor: pointer;
-  font-size: 25px;
+  font-size: 15px;
   align-content: center;
 }
 
@@ -87,15 +87,15 @@
   font-weight: bold;
   color: #f28500;
   margin-bottom: 6px;
-  font-size: 30px;
+  font-size: 20px;
 }
 
 .form-group input {
-  padding: 12px;
+  padding: 10px;
   border: 3px solid #f28500;
   background-color: white;
-  border-radius: 20px;
-  font-size: 30px;
+  border-radius: 20px !important;
+  font-size: 20px !important;
 }
 
 .form-row {
@@ -105,10 +105,10 @@
 
 .username {
   padding: 12px;
-  border: 3px solid #f28500;
+  border: 3px solid #184a57;
   background-color: white;
   border-radius: 20px;
-  font-size: 30px;
+  font-size: 20px;
   color: #636262;
 }
 
@@ -118,8 +118,8 @@
 }
 
 .user-avatar {
-  width: 200px;
-  height: 200px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   background-color: #fff;
   margin-right: 20px;
@@ -133,6 +133,6 @@
 }
 
 .avatar-icon {
-  font-size: 200px;
+  font-size: 150px;
   color: #f89236;
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
-import AdminDashboardButtons from '../../../components/AdminTopButtons'; 
+import AdminDashboardButtons from '../../../components/TopButtons'; 
 
 const Dashboard = () => {
   const navigate = useNavigate();

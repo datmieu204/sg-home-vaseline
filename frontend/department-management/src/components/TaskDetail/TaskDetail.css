@@ -455,3 +455,69 @@
     font-size: 1.75rem;
   }
 }
+
+.complete-button {
+  padding: 0.6rem 1rem;
+  justify-content: center;
+  display: flex;
+  align-self: center;
+  background-color: #28a745;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  transition: none; /* Loại bỏ hiệu ứng chuyển màu */
+}
+
+.complete-button:hover {
+  background-color: #28a745; /* Giữ nguyên màu nền khi hover */
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0); /* Màu nền của overlay không thay đổi */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup-content-dt {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  text-align: center;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.confirm-button,
+.cancel-button {
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.confirm-button {
+  color: white;
+  border: none;
+  border-radius: 4px;
+  background-color: #28a745; /* Giữ nguyên màu nền */
+}
+
+.cancel-button {
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}

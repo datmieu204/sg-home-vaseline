@@ -27,6 +27,8 @@ const LoginPage = () => {
       // Lưu user vào localStorage
       // QUAN TRỌNG
       localStorage.setItem('user', JSON.stringify(data));
+      const user = JSON.parse(localStorage.getItem('user'));
+      console.log(user)
 
       // Điều hướng theo role
       if (data.role === 'admin') {
@@ -34,7 +36,13 @@ const LoginPage = () => {
       } else if (data.role === 'manager') {
         navigate('/manager');
       } else if (data.role === 'staff') {
-        navigate('/staff');
+        if (data.department_id === 'ACCT') {
+          navigate('/staffACCT');
+        } else if (data.department_id === 'RECEP') {
+          navigate('/staffRECEP');
+        } else {
+          navigate('/staff');
+        }
       } else if (data.role === 'household') {
         navigate('/household');
       } else {

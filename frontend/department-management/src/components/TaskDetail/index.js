@@ -11,39 +11,25 @@ import {
   FaCheck,
   FaSpinner,
   FaHourglassStart,
-  FaProjectDiagram
+  FaProjectDiagram,
+  FaCheckCircle 
 } from 'react-icons/fa';
-import axios from 'axios';
 
-const TaskDetail = ({ task, onBack }) => {
+const TaskDetail = ({ task, onBack, updateTaskStatus, showStatusUpdateButton }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const [employees, setEmployees] = useState({});
+  const [currentTask, setCurrentTask] = useState(null);
+  const [showConfirmPopup, setShowConfirmPopup] = useState(false);  
   
+
   useEffect(() => {
-    setIsVisible(true);
-    fetchEmployees();
-  }, []);
-
-  // Fetch employees from database
-  const fetchEmployees = async () => {
-    try {
-      const response = await axios.get('/api/employees');
-      const employeeMap = {};
-      
-      // Create mapping from ID to employee name
-      response.data.forEach(employee => {
-        employeeMap[employee.id] = `${employee.first_name} ${employee.last_name}`;
-      });
-      
-      setEmployees(employeeMap);
-    } catch (error) {
-      console.error('Error fetching employees:', error);
+    if (task) {
+      setIsVisible(true);
+      setCurrentTask(task);
     }
-  };
+  }, [task]);
 
-  if (!task) return null;
+  if (!currentTask) return null;
 
-  // Format date to a more readable format
   const formatDate = (dateString) => {
     const options = { 
       year: 'numeric', 
@@ -55,7 +41,6 @@ const TaskDetail = ({ task, onBack }) => {
     return new Date(dateString).toLocaleDateString('vi-VN', options);
   };
 
-  // Determine status class for styling
   const getStatusClass = (status) => {
     switch(status) {
       case 'completed': return 'status-completed';
@@ -64,7 +49,6 @@ const TaskDetail = ({ task, onBack }) => {
     }
   };
 
-  // Get status label
   const getStatusLabel = (status) => {
     switch(status) {
       case 'completed': return 'Hoàn thành';
@@ -72,8 +56,7 @@ const TaskDetail = ({ task, onBack }) => {
       default: return 'Chưa bắt đầu';
     }
   };
-  
-  // Get status icon
+
   const getStatusIcon = (status) => {
     switch(status) {
       case 'completed': return <FaCheck />;
@@ -82,28 +65,23 @@ const TaskDetail = ({ task, onBack }) => {
     }
   };
 
-  // Calculate remaining time
   const getRemainingTime = () => {
-    const deadline = new Date(task.deadline);
+    const deadline = new Date(currentTask.deadline);
     const now = new Date();
     
-    if (task.status === 'completed') return 'Đã hoàn thành';
-    
-    if (deadline < now) {
-      return 'Đã quá hạn';
-    }
+    if (currentTask.status === 'completed') return 'Đã hoàn thành';
+    if (deadline < now) return 'Đã quá hạn';
     
     const diffTime = Math.abs(deadline - now);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     
-    if (diffDays === 0) return 'Hạn hôm nay';
-    return `Còn ${diffDays} ngày`;
+    return diffDays === 0 ? 'Hạn hôm nay' : `Còn ${diffDays} ngày`;
   };
 
-  // Get remaining time class for styling
   const getRemainingTimeClass = () => {
-    if (task.status === 'completed') return 'completed';
-    const deadline = new Date(task.deadline);
+    if (currentTask.status === 'completed') return 'completed';
+    
+    const deadline = new Date(currentTask.deadline);
     const now = new Date();
     if (deadline < now) return 'overdue';
     
@@ -115,9 +93,25 @@ const TaskDetail = ({ task, onBack }) => {
     return 'normal';
   };
 
-  // Get employee name from ID
-  const getEmployeeName = (id) => {
-    return employees[id] || id || 'Không xác định';
+  const handleStatusChange = (status) => {
+    updateTaskStatus(currentTask.task_id, status);
+    setCurrentTask(prev => ({ ...prev, status }));
+  };
+
+  // Function to handle confirming completion
+  const handleConfirmCompletion = () => {
+    setShowConfirmPopup(true);
+  };
+
+  // Function to handle confirmation in the popup
+  const confirmCompletion = () => {
+    handleStatusChange('completed');
+    setShowConfirmPopup(false);  // Close the popup after confirmation
+  };
+
+  // Function to handle cancelling the popup
+  const cancelCompletion = () => {
+    setShowConfirmPopup(false);  // Close the popup
   };
 
   return (
@@ -130,13 +124,38 @@ const TaskDetail = ({ task, onBack }) => {
           <FaArrowLeft /> <span>Quay lại</span>
         </button>
         <h1 className="task-title-in-detail">
-          {task.name_task}
+          {currentTask.name_task}
         </h1>
-        <div className={`task-status ${getStatusClass(task.status)}`}>
-          {getStatusIcon(task.status)} {getStatusLabel(task.status)}
+        <div className={`task-status ${getStatusClass(currentTask.status)}`}>
+          {getStatusIcon(currentTask.status)} {getStatusLabel(currentTask.status)}
         </div>
       </div>
       
+      {currentTask.status === 'in_progress' && showStatusUpdateButton  && (
+        <div className="status-update">
+          <button 
+            className="complete-button" 
+            onClick={handleConfirmCompletion}
+          >
+            <FaCheckCircle /> Xác nhận hoàn thành
+          </button>
+        </div>
+      )}
+
+      {/* Confirmation Popup */}
+      {showConfirmPopup && (
+        <div className="popup-overlay">
+          <div className="popup-content-dt">
+            <h3>Xác nhận hoàn thành nhiệm vụ</h3>
+            <p>Bạn có chắc chắn muốn đánh dấu nhiệm vụ này là hoàn thành?</p>
+            <div className="popup-buttons">
+              <button className="confirm-button" onClick={confirmCompletion}>Xác nhận</button>
+              <button className="cancel-button" onClick={cancelCompletion}>Hủy</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="task-layout">
         <div className="task-main-content">
           <div className="task-progress-wrapper fade-in-slide delay-1">
@@ -151,7 +170,7 @@ const TaskDetail = ({ task, onBack }) => {
               <FaInfo /> <h3>Mô tả công việc</h3>
             </div>
             <div className="description-content">
-              {task.description || 'Không có mô tả cho công việc này.'}
+              {currentTask.description || 'Không có mô tả cho công việc này.'}
             </div>
           </div>
         </div>
@@ -164,7 +183,7 @@ const TaskDetail = ({ task, onBack }) => {
               <div className="detail-icon"><FaUser /></div>
               <h4>Người giao việc</h4>
             </div>
-            <p>{getEmployeeName(task.assigner_id)}</p>
+            <p>{currentTask.assigner_id}</p>
           </div>
           
           <div className="sidebar-card fade-in-slide delay-5 hover-card">
@@ -172,7 +191,7 @@ const TaskDetail = ({ task, onBack }) => {
               <div className="detail-icon"><FaUser /></div>
               <h4>Người thực hiện</h4>
             </div>
-            <p>{getEmployeeName(task.assignee_id)}</p>
+            <p>{currentTask.assignee_id}</p>
           </div>
           
           <div className="sidebar-card fade-in-slide delay-6 hover-card">
@@ -180,7 +199,7 @@ const TaskDetail = ({ task, onBack }) => {
               <div className="detail-icon"><FaCalendarAlt /></div>
               <h4>Thời gian giao</h4>
             </div>
-            <p>{formatDate(task.assigned_time)}</p>
+            <p>{formatDate(currentTask.assigned_time)}</p>
           </div>
           
           <div className="sidebar-card fade-in-slide delay-7 hover-card">
@@ -188,7 +207,7 @@ const TaskDetail = ({ task, onBack }) => {
               <div className="detail-icon"><FaClock /></div>
               <h4>Hạn chót</h4>
             </div>
-            <p>{formatDate(task.deadline)}</p>
+            <p>{formatDate(currentTask.deadline)}</p>
           </div>
         </div>
       </div>

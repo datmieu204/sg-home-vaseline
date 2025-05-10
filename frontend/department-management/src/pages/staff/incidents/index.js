@@ -1,26 +1,26 @@
-// Thêm các import cần thiết
 import React, { useEffect, useState } from 'react';
-import IncidentList from '../../../components/IncidentList';
+import { FaArrowLeft, FaCalendarAlt, FaFlag, FaInfoCircle, FaUserAlt, FaClock, FaPlusCircle } from 'react-icons/fa';
+import SearchBar from '../../../components/SearchBar/SearchBar';
 import './StaffIncidents2.css';
 
-const StaffIncidents2 = () => {
+const StaffIncidents = () => {
   const [incidents, setIncidents] = useState([]);
+  const [filteredIncidents, setFilteredIncidents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedIncidentId, setSelectedIncidentId] = useState(null);
-  const [selectedIncident, setSelectedIncident] = useState(null);
-  const [detailLoading, setDetailLoading] = useState(false);
   const [statusFilter, setStatusFilter] = useState('all');
   const [monthFilter, setMonthFilter] = useState('');
   const [yearFilter, setYearFilter] = useState('');
-  const [filteredIncidents, setFilteredIncidents] = useState([]);
+  const [selectedIncidentId, setSelectedIncidentId] = useState(null);
+  const [selectedIncident, setSelectedIncident] = useState(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [newIncidentName, setNewIncidentName] = useState('');
   const [newIncidentDesc, setNewIncidentDesc] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
-    const [newStatus, setNewStatus] = useState('');
-    const [updateDescription, setUpdateDescription] = useState('');
-
+  const [newStatus, setNewStatus] = useState('');
+  const [updateDescription, setUpdateDescription] = useState('');
 
   const getEmployeeId = () => {
     const userData = localStorage.getItem('user');
@@ -31,6 +31,15 @@ const StaffIncidents2 = () => {
     } catch {
       return null;
     }
+  };
+
+  // Sorting function - newest to oldest
+  const sortIncidentsByDate = (incidentsToSort) => {
+    return [...incidentsToSort].sort((a, b) => {
+      const dateA = a.report_time ? new Date(a.report_time) : new Date(0);
+      const dateB = b.report_time ? new Date(b.report_time) : new Date(0);
+      return dateB - dateA; // Newest first
+    });
   };
 
   const fetchIncidents = () => {
@@ -44,7 +53,9 @@ const StaffIncidents2 = () => {
     fetch(`http://127.0.0.1:8000/staff/incidents?employee_id=${employeeId}`)
       .then(res => res.json())
       .then(data => {
-        setIncidents(data || []);
+        const sortedIncidents = sortIncidentsByDate(data || []);
+        setIncidents(sortedIncidents);
+        setFilteredIncidents(sortedIncidents);
         setLoading(false);
       })
       .catch(err => {
@@ -52,7 +63,6 @@ const StaffIncidents2 = () => {
         setLoading(false);
       });
   };
-
 
   const handleUpdateStatus = () => {
     const employeeId = getEmployeeId();
@@ -81,13 +91,16 @@ const StaffIncidents2 = () => {
         setSelectedIncident(data);
         fetchIncidents(); // Cập nhật lại danh sách
         alert('Cập nhật trạng thái thành công!');
+        setNewStatus('');
+        setUpdateDescription('');
       })
       .catch(err => alert(err.message))
       .finally(() => setUpdatingStatus(false));
   };
-  
 
-  const fetchIncidentDetail = (incidentId) => {
+  const handleSelectIncident = (incidentId) => {
+    setSelectedIncidentId(incidentId);
+    
     const employeeId = getEmployeeId();
     if (!employeeId) return;
 
@@ -104,14 +117,27 @@ const StaffIncidents2 = () => {
       });
   };
 
-  const handleSelectIncident = (incidentId) => {
-    setSelectedIncidentId(incidentId);
-    fetchIncidentDetail(incidentId);
-  };
-
   const handleBack = () => {
     setSelectedIncidentId(null);
     setSelectedIncident(null);
+    setNewStatus('');
+    setUpdateDescription('');
+  };
+
+  const handleSearch = (term) => {
+    setSearchTerm(term);
+    
+    if (!term.trim()) {
+      setFilteredIncidents(incidents);
+      return;
+    }
+    
+    const termLower = term.toLowerCase();
+    const filtered = incidents.filter(incident => 
+      (incident.incident_name && incident.incident_name.toLowerCase().includes(termLower)) ||
+      (incident.description && incident.description.toLowerCase().includes(termLower))
+    );
+    setFilteredIncidents(filtered);
   };
 
   const handleSubmitNewIncident = () => {
@@ -146,6 +172,37 @@ const StaffIncidents2 = () => {
       .finally(() => setSubmitting(false));
   };
 
+  // Format date to a more readable format
+  const formatDate = (dateString) => {
+    if (!dateString) return 'Không xác định';
+    const options = { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric', 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    };
+    return new Date(dateString).toLocaleDateString('vi-VN', options);
+  };
+
+  // Get status label
+  const getStatusLabel = (status) => {
+    switch(status) {
+      case 'resolved': return 'Đã xử lý';
+      case 'in_progress': return 'Đang xử lý';
+      default: return 'Không xác định';
+    }
+  };
+
+  // Get status class for styling
+  const getStatusClass = (status) => {
+    switch(status) {
+      case 'resolved': return 'status-resolved';
+      case 'in_progress': return 'status-in-progress';
+      default: return 'status-unknown';
+    }
+  };
+  
   useEffect(() => {
     fetchIncidents();
   }, []);
@@ -158,107 +215,302 @@ const StaffIncidents2 = () => {
     }
 
     if (monthFilter) {
-      filtered = filtered.filter(i => new Date(i.report_time).getMonth() + 1 === parseInt(monthFilter));
+      filtered = filtered.filter(i => 
+        i.report_time && new Date(i.report_time).getMonth() + 1 === parseInt(monthFilter)
+      );
     }
 
     if (yearFilter) {
-      filtered = filtered.filter(i => new Date(i.report_time).getFullYear() === parseInt(yearFilter));
+      filtered = filtered.filter(i => 
+        i.report_time && new Date(i.report_time).getFullYear() === parseInt(yearFilter)
+      );
+    }
+
+    // Apply search term
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter(incident => 
+        (incident.incident_name && incident.incident_name.toLowerCase().includes(term)) ||
+        (incident.description && incident.description.toLowerCase().includes(term))
+      );
     }
 
     setFilteredIncidents(filtered);
-  }, [incidents, statusFilter, monthFilter, yearFilter]);
+  }, [incidents, statusFilter, monthFilter, yearFilter, searchTerm]);
 
-  if (loading) return <p className="loading">Đang tải danh sách sự cố...</p>;
+  if (loading) return <div className="loading-container"><div className="loader"></div><p>Đang tải dữ liệu...</p></div>;
 
   return (
-    <div className="manager-incidents-container">
-      {selectedIncident ? (
+    <div className="staff-incidents-container">
+      {selectedIncidentId ? (
         detailLoading ? (
-          <p className="loading">Đang tải chi tiết sự cố...</p>
+          <div className="loading-container"><div className="loader"></div><p>Đang tải chi tiết...</p></div>
         ) : (
-          <div className="incident-detail">
-            <h3>Chi tiết sự cố</h3>
-            <p><strong>ID:</strong> {selectedIncident.incident_id}</p>
-            <p><strong>Tên:</strong> {selectedIncident.incident_name}</p>
-            <p><strong>Thời gian báo cáo:</strong> {new Date(selectedIncident.report_time).toLocaleString()}</p>
-            <p><strong>Người phụ trách:</strong> {selectedIncident.responsible_id}</p>
-            <p><strong>Trạng thái hiện tại:</strong> {selectedIncident.status}</p>
-                <div className="status-update-form">
-                <select value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
-                    <option value="">-- Chọn trạng thái mới --</option>
-                    <option value="in_progress">Đang xử lý</option>
-                    <option value="resolved">Đã xử lý</option>
-                </select>
-                <textarea
-                    placeholder="Mô tả cập nhật (nếu có)"
-                    value={updateDescription}
-                    onChange={(e) => setUpdateDescription(e.target.value)}
-                />
-                <button onClick={handleUpdateStatus} disabled={updatingStatus}>
-                    {updatingStatus ? 'Đang cập nhật...' : 'Cập nhật trạng thái'}
-                </button>
+          <div className="incident-detail-container">
+            <button className="back-button" onClick={handleBack}>
+              <FaArrowLeft /> <span>Quay lại danh sách</span>
+            </button>
+            
+            <div className="incident-detail-header">
+              <h2>{selectedIncident.incident_name}</h2>
+              <div className={`incident-status ${getStatusClass(selectedIncident.status)}`}>
+                {getStatusLabel(selectedIncident.status)}
+              </div>
+            </div>
+            
+            <div className="incident-detail-content">
+              <div className="incident-info-section">
+                <div className="info-card">
+                  <div className="info-card-header">
+                    <FaInfoCircle /> <h3>Thông tin cơ bản</h3>
+                  </div>
+                  <div className="info-card-content">
+                    <div className="info-item">
+                      <span className="info-label"><FaFlag /> ID sự cố:</span>
+                      <span className="info-value">{selectedIncident.incident_id}</span>
+                    </div>
+                    <div className="info-item">
+                      <span className="info-label"><FaClock /> Thời gian báo cáo:</span>
+                      <span className="info-value">{formatDate(selectedIncident.report_time)}</span>
+                    </div>
+                    <div className="info-item">
+                      <span className="info-label"><FaUserAlt /> Người phụ trách:</span>
+                      <span className="info-value">{selectedIncident.responsible_id || 'Không xác định'}</span>
+                    </div>
+                  </div>
                 </div>
-            <p><strong>Mô tả:</strong> {selectedIncident.description}</p>
-            <button onClick={handleBack}>Quay lại danh sách</button>
+                
+                <div className="info-card description-card">
+                  <div className="info-card-header">
+                    <FaInfoCircle /> <h3>Mô tả sự cố</h3>
+                  </div>
+                  <div className="info-card-content">
+                    <p className="incident-description">{selectedIncident.description || 'Không có mô tả chi tiết cho sự cố này.'}</p>
+                  </div>
+                </div>
+                
+                <div className="info-card update-status-card">
+                  <div className="info-card-header">
+                    <FaInfoCircle /> <h3>Cập nhật trạng thái</h3>
+                  </div>
+                  <div className="info-card-content">
+                    <div className="status-update-form">
+                      <div className="form-group">
+                        <label>Trạng thái mới:</label>
+                        <select 
+                          value={newStatus} 
+                          onChange={(e) => setNewStatus(e.target.value)}
+                          className="status-select"
+                        >
+                          <option value="">-- Chọn trạng thái mới --</option>
+                          <option value="in_progress">Đang xử lý</option>
+                          <option value="resolved">Đã xử lý</option>
+                        </select>
+                      </div>
+                      
+                      <div className="form-group">
+                        <label>Mô tả cập nhật:</label>
+                        <textarea
+                          placeholder="Mô tả cập nhật (nếu có)"
+                          value={updateDescription}
+                          onChange={(e) => setUpdateDescription(e.target.value)}
+                          className="update-description"
+                        />
+                      </div>
+                      
+                      <button 
+                        onClick={handleUpdateStatus} 
+                        disabled={updatingStatus}
+                        className="update-status-button"
+                      >
+                        {updatingStatus ? 'Đang cập nhật...' : 'Cập nhật trạng thái'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )
       ) : (
-        <>
-          <h2>Danh sách sự cố đã báo cáo</h2>
-          <div className="filters">
-            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-              <option value="all">Tất cả trạng thái</option>
-              <option value="in_progress">Đang xử lý</option>
-              <option value="resolved">Đã xử lý</option>
-            </select>
-
-            <select value={monthFilter} onChange={(e) => setMonthFilter(e.target.value)}>
-              <option value="">Tất cả tháng</option>
-              {[...Array(12)].map((_, i) => (
-                <option key={i} value={i + 1}>Tháng {i + 1}</option>
-              ))}
-            </select>
-
-            <select value={yearFilter} onChange={(e) => setYearFilter(e.target.value)}>
-              <option value="">Tất cả năm</option>
-              {Array.from(new Set(incidents.map(i => new Date(i.report_time).getFullYear()))).map(year => (
-                <option key={year} value={year}>{year}</option>
-              ))}
-            </select>
-
-            <button onClick={() => setShowAddModal(true)}>+ Thêm sự cố</button>
+        <div className="incidents-list-container">
+          <div className="page-header">
+            <h1>Danh sách sự cố đã báo cáo</h1>
+          </div>
+          
+          <div className="actions-row">
+            <div className="search-section">
+              <SearchBar 
+                placeholder="Tìm kiếm sự cố..." 
+                onSearch={handleSearch} 
+              />
+            </div>
+            
+            <div className="filters-section">
+              <div className="filter-group">
+                <span className="filter-label">Trạng thái:</span>
+                <select 
+                  value={statusFilter} 
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="filter-select"
+                >
+                  <option value="all">Tất cả</option>
+                  <option value="in_progress">Đang xử lý</option>
+                  <option value="resolved">Đã xử lý</option>
+                </select>
+              </div>
+              
+              <div className="filter-group">
+                <span className="filter-label">Tháng:</span>
+                <select 
+                  value={monthFilter} 
+                  onChange={(e) => setMonthFilter(e.target.value)}
+                  className="filter-select"
+                >
+                  <option value="">Tất cả tháng</option>
+                  {[...Array(12)].map((_, i) => (
+                    <option key={i} value={i + 1}>Tháng {i + 1}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div className="filter-group">
+                <span className="filter-label">Năm:</span>
+                <select 
+                  value={yearFilter} 
+                  onChange={(e) => setYearFilter(e.target.value)}
+                  className="filter-select"
+                >
+                  <option value="">Tất cả năm</option>
+                  {Array.from(
+                    new Set(incidents.map(i => 
+                      i.report_time ? new Date(i.report_time).getFullYear() : null
+                    ).filter(Boolean))
+                  ).map(year => (
+                    <option key={year} value={year}>{year}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            
+            <div className="add-section">
+              <button className="add-incident-button" onClick={() => setShowAddModal(true)}>
+                <FaPlusCircle /> Thêm sự cố
+              </button>
+            </div>
           </div>
 
-          <IncidentList incidents={filteredIncidents} onIncidentClick={handleSelectIncident} />
+          {filteredIncidents.length === 0 ? (
+            <div className="no-incidents">
+              <p>Không tìm thấy sự cố nào.</p>
+            </div>
+          ) : (
+            <div className="incidents-grid">
+              {filteredIncidents.map(incident => (
+                <div 
+                  key={incident.incident_id} 
+                  className="incident-card" 
+                  onClick={() => handleSelectIncident(incident.incident_id)}
+                >
+                  <div className="incident-card-header">
+                    <h3 className="incident-title">{incident.incident_name}</h3>
+                    <span className={`incident-status-badge ${getStatusClass(incident.status)}`}>
+                      {getStatusLabel(incident.status)}
+                    </span>
+                  </div>
+                  <div className="incident-card-content">
+                    <p className="incident-info">
+                      <FaCalendarAlt className="info-icon" /> {formatDate(incident.report_time)}
+                    </p>
+                    {incident.responsible_id && (
+                      <p className="incident-info">
+                        <FaUserAlt className="info-icon" /> {incident.responsible_id}
+                      </p>
+                    )}
+                    <p className="incident-description-preview">
+                      {incident.description 
+                        ? (incident.description.length > 100 
+                            ? incident.description.slice(0, 100) + '...' 
+                            : incident.description)
+                        : 'Không có mô tả'}
+                    </p>
+                  </div>
+                  <div className="incident-card-footer">
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
 
           {showAddModal && (
             <div className="modal-overlay">
-              <div className="modal">
-                <h3>Thêm sự cố mới</h3>
-                <input
-                  type="text"
-                  placeholder="Tên sự cố"
-                  value={newIncidentName}
-                  onChange={(e) => setNewIncidentName(e.target.value)}
-                />
-                <textarea
-                  placeholder="Mô tả"
-                  value={newIncidentDesc}
-                  onChange={(e) => setNewIncidentDesc(e.target.value)}
-                />
-                <div className="modal-actions">
-                  <button onClick={handleSubmitNewIncident} disabled={submitting}>
-                    {submitting ? 'Đang gửi...' : 'Gửi'}
-                  </button>
-                  <button onClick={() => setShowAddModal(false)}>Hủy</button>
+              <div className="modal-container">
+                <div className="incident-modal">
+                  <div className="modal-header">
+                    <h3><FaPlusCircle className="modal-icon" /> Thêm sự cố mới</h3>
+                    <button 
+                      className="close-button" 
+                      onClick={() => setShowAddModal(false)}
+                      aria-label="Đóng"
+                    >
+                      <span aria-hidden="true">×</span>
+                    </button>
+                  </div>
+                  
+                  <div className="modal-body">
+                    <div className="form-group">
+                      <label htmlFor="incident-name">Tên sự cố:</label>
+                      <input
+                        id="incident-name"
+                        type="text"
+                        placeholder="Nhập tên sự cố"
+                        value={newIncidentName}
+                        onChange={(e) => setNewIncidentName(e.target.value)}
+                        className="form-input"
+                      />
+                    </div>
+                    
+                    <div className="form-group">
+                      <label htmlFor="incident-description">Mô tả chi tiết:</label>
+                      <textarea
+                        id="incident-description"
+                        placeholder="Mô tả chi tiết về sự cố"
+                        value={newIncidentDesc}
+                        onChange={(e) => setNewIncidentDesc(e.target.value)}
+                        className="form-textarea"
+                        rows={5}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="modal-footer">
+                    <button 
+                      onClick={() => setShowAddModal(false)}
+                      className="btn btn-secondary"
+                    >
+                      Hủy
+                    </button>
+                    <button 
+                      onClick={handleSubmitNewIncident} 
+                      disabled={submitting || !newIncidentName || !newIncidentDesc}
+                      className={`btn btn-primary ${submitting ? 'btn-loading' : ''}`}
+                    >
+                      {submitting ? (
+                        <>
+                          <span className="btn-spinner"></span>
+                          <span>Đang gửi...</span>
+                        </>
+                      ) : 'Gửi báo cáo'}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           )}
-        </>
+        </div>
       )}
     </div>
   );
 };
 
-export default StaffIncidents2;
+export default StaffIncidents;

@@ -97,6 +97,41 @@ const StaffTasks2 = () => {
     setSelectedTask(null);
   };
 
+  const updateTaskStatus = (taskId, status) => {
+    const employeeId = getEmployeeId();
+    if (!employeeId) {
+      alert('Không tìm thấy thông tin người dùng.');
+      return;
+    }
+
+    const requestData = {
+      status: status,
+    };
+
+    fetch(`http://127.0.0.1:8000/staff/tasks/${taskId}/update_status?employee_id=${employeeId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestData),
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Không thể cập nhật trạng thái nhiệm vụ');
+        return res.json();
+      })
+      .then(() => {
+        // Update local state to reflect status change
+        setTasks(tasks.map(task => 
+          task.task_id === taskId ? { ...task, status } : task
+        ));
+        setSelectedTask(prev => ({ ...prev, status }));
+      })
+      .catch(err => {
+        console.error('Lỗi khi cập nhật trạng thái:', err);
+        alert('Không thể cập nhật trạng thái nhiệm vụ');
+      });
+  };
+
   if (loading) return <p className="loading">Đang tải danh sách nhiệm vụ...</p>;
 
   return (
@@ -105,7 +140,7 @@ const StaffTasks2 = () => {
         detailLoading ? (
           <p className="loading">Đang tải chi tiết nhiệm vụ...</p>
         ) : (
-          <TaskDetail task={selectedTask} onBack={handleBackToList} />
+          <TaskDetail task={selectedTask} onBack={handleBackToList} updateTaskStatus={updateTaskStatus} />
         )
       ) : (
         <>

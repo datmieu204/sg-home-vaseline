@@ -6,9 +6,12 @@ const TaskList = ({ tasks, onTaskClick }) => {
     return <p className="no-tasks">Không có công việc nào.</p>;
   }
 
+  // Sắp xếp theo deadline tăng dần
+  const sortedTasks = [...tasks].sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+
   return (
     <div className="task-list">
-      {tasks.map((task, index) => (
+      {sortedTasks.map((task, index) => (
         <div
           key={task.task_id || index}
           className={`task-card ${task.status}`}

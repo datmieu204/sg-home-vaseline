@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import TaskList from '../../../../components/TaskList';
+import ListContainer from '../../../../components/ListContainer/ListContainer';
 import TaskDetail from '../../../../components/TaskDetail';
 import './StaffTasks.css';
 
@@ -7,17 +7,29 @@ const StaffTasks = () => {
   const [tasks, setTasks] = useState([]);
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [monthFilter, setMonthFilter] = useState('');
-  const [yearFilter, setYearFilter] = useState('');
+  const [filters, setFilters] = useState({
+    'Trạng thái': 'all',
+    'Tháng': '',
+    'Năm': ''
+  });
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
 
+  // Sorting function - newest to oldest
+  const sortTasksByDate = (tasksToSort) => {
+    return [...tasksToSort].sort((a, b) => {
+      // Convert deadlines to dates for comparison (newer ones first)
+      const dateA = a.deadline ? new Date(a.deadline) : new Date(0);
+      const dateB = b.deadline ? new Date(b.deadline) : new Date(0);
+      return dateB - dateA; // Newest first
+    });
+  };
+
+  // Load tasks
   useEffect(() => {
     const userData = localStorage.getItem('user');
     if (!userData) {
-      alert('Không có thông tin người dùng trong localStorage.');
       setLoading(false);
       return;
     }
@@ -31,101 +43,133 @@ const StaffTasks = () => {
         return res.json();
       })
       .then((data) => {
-        setTasks(data.tasks);
+        const sortedTasks = sortTasksByDate(data.tasks || []);
+        setTasks(sortedTasks);
+        setFilteredTasks(sortedTasks);
         setLoading(false);
       })
       .catch((err) => {
         console.error('Lỗi khi tải dữ liệu:', err);
-        alert('Không thể tải danh sách công việc');
         setLoading(false);
       });
   }, []);
 
+  // Apply filters
+  const handleFilter = (filterType, value) => {
+    // Update filter state
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      [filterType]: value
+    }));
+  };
+
+  // Apply filters when filter state changes
   useEffect(() => {
     let filtered = [...tasks];
 
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(task => task.status === statusFilter);
+    // Apply status filter
+    if (filters['Trạng thái'] && filters['Trạng thái'] !== 'all') {
+      filtered = filtered.filter(task => task.status === filters['Trạng thái']);
     }
 
-    if (monthFilter) {
-      filtered = filtered.filter(task => new Date(task.deadline).getMonth() + 1 === parseInt(monthFilter));
+    // Apply month filter
+    if (filters['Tháng']) {
+      filtered = filtered.filter(task => 
+        task.deadline && new Date(task.deadline).getMonth() + 1 === parseInt(filters['Tháng'])
+      );
     }
 
-    if (yearFilter) {
-      filtered = filtered.filter(task => new Date(task.deadline).getFullYear() === parseInt(yearFilter));
+    // Apply year filter
+    if (filters['Năm']) {
+      filtered = filtered.filter(task => 
+        task.deadline && new Date(task.deadline).getFullYear() === parseInt(filters['Năm'])
+      );
     }
 
-    setFilteredTasks(filtered);
-  }, [tasks, statusFilter, monthFilter, yearFilter]);
+    // Always maintain newest-to-oldest sorting
+    setFilteredTasks(sortTasksByDate(filtered));
+  }, [tasks, filters]);
 
-  useEffect(() => {
-    if (selectedTaskId) {
-      setDetailLoading(true);
-      fetch(`http://127.0.0.1:8000/admin/tasks/staffs/${selectedTaskId}`)
-        .then((res) => {
-          if (!res.ok) throw new Error('Không thể tải chi tiết công việc');
-          return res.json();
-        })
-        .then((data) => {
-          setSelectedTask(data);
-          setDetailLoading(false);
-        })
-        .catch((err) => {
-          console.error('Lỗi khi tải chi tiết:', err);
-          alert('Không thể tải chi tiết công việc');
-          setDetailLoading(false);
-        });
-    }
-  }, [selectedTaskId]);
-
-  const handleSelectTask = (taskId) => {
-    setSelectedTaskId(taskId);
+  // Search functionality
+  const handleSearch = (searchTerm) => {
+    const term = searchTerm.toLowerCase();
+    const filtered = tasks.filter(task => 
+      task.name_task.toLowerCase().includes(term) ||
+      (task.description && task.description.toLowerCase().includes(term))
+    );
+    setFilteredTasks(sortTasksByDate(filtered));
   };
 
-  const handleBackToList = () => {
-    setSelectedTaskId(null);
-    setSelectedTask(null);
+  // Format tasks for ListItem component
+  const formatTasksForListItems = () => {
+    return filteredTasks.map(task => ({
+      id: task.task_id,
+      title: task.name_task,
+      statusText: task.status === 'completed' ? 'Hoàn thành' : task.status === 'in_progress' ? 'Đang xử lý' : 'Chưa bắt đầu',
+      statusType: task.status === 'completed' ? 'closed' : 'open',
+      deadline: task.deadline ? new Date(task.deadline).toLocaleDateString('vi-VN') : 'Không có hạn',
+      deadlineLabel: 'Hạn chót:'
+    }));
   };
+
+ const handleItemClick = (id) => {
+     setSelectedTaskId(id);
+   };
+ 
+   const handleBackToList = () => {
+     setSelectedTaskId(null);
+     setSelectedTask(null);
+   };
+ 
+   // Load task details when a task is selected
+   useEffect(() => {
+     if (selectedTaskId) {
+       setDetailLoading(true);
+       fetch(`http://127.0.0.1:8000/admin/tasks/staffs/${selectedTaskId}`)
+         .then((res) => {
+           if (!res.ok) throw new Error('Không thể tải chi tiết công việc');
+           return res.json();
+         })
+         .then((data) => {
+           setSelectedTask(data);
+           setDetailLoading(false);
+         })
+         .catch((err) => {
+           console.error('Lỗi khi tải chi tiết:', err);
+           setDetailLoading(false);
+         });
+     }
+   }, [selectedTaskId]);
+ 
+   // Filter configuration
+   const filterConfig = {
+     initialFilters: filters,
+     showStatusFilter: true,
+     showMonthFilter: true,
+     showYearFilter: true
+   };
 
   if (loading) return <p className="loading">Đang tải danh sách công việc...</p>;
 
   return (
-    <div className="staff-tasks-container">
+    <div className="emp-tasks-container">
       {selectedTaskId ? (
         detailLoading ? (
           <p className="loading">Đang tải chi tiết công việc...</p>
         ) : (
-          <TaskDetail task={selectedTask} onBack={handleBackToList} />
+          selectedTask && <TaskDetail task={selectedTask} onBack={handleBackToList} />
         )
       ) : (
-        <>
-          <h2 className="task-title">Danh sách công việc của Nhân viên</h2>
-
-          <div className="filters">
-            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-              <option value="all">Tất cả trạng thái</option>
-              <option value="completed">Hoàn thành</option>
-              <option value="in_progress">Đang xử lý</option>
-            </select>
-
-            <select value={monthFilter} onChange={(e) => setMonthFilter(e.target.value)}>
-              <option value="">Tất cả tháng</option>
-              {[...Array(12)].map((_, i) => (
-                <option key={i} value={i + 1}>Tháng {i + 1}</option>
-              ))}
-            </select>
-
-            <select value={yearFilter} onChange={(e) => setYearFilter(e.target.value)}>
-              <option value="">Tất cả năm</option>
-              {Array.from(new Set(tasks.map(t => new Date(t.deadline).getFullYear()))).map((year) => (
-                <option key={year} value={year}>{year}</option>
-              ))}
-            </select>
-          </div>
-
-          <TaskList tasks={filteredTasks} onTaskClick={handleSelectTask} />
-        </>
+        <ListContainer 
+          title="Danh sách công việc của Nhân viên" 
+          items={formatTasksForListItems()} 
+          rawTasks={tasks} // Pass the original tasks for filter generation
+          searchPlaceholder="Tìm kiếm công việc..." 
+          filterConfig={filterConfig}
+          onSearch={handleSearch}
+          onFilter={handleFilter}
+          onItemClick={handleItemClick}
+        />
       )}
     </div>
   );
