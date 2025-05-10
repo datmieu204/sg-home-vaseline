@@ -369,7 +369,7 @@ const StaffService2 = () => {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Tìm kiếm dịch vụ..."
-                  className="search-input"
+                  className="search-input-1"
                 />
               </div>
             </div>
