@@ -870,6 +870,7 @@ def disable_account(
         name=household.name,
         number_of_members=household.number_of_members,
         phone=household.phone,
+        room_number=household.room_number,
         status=household.status
     )
 

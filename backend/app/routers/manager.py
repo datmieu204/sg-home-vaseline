@@ -265,6 +265,65 @@ def get_task_detail(
     )
 
 
+# ------------------------------------------------------------------------------------
+# Update status of task for manager
+class TaskResponse(BaseModel):
+    task_id: str
+    name_task: str
+    assigner_id: str
+    assignee_id: str
+    assigned_time: datetime
+    description: Optional[str] = None
+    deadline: Optional[datetime] = None
+    status: TaskStatus
+
+    class Config:
+        from_attributes = True
+
+class UpdateTaskStatusRequest(BaseModel):
+    status: TaskStatus
+
+    class Config:
+        from_attributes = True
+
+@manager_router.put("/tasks/{task_id}/update_status", response_model=TaskResponse)
+def update_task_status(
+    task_id: str,
+    employee_id: str,
+    request: UpdateTaskStatusRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Cập nhật trạng thái của task (cho manager).
+    """
+
+    employee = db.query(Employee).filter(
+        Employee.employee_id == employee_id,
+        Employee.position == EmployeePosition.manager,
+        Employee.status == EmployeeStatus.active
+    ).first()
+
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found or not a manager")
+
+    task = db.query(Task).filter(Task.task_id == task_id).first()
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    task.status = request.status
+
+    time_finished = datetime.now()
+
+    if time_finished <= task.deadline:
+        task.description = "Hoàn thành đúng hạn lúc " + str(time_finished)
+    else:
+        task.description = "Hoàn thành quá hạn lúc " + str(time_finished)
+
+    db.commit()
+    db.refresh(task)
+
+    return TaskResponse.from_orm(task)
+
 # --------------------------------------------------------------------------
 # View Task Staff List from Manager
 
@@ -464,7 +523,7 @@ def get_staff_accounts(
     staffs = db.query(Employee).filter(
         Employee.department_id == manager.department_id,
         Employee.position == EmployeePosition.staff,
-        Employee.status == EmployeeStatus.active
+        # Employee.status == EmployeeStatus.active
     ).all()
 
     staff_accounts = []
@@ -492,6 +551,7 @@ def get_staff_accounts(
 # View Account Detail of Staffs of Manager
 
 class StaffAccountDetailResponse(BaseModel):
+    account_id: str
     employee_id: str
     employee_name: str
     phone: str
@@ -534,13 +594,14 @@ def get_staff_account_detail(
     staff = db.query(Employee).filter(
         Employee.employee_id == account.employee_id,
         Employee.position == EmployeePosition.staff,
-        Employee.status == EmployeeStatus.active
+        # Employee.status == EmployeeStatus.active
     ).first()
 
     if not staff:
         raise HTTPException(status_code=404, detail="Staff not found or not active")
 
     return StaffAccountDetailResponse(
+        account_id=account.account_id,
         employee_id=staff.employee_id,
         employee_name=staff.employee_name,
         phone=staff.phone,
@@ -551,6 +612,42 @@ def get_staff_account_detail(
         begin_date=staff.begin_date,
         username=account.username
     )
+
+# --------------------------------------------------------------------------------------
+# Disable Account of Staffs of Manager
+
+@manager_router.put("/accounts/staffs/{account_id}/disable")
+def disable_staff_account(
+    account_id: str,
+    manager_id: str,
+    db: Session = Depends(get_db)
+):
+    account = db.query(AccountEmployee).filter(
+        AccountEmployee.account_id == account_id
+    ).first()
+
+    if not account:
+        raise HTTPException(status_code=404, detail="Account not found")
+    
+    employee = db.query(Employee).filter(
+        Employee.employee_id == account.employee_id,
+        Employee.position == EmployeePosition.staff,
+        Employee.status == EmployeeStatus.active
+    ).first()
+
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found or not active")
+
+    employee.status = EmployeeStatus.inactive
+
+    db.commit()
+    db.refresh(employee)
+
+    return {
+        "account_id": account.account_id,
+        "employee_id": employee.employee_id,
+        "employee_status": employee.status.value,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -624,7 +721,10 @@ def add_staff_account(
         address=new_employee.address,
         status=new_employee.status,
         begin_date=new_employee.begin_date,
-        username=new_account.username
+        username=new_account.username,
+        account_id=new_account.account_id,
+        department_id=new_employee.department_id,
+        position=new_employee.position
     )
 
 # ---------------------------------------------------------------------------
@@ -874,65 +974,6 @@ def get_incident_detail(
         "description": incident.description,
         "status": incident.status.value
     }
-
-# ------------------------------------------------------------------------------------
-# Update status of task for manager
-class TaskResponse(BaseModel):
-    task_id: str
-    name_task: str
-    assigner_id: str
-    assignee_id: str
-    assigned_time: datetime
-    description: Optional[str] = None
-    deadline: Optional[datetime] = None
-    status: TaskStatus
-
-    class Config:
-        from_attributes = True
-
-class UpdateTaskStatusRequest(BaseModel):
-    status: TaskStatus
-
-    class Config:
-        from_attributes = True
-
-@manager_router.put("/tasks/{task_id}/status", response_model=TaskResponse)
-def update_task_status(
-    task_id: str,
-    employee_id: str,
-    request: UpdateTaskStatusRequest,
-    db: Session = Depends(get_db)
-):
-    """
-    Cập nhật trạng thái của task (cho manager).
-    """
-
-    employee = db.query(Employee).filter(
-        Employee.employee_id == employee_id,
-        Employee.position == EmployeePosition.manager,
-        Employee.status == EmployeeStatus.active
-    ).first()
-
-    if not employee:
-        raise HTTPException(status_code=404, detail="Employee not found or not a manager")
-
-    task = db.query(Task).filter(Task.task_id == task_id).first()
-    if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
-
-    task.status = request.status
-
-    time_finished = datetime.now()
-
-    if time_finished <= task.deadline:
-        task.description = "Hoàn thành đúng hạn lúc " + str(time_finished)
-    else:
-        task.description = "Hoàn thành quá hạn lúc " + str(time_finished)
-
-    db.commit()
-    db.refresh(task)
-
-    return TaskResponse.from_orm(task)
 
 
 # ------------------------------------------------------------------------------------
