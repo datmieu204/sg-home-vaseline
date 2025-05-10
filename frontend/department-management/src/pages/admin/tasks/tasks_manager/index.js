@@ -15,6 +15,16 @@ const ManagerTasks = () => {
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newTask, setNewTask] = useState({
+    name_task: '',
+    assignee_id: '',
+    assigned_time: '',
+    deadline: '',
+    description: ''
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [accounts, setAccounts] = useState([]);
 
   // Sorting function - newest to oldest
   const sortTasksByDate = (tasksToSort) => {
@@ -51,6 +61,21 @@ const ManagerTasks = () => {
       .catch((err) => {
         console.error('Lỗi khi tải dữ liệu:', err);
         setLoading(false);
+      });
+  }, []);
+
+  // Load accounts for assignee selection
+  useEffect(() => {
+    fetch('http://127.0.0.1:8000/admin/accounts/managers')
+      .then((res) => {
+        if (!res.ok) throw new Error('Không thể tải dữ liệu');
+        return res.json();
+      })
+      .then((data) => {
+        setAccounts(data.accounts); 
+      })
+      .catch((err) => {
+        console.error('Lỗi khi tải tài khoản:', err);
       });
   }, []);
 
@@ -141,6 +166,65 @@ const ManagerTasks = () => {
     }
   }, [selectedTaskId]);
 
+  // Add new task functionality from first file
+  const handleSubmitNewTask = () => {
+    const userData = localStorage.getItem('user');
+    if (!userData) return alert('Không tìm thấy người dùng');
+  
+    const user = JSON.parse(userData);
+    const adminId = user?.user_id;
+  
+    const { name_task, assignee_id, assigned_time, deadline, description } = newTask;
+    if (!name_task || !assignee_id || !assigned_time || !deadline || !description) {
+      return alert('Vui lòng điền đầy đủ thông tin');
+    }
+  
+    setSubmitting(true);
+  
+    fetch(`http://127.0.0.1:8000/admin/tasks/managers?employee_id=${adminId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        task_data: {
+          name_task,
+          assignee_id,
+          assigned_time,
+          deadline,
+          description
+        },
+        admin_id_request: {
+          employee_id: adminId
+        }
+      })
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Thêm nhiệm vụ thất bại');
+        return res.json();
+      })
+      .then(() => {
+        setShowAddModal(false);
+        setNewTask({
+          name_task: '',
+          assignee_id: '',
+          assigned_time: '',
+          deadline: '',
+          description: ''
+        });
+        
+        // Reload tasks after adding a new one
+        const reloadUser = JSON.parse(localStorage.getItem('user'));
+        fetch(`http://127.0.0.1:8000/admin/tasks/managers?employee_id=${reloadUser.user_id}`)
+          .then(res => res.json())
+          .then(data => {
+            const sortedTasks = sortTasksByDate(data.tasks || []);
+            setTasks(sortedTasks);
+            setFilteredTasks(sortedTasks);
+          });
+      })
+      .catch(err => alert(err.message))
+      .finally(() => setSubmitting(false));
+  };
+
   // Filter configuration
   const filterConfig = {
     initialFilters: filters,
@@ -160,16 +244,73 @@ const ManagerTasks = () => {
           <TaskDetail task={selectedTask} onBack={handleBackToList} />
         )
       ) : (
-        <ListContainer 
-          title="Danh sách công việc của Quản lý" 
-          items={formatTasksForListItems()} 
-          rawTasks={tasks} // Pass the original tasks for filter generation
-          searchPlaceholder="Tìm kiếm công việc..." 
-          filterConfig={filterConfig}
-          onSearch={handleSearch}
-          onFilter={handleFilter}
-          onItemClick={handleItemClick}
-        />
+        <>
+          <ListContainer 
+            title="Danh sách công việc của Quản lý" 
+            items={formatTasksForListItems()} 
+            rawTasks={tasks} // Pass the original tasks for filter generation
+            searchPlaceholder="Tìm kiếm công việc..." 
+            filterConfig={filterConfig}
+            onSearch={handleSearch}
+            onFilter={handleFilter}
+            onItemClick={handleItemClick}
+          />
+          
+          <div className="add-task-button-wrapper">
+            <button className="add-task-button" onClick={() => setShowAddModal(true)}>
+              + Thêm nhiệm vụ
+            </button>
+          </div>
+
+          {showAddModal && (
+            <div className="modal-overlay">
+              <div className="modal">
+                <h3>Thêm nhiệm vụ mới</h3>
+                <input
+                  type="text"
+                  placeholder="Tên nhiệm vụ"
+                  value={newTask.name_task}
+                  onChange={(e) => setNewTask({ ...newTask, name_task: e.target.value })}
+                />
+                <select
+                  value={newTask.assignee_id}
+                  onChange={(e) => setNewTask({ ...newTask, assignee_id: e.target.value })}
+                >
+                  <option value="">Chọn người được giao</option>
+                  {accounts.map((account) => (
+                    <option key={account.employee_id} value={account.employee_id}>
+                      {account.employee_name} ({account.employee_id})
+                    </option>
+                  ))}
+                </select>
+                
+                <input
+                  type="datetime-local"
+                  placeholder="Thời gian giao"
+                  value={newTask.assigned_time}
+                  onChange={(e) => setNewTask({ ...newTask, assigned_time: e.target.value })}
+                />
+                <input
+                  type="datetime-local"
+                  placeholder="Deadline"
+                  value={newTask.deadline}
+                  onChange={(e) => setNewTask({ ...newTask, deadline: e.target.value })}
+                />
+                <textarea
+                  placeholder="Mô tả nhiệm vụ"
+                  value={newTask.description}
+                  onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+                />
+                <div className="modal-actions">
+                  <button onClick={handleSubmitNewTask} disabled={submitting} style={{ backgroundColor:'#f89236', color:'white', fontSize:'16px'}}>
+                    {submitting ? 'Đang gửi...' : 'Gửi'}
+                  </button>
+                  <button onClick={() => setShowAddModal(false) } style={{ backgroundColor:'white', color:'black', fontSize:'16px'}}>Hủy</button>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

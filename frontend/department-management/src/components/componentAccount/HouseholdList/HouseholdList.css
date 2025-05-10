@@ -4,8 +4,6 @@
   min-height: 860px;
   margin: 0 auto;
   padding: 20px;
-  border: 5px solid #f89236;
-  border-top: none;
 }
 
 .household-search-container {
@@ -144,8 +142,6 @@
   align-items: center;
   padding: 15px 20px;
   background-color: #FFF5E9;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
 }
 
 .dropdown-icon {
@@ -156,7 +152,7 @@
 
 .table-title {
   color: #f89236;
-  font-size: 28px;
+  font-size: 25px;
   font-weight: 600;
   margin: 0;
 }

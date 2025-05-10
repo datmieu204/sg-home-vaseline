@@ -1,0 +1,29 @@
+/* Container để căn giữa */
+.incident-list-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* dùng center nếu muốn cả chiều dọc */
+    min-height: 100vh;
+    padding: 20px;
+  }
+  
+  /* Danh sách */
+  .incident-list {
+    list-style: none;
+    padding: 0;
+    width: 300px;
+  }
+  
+  .incident-list li {
+    background: #eef;
+    margin-bottom: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .incident-list li:hover {
+    background: #dde;
+  }
+  

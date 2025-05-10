@@ -65,8 +65,7 @@ const AdminAccount = () => {
   if (!profile) return <p>Không tìm thấy dữ liệu tài khoản.</p>;
 
   return (
-    <div style={{ width: '100%', height: '95%'}}>
-      <h1 style={{ textAlign: 'center', color: '#f28500', fontSize: '50px'}}>Trang tài khoản Admin</h1>
+    <div>
       <Account profile={profile} onConfirm={handleUpdate} />
     </div>
   );

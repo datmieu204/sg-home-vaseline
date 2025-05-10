@@ -1,0 +1,103 @@
+.rs-main-wrapper {
+    padding: 20px;
+    background-color: #f9f4ef;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    font-family: 'Arial', sans-serif;
+}
+
+.rs-service-box {
+    background-color: white;
+    border: 2px solid #f28500;
+    padding: 20px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    max-width: 600px; /* Giới hạn chiều rộng tối đa cho hộp dịch vụ */
+    width: 100%; /* Đảm bảo phần tử chiếm hết chiều rộng có sẵn nhưng không vượt quá max-width */
+    margin: 10px; /* Khoảng cách giữa các hộp dịch vụ */
+}
+
+.rs-service-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.rs-service-name {
+    margin: 0;
+    font-size: 20px;
+    color: #f28500;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.rs-service-detail {
+    margin: 4px 0;
+    font-size: 16px;
+    color: #333;
+    line-height: 1.5;
+}
+
+.rs-service-detail strong {
+    color: #f28500;
+}
+
+.rs-button-group {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.rs-button-group button {
+    background-color: #ffffff;
+    color: #f28500;
+    border: 2px solid #f28500;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.rs-button-group .rs-extend-button {
+    background-color: #f28500;
+    color: white;
+    border: none;
+}
+
+.rs-button-group button:hover {
+    background-color: #f28500;
+    color: white;
+}
+
+.rs-button-group button:active {
+    background-color: #d66d00;
+    border-color: #d66d00;
+}
+
+.rs-loading-text {
+    text-align: center;
+    font-size: 18px;
+    color: #333;
+    font-weight: 600;
+}
+
+.rs-empty-message {
+    text-align: center;
+    font-size: 18px;
+    color: #333;
+    font-weight: 600;
+}
+
+.rs-service-box .rs-service-detail p {
+    margin: 5px 0;
+    font-size: 16px;
+    color: #666;
+}

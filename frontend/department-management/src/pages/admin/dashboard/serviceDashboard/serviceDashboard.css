@@ -31,4 +31,10 @@
   .bg-gray-100 {
     background-color: #f7fafc;
   }
-  
+
+  .textHeader{
+    font-size: 40px;
+    font-weight: bold;
+    color: #184a57;
+    margin-top: 20px;
+  }

@@ -13,7 +13,7 @@ import {
   FaHourglassStart,
   FaProjectDiagram
 } from 'react-icons/fa';
-import axios from 'axios';
+// Removed axios import
 
 const TaskDetail = ({ task, onBack }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -21,25 +21,10 @@ const TaskDetail = ({ task, onBack }) => {
   
   useEffect(() => {
     setIsVisible(true);
-    fetchEmployees();
+    // Removed fetchEmployees call
   }, []);
 
-  // Fetch employees from database
-  const fetchEmployees = async () => {
-    try {
-      const response = await axios.get('/api/employees');
-      const employeeMap = {};
-      
-      // Create mapping from ID to employee name
-      response.data.forEach(employee => {
-        employeeMap[employee.id] = `${employee.first_name} ${employee.last_name}`;
-      });
-      
-      setEmployees(employeeMap);
-    } catch (error) {
-      console.error('Error fetching employees:', error);
-    }
-  };
+  // Removed fetchEmployees function
 
   if (!task) return null;
 
@@ -87,7 +72,7 @@ const TaskDetail = ({ task, onBack }) => {
     const deadline = new Date(task.deadline);
     const now = new Date();
     
-    if (task.status === 'completed') return 'Đã hoàn thành';
+    if (task.status === 'completed') return 'Hoàn thành';
     
     if (deadline < now) {
       return 'Đã quá hạn';
@@ -131,6 +116,7 @@ const TaskDetail = ({ task, onBack }) => {
         </button>
         <h1 className="task-title-in-detail">
           {task.name_task}
+          {console.log(task.name_task)}
         </h1>
         <div className={`task-status ${getStatusClass(task.status)}`}>
           {getStatusIcon(task.status)} {getStatusLabel(task.status)}
@@ -138,14 +124,7 @@ const TaskDetail = ({ task, onBack }) => {
       </div>
       
       <div className="task-layout">
-        <div className="task-main-content">
-          <div className="task-progress-wrapper fade-in-slide delay-1">
-            <h3><FaProjectDiagram /> Tiến độ công việc</h3>
-            <div className={`remaining-time ${getRemainingTimeClass()}`}>
-              <FaRegClock /> {getRemainingTime()}
-            </div>
-          </div>
-          
+        <div className="task-main-content">          
           <div className="task-description-card fade-in-slide delay-2">
             <div className="card-header">
               <FaInfo /> <h3>Mô tả công việc</h3>
@@ -157,8 +136,12 @@ const TaskDetail = ({ task, onBack }) => {
         </div>
         
         <div className="task-sidebar">
-          <h3 className="section-title fade-in-slide delay-3"><FaTasks /> Thông tin</h3>
-          
+          <div className="task-progress-wrapper fade-in-slide delay-1">
+            <h3><FaProjectDiagram /> Tiến độ</h3>
+            <div className={`remaining-time ${getRemainingTimeClass()}`}>
+              <FaRegClock /> {getRemainingTime()}
+            </div>
+          </div>
           <div className="sidebar-card fade-in-slide delay-4 hover-card">
             <div className="card-header">
               <div className="detail-icon"><FaUser /></div>

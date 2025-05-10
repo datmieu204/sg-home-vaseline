@@ -71,7 +71,6 @@ const ManagerAccount1 = () => {
 
   return (
     <div>
-      <h1 style={{ textAlign: 'center', color: '#f28500', fontSize: '50px' }}>Trang tài khoản Manager</h1>
       <Account profile={profile} onConfirm={handleUpdate} />
     </div>
   );

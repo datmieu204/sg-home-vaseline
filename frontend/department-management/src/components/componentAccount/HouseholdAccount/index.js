@@ -31,7 +31,7 @@ const HouseholdAccount = ({ profile, onDisable  }) => {
             </div>
 
             <div className="info-item">
-                <label>Trạng thái tài khoản:</label>
+                <label>Trạng thái:</label>
                 <span>{profile.status}</span>
             </div>
 

@@ -3,7 +3,7 @@ import './OtherAccount.css'; // Reuse CSS của Account component
 
 const OtherAccount = ({ profile, onDisable  }) => {
   return (
-    <div className="account-container">
+    <div className="account-container-no-border">
       <div className="account-left">
         <div className="account-header">
           <div>
@@ -52,7 +52,7 @@ const OtherAccount = ({ profile, onDisable  }) => {
             />
           </div>
           <div className="form-group">
-            <label>Trạng thái tài khoản</label>
+            <label>Trạng thái</label>
             <input
               type="text"
               name="status"

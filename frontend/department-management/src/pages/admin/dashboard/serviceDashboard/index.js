@@ -29,7 +29,7 @@ const ServiceDashboard = () => {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="w-full max-w-7xl px-8 space-y-12">
-        <h1 className="text-3xl font-bold text-center">Trực quan hóa dữ liệu dịch vụ</h1>
+        <h1 className="textHeader">Trực quan hóa dữ liệu dịch vụ</h1>
         <ServiceChart data={data} />
       </div>
     </div>

@@ -1,8 +1,7 @@
 import React from 'react';
 import './MenuBar.css';
-import { Link, useLocation} from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
-// Icons import
 import { 
   FaUser, 
   FaClipboardList, 
@@ -14,42 +13,55 @@ import {
   FaReceipt
 } from 'react-icons/fa';
 
-// Import the logo directly
-import logo from '../../assets/white_logo.png'; // You'll need to create this assets folder
-
+import logo from '../../assets/white_logo.png'; 
 const MenuBar = ({ role }) => {
   const location = useLocation();
   
   const menuItems = {
     admin: [
       { name: 'Tài khoản', icon: <FaUser />, path: 'account' },
+      { name: 'Tài khoản khác', icon: <FaUserFriends />, path: 'otherAccount' },
       { name: 'Xem nhiệm vụ', icon: <FaClipboardList />, path: 'tasks' },
-      { name: 'Tài khoản người khác', icon: <FaUserFriends />, path: 'otherAccount' },
       { name: 'Dashboard', icon: <FaTachometerAlt />, path: 'dashboard' },
     ],
     manager: [
       { name: 'Tài khoản', icon: <FaUser />, path: 'account' },
+      { name: 'Tài khoản nhân viên', icon: <FaUserFriends />, path: 'otherAccount' },
       { name: 'Nhiệm vụ', icon: <FaClipboardList />, path: 'tasks' },
+      { name: 'Giao nhiệm vụ', icon: <FaClipboardList />, path: 'otherTasks' },
       { name: 'Sự cố', icon: <FaChartLine />, path: 'incidents' },
-      { name: 'Nhiệm vụ khác', icon: <FaClipboardList />, path: 'otherTasks' },
-      { name: 'Tài khoản khác', icon: <FaUserFriends />, path: 'otherAccount' },
     ],
-    emp: [
+    staff: [
       { name: 'Tài khoản', icon: <FaUser />, path: 'account' },
       { name: 'Nhiệm vụ', icon: <FaClipboardList />, path: 'tasks' },
-      { name: 'Báo cáo', icon: <FaChartLine />, path: 'reports' },
+      { name: 'Báo cáo sự cố', icon: <FaChartLine />, path: 'incidents' },
     ],
-    resident: [
+    staffACCT: [
+      { name: 'Tài khoản', icon: <FaUser />, path: 'account' },
+      { name: 'Nhiệm vụ', icon: <FaClipboardList />, path: 'tasks' },
+      { name: 'Báo cáo sự cố', icon: <FaChartLine />, path: 'incidents' },
+      { name: 'Xác nhận thanh toán', icon: <FaReceipt />, path: 'payment' },
+    ],
+    staffRECEP: [
+      { name: 'Tài khoản', icon: <FaUser />, path: 'account' },
+      { name: 'Tài khoản Hộ cư dân', icon: <FaUserFriends />, path: 'otherAccount' },
+      { name: 'Nhiệm vụ', icon: <FaClipboardList />, path: 'tasks' },
+      { name: 'Báo cáo sự cố', icon: <FaChartLine />, path: 'incidents' },
+      { name: 'Dịch vụ', icon: <FaReceipt />, path: 'services' },
+    ],
+    household: [
       { name: 'Tài khoản', icon: <FaUser />, path: 'account' },
       { name: 'Thông báo', icon: <FaBell />, path: 'notifications' },
-      { name: 'Dịch vụ', icon: <FaConciergeBell />, path: 'services' },
+      { 
+        name: 'Dịch vụ', 
+        icon: <FaConciergeBell />, 
+        path: 'services',
+        subItems: [
+          { name: 'Đăng ký dịch vụ', path: 'registerService' },
+          { name: 'Quản lý dịch vụ', path: 'myService' },
+        ],
+      },
     ],
-    finance: [
-      { name: 'Tài khoản', icon: <FaUser />, path: 'account' },
-      { name: 'Nhiệm vụ', icon: <FaClipboardList />, path: 'tasks' },
-      { name: 'Báo cáo', icon: <FaChartLine />, path: 'reports' },
-      { name: 'Xác nhận thanh toán', icon: <FaReceipt />, path: 'payment-confirmation' },
-    ]
   };
 
   const items = menuItems[role] || [];

@@ -1,69 +1,68 @@
 .employee-list {
-    background-color: #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    width: 100%;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  width: 100%;
+}
+
+.employee-list h2 {
+  text-align: center;
+  color: #f28500;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.employee-list table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.employee-list th, .employee-list td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.employee-list th {
+  background-color: #f5f5f5;
+  color: #333;
+  font-weight: 600;
+}
+
+.employee-list tr:hover {
+  background-color: #f9f9f9;
+}
+
+.employee-list td {
+  color: #555;
+}
+
+@media (max-width: 768px) {
+  .employee-list table, .employee-list thead, .employee-list tbody, .employee-list th, .employee-list td, .employee-list tr {
+    display: block;
   }
-  
-  .employee-list h2 {
-    text-align: center;
-    color: #f28500;
-    margin-bottom: 20px;
-    font-weight: 600;
+
+  .employee-list tr {
+    margin-bottom: 15px;
   }
-  
-  .employee-list table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
-  
-  .employee-list th, .employee-list td {
-    padding: 12px 16px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .employee-list th {
-    background-color: #f5f5f5;
-    color: #333;
-    font-weight: 600;
-  }
-  
-  .employee-list tr:hover {
-    background-color: #f9f9f9;
-  }
-  
+
   .employee-list td {
-    color: #555;
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
   }
-  
-  @media (max-width: 768px) {
-    .employee-list table, .employee-list thead, .employee-list tbody, .employee-list th, .employee-list td, .employee-list tr {
-      display: block;
-    }
-  
-    .employee-list tr {
-      margin-bottom: 15px;
-    }
-  
-    .employee-list td {
-      text-align: right;
-      padding-left: 50%;
-      position: relative;
-    }
-  
-    .employee-list td::before {
-      content: attr(data-label);
-      position: absolute;
-      left: 0;
-      width: 45%;
-      padding-left: 15px;
-      font-weight: bold;
-      text-align: left;
-    }
-  
-    .employee-list th {
-      display: none;
-    }
+
+  .employee-list td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0;
+    width: 45%;
+    padding-left: 15px;
+    font-weight: bold;
+    text-align: left;
   }
-  
+
+  .employee-list th {
+    display: none;
+  }
+}

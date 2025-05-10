@@ -1,0 +1,22 @@
+.form-group select {
+    padding: 12px;
+    border: 1.5px solid #f28500;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: white;
+    color: #333;
+    appearance: none; /* Ẩn giao diện mặc định của trình duyệt */
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 50 L70 100 L120 50' stroke='%23f28500' stroke-width='15' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+  } 
+  
+.form-group select:focus {
+    outline: none;
+    border-color: #d96e00;
+    box-shadow: 0 0 5px rgba(242, 133, 0, 0.5);
+  }
+  
