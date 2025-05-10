@@ -19,6 +19,12 @@ def get_profile(household_id: str ,db: Session = Depends(get_db)):
     Get household profile by household_id.
     """
     household = db.query(Household).filter(Household.household_id == household_id).first()
+
+    account_household = db.query(AccountHousehold).filter(AccountHousehold.household_id == household_id).first()
+    if not account_household:
+        raise HTTPException(status_code=404, detail="Account for household not found")
+
+
     if not household:
         raise HTTPException(status_code=404, detail="Household not found")
     return {
@@ -28,6 +34,7 @@ def get_profile(household_id: str ,db: Session = Depends(get_db)):
         "phone": household.phone,
         "room_number": household.room_number,
         "status": household.status,
+        "username": account_household.username,
     }
 
 # ------------------------------------------------------------------------
@@ -91,44 +98,6 @@ def modify_profile(
         "password": account_household.password
     }
 
-# @household_router.patch("/profile/modify")
-# def modify_profile(household_id: str, name: Optional[str] = None, phone: Optional[str] = None, room_number: Optional[str] = None, status: Optional[HouseholdStatus] = None, username: Optional[str] = None, password: Optional[str] = None, db: Session = Depends(get_db)):
-#     household = db.query(Household).filter(Household.household_id == household_id).first()
-#     if not household:
-#         raise HTTPException(status_code=404, detail="Household not found")
-    
-#     if name:
-#         household.name = name
-#     if phone:
-#         household.phone = phone
-#     if room_number:
-#         household.room_number = room_number
-#     if status:
-#         household.status = status
-
-#     account_household = db.query(AccountHousehold).filter(AccountHousehold.household_id == household_id).first()
-#     if not account_household:
-#         raise HTTPException(status_code=404, detail="Account for household not found")
-    
-#     if username:
-#         account_household.username = username
-#     if password:
-#         account_household.password = password
-
-#     db.commit()
-#     db.refresh(household)
-#     db.refresh(account_household)
-#     return {
-#         "id": household.household_id,
-#         "name": household.name,
-#         "number_of_members": household.number_of_members,
-#         "phone": household.phone,
-#         "room_number": household.room_number,
-#         "status": household.status,
-#         "account": account_household.account_id,
-#         "username": account_household.username,
-#         "password": account_household.password
-#     }
 
 
 @household_router.get("/notifications")
@@ -244,6 +213,7 @@ def get_service_by_id(service_id: str, db: Session = Depends(get_db)):
     if not service:
         raise HTTPException(status_code=404, detail="Service not found")
 
+    
     # Build the response
     response = {
         "service_id": service.service_id,
@@ -282,6 +252,7 @@ def get_my_registered_services(household_id: str, db: Session = Depends(get_db))
             "status": sr.status.value,
             "start_date": sr.start_date,
             "end_date": sr.end_date,
+            "quantity": sr.quantity,
             "service_name": s.service_name,
             "price": s.price
         }
