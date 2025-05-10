@@ -1,152 +1,193 @@
+/* =======  BIẾN MÀU & CƠ BẢN  ======= */
+:root {
+  --primary: #f28500;
+  --primary-dark: #d46f00;
+  --bg: #f9f4ef;
+  --white: #ffffff;
+  --shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  --radius-lg: 22px;
+  --radius-md: 12px;
+  --transition: all 0.25s ease-in-out;
+  --font-base: "Inter", "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-base);
+  background: var(--bg);
+  color: #000;
+}
+
+/* =======  KHỐI NGOÀI  ======= */
 .services-container {
-    padding: 16px;
-    background-color: #f9f4ef;
-    align-items: center;
-    justify-items: center;
-    position: relative;
+  padding: 32px 16px;
+  max-width: 960px;
+  margin: 0 auto;
 }
 
 .services-list {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
+  display: grid;
+  gap: 24px;
 }
 
+/* =======  THẺ DỊCH VỤ  ======= */
 .service-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    background-color: white;
-    border: 2px solid #f28500;
-    padding: 16px;
-    border-radius: 22px;
-    max-width: 600px; 
-    width: 100%; 
-    margin: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 24px;
+  background: var(--white);
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+
+.service-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
 .service-content {
-    flex: 1;
+  flex: 1;
+  min-width: 0;
 }
 
 .service-title {
-    margin: 0;
-    font-size: 16px;
-    color: #f28500;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .service-description {
-    margin: 4px 0 0 0;
-    font-size: 14px;
-    color: #000000;
+  margin-top: 6px;
+  font-size: 16px;
+  color: #444;
+  line-height: 1.5;
 }
 
-.service-actions {
-    display: flex;
-    gap: 8px;
+/* =======  NÚT HÀNH ĐỘNG  ======= */
+.service-actions,
+.service-details-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
 }
 
-.service-actions button {
-    background-color: #ffffff;
-    color: #f28500;
-    border: 2px solid #f28500;
-    padding: 8px 12px;
-    border-radius: 20px;
-    cursor: pointer;
+.service-actions button,
+.back-btn,
+.register-btn {
+  min-width: 110px;
+  min-height: 38px;
+  border: 2px solid var(--primary);
+  background: var(--white);
+  color: var(--primary);
+  padding: 8px 18px;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition);
 }
 
-.service-actions .register-btn {
-    background-color: #f28500;
-    color: white;
+.service-actions button:hover,
+.back-btn:hover,
+.register-btn:hover {
+  background: var(--primary);
+  color: var(--white);
 }
 
-.service-actions button:hover {
-    background-color: #f28500;
-    color: white;
+.register-btn {
+  background: var(--primary);
+  color: var(--white);
+  border-color: var(--primary);
 }
 
+.register-btn:hover {
+  background: var(--primary-dark);
+}
+
+/* =======  KHỐI CHI TIẾT  ======= */
 .service-details-content {
-    background-color: white;
-    padding: 20px;
-    border: 2px solid #f28500;
-    border-radius: 22px;
+  background: var(--white);
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-lg);
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 24px;
+  box-shadow: var(--shadow);
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.service-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .service-details-title {
-    margin: 0 0 16px 0;
-    font-size: 20px;
-    color: #f28500;
+  margin: 0 0 12px 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--primary);
 }
 
 .service-details-content p {
-    margin: 8px 0;
-    font-size: 16px;
-    color: #000;
+  margin: 10px 0;
+  font-size: 18px;
+  line-height: 1.5;
 }
 
 .service-details-content p strong {
-    color: #f28500;
+  color: var(--primary);
 }
 
-.service-details-actions {
-    display: flex;
-    justify-content: space-between; /* Pushes buttons to opposite ends */
-    gap: 8px;
-    margin-top: 16px;
-}
-
-.back-btn,
-.register-btn {
-    background-color: #ffffff;
-    color: #f28500;
-    border: 2px solid #f28500;
-    padding: 8px 16px;
-    border-radius: 20px;
-    cursor: pointer;
-}
-
-.back-btn:hover,
-.register-btn:hover {
-    background-color: #f28500;
-    color: white;
-}
-
-.back-btn:hover {
-    background-color: #f28500;
-    color: white;
-}
-
-.register-btn {
-    background-color: #f28500;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 20px;
-    cursor: pointer;
-}
-
-.register-btn:hover {
-    background-color: #f28500;
-    color: white;
-}
-
+/* =======  INPUT SỐ LƯỢNG  ======= */
 .quantity-input {
-    margin: 16px 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 20px 0;
+  font-size: 18px;
 }
 
 .quantity-input label {
-    color: #f28500;
+  font-weight: 500;
+  color: var(--primary);
 }
 
 .quantity-input input {
-    width: 60px;
-    padding: 4px;
-    border: 2px solid #f28500;
-    border-radius: 8px;
-    text-align: center;
+  width: 70px;
+  padding: 6px;
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-md);
+  text-align: center;
+  font-size: 18px;
+}
+
+/* =======  RESPONSIVE  ======= */
+@media (max-width: 600px) {
+  .service-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .service-title { font-size: 18px; }
+  .service-description { font-size: 16px; }
 }

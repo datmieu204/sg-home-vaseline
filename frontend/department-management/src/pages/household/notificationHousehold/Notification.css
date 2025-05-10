@@ -1,141 +1,190 @@
-/* Notification.css */
+/* ================================
+   Notification Module – Modern UI
+   ================================ */
 
+:root {
+  /* Color palette */
+  --clr-bg: #f9fafb;
+  --clr-surface: #ffffff;
+  --clr-text-primary: #22292f;
+  --clr-text-secondary: #6b7280;
+  --clr-border: #e5e7eb;
+  --clr-primary: #f89236; /* Accent */
+  --clr-primary-dark: #c05621;
+  --clr-hover: #f3f4f6;
+  --radius-md: 0.75rem;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+html {
+  font-size: 16px;
+  box-sizing: border-box;
+}
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+/* ---------- Layout wrappers ---------- */
 .notification-container {
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-  
-  .notification-title {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    text-align: center;
-    color: #333;
-  }
-  
-  .notification-list {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .notification-item {
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 16px;
-    margin-bottom: 12px;
-    background-color: #f8f9fa;
-    transition: background-color 0.2s ease;
-    cursor: pointer;
-  }
-  
-  .notification-item:hover {
-    background-color: #e9ecef;
-  }
-  
-  .notification-message {
-    font-weight: 600;
-    margin-bottom: 4px;
-  }
-  
-  .notification-time {
-    color: #666;
-    font-size: 14px;
-  }
-  
-  .detail-box {
-    border: 1px solid #ccc;
-    padding: 20px;
-    border-radius: 10px;
-    background-color: #fffefc;
-  }
-  
-  .back-button {
-    background-color: #007bff;
-    color: white;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 6px;
-    margin-bottom: 16px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-  
-  .back-button:hover {
-    background-color: #0056b3;
-  }
-  
-  .service-list {
-    padding-left: 20px;
-    margin-top: 8px;
-  }
-  
-  .service-list li {
-    margin-bottom: 4px;
-  }
-  /* Thêm vào cuối file hoặc giữa các section */
+  max-width: 760px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background-color: var(--clr-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.notification-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--clr-text-primary);
+  margin-bottom: 1.5rem;
+}
+
+/* ---------- Notification list ---------- */
+.notification-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.notification-item {
+  background-color: var(--clr-bg);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.notification-item:hover {
+  background-color: var(--clr-hover);
+  box-shadow: var(--shadow-sm);
+}
+
+.notification-message {
+  font-weight: 600;
+  color: var(--clr-text-primary);
+}
+
+.notification-time {
+  font-size: 0.875rem;
+  color: var(--clr-text-secondary);
+}
+
+/* ---------- Detail view ---------- */
+.notification-detail {
+  padding: 1.75rem;
+  background-color: var(--clr-bg);
+  border-radius: var(--radius-md);
+}
+
+.detail-card {
+  background-color: var(--clr-surface);
+  padding: 1.5rem 1.75rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+.detail-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--clr-text-primary);
+}
+
+.detail-info p {
+  margin: 0.375rem 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--clr-text-secondary);
+}
+
+.detail-info span {
+  font-weight: 600;
+  color: var(--clr-text-primary);
+}
+
+/* ---------- Service section / table ---------- */
+.service-section {
+  margin-top: 1.5rem;
+}
+
+.service-section h4 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--clr-text-primary);
+}
+
+.service-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.service-table th,
+.service-table td {
+  padding: 0.65rem 0.9rem;
+  border: 1px solid var(--clr-border);
+  text-align: left;
+}
+
+.service-table th {
+  background-color: var(--clr-hover);
+  font-weight: 600;
+  color: var(--clr-text-primary);
+}
+
+/* ---------- Buttons & Inputs ---------- */
+.back-button {
+  display: inline-block;
+  background-color: var(--clr-primary);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.55rem 1.4rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: var(--clr-primary-dark);
+  box-shadow: var(--shadow-sm);
+}
 
 .search-input {
-    width: 100%;
-    padding: 10px 12px;
-    margin-bottom: 20px;
-    font-size: 16px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
+  width: 100%;
+  padding: 0.65rem 0.9rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--clr-border);
+  transition: box-shadow 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(248, 146, 54, 0.35);
+}
+
+/* ---------- Utility classes ---------- */
+@media (max-width: 576px) {
+  .notification-container {
+    padding: 1rem;
   }
+  .detail-card,
   .notification-detail {
-    padding: 20px;
-    background-color: #f9fafb;
-    border-radius: 12px;
+    padding: 1.25rem;
   }
-  
-  .detail-card {
-    background-color: white;
-    padding: 24px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  }
-  
-  .detail-title {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 16px;
-  }
-  
-  .detail-info p {
-    margin: 6px 0;
-    font-size: 15px;
-  }
-  
-  .detail-info span {
-    font-weight: 600;
-    color: #333;
-  }
-  
-  .service-section {
-    margin-top: 20px;
-  }
-  
-  .service-section h4 {
-    font-size: 17px;
-    margin-bottom: 10px;
-  }
-  
-  .service-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-  }
-  
-  .service-table th,
-  .service-table td {
-    padding: 10px 12px;
-    border: 1px solid #e0e0e0;
-    text-align: left;
-  }
-  
-  .service-table th {
-    background-color: #f0f0f0;
-  }
-  
+}
