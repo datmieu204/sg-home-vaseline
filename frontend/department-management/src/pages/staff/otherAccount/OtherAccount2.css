@@ -1,0 +1,96 @@
+.add-btn {
+  margin: 10px auto;
+  padding: 10px 16px;
+  background-color: #f3ad2a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.add-btn:hover {
+  background-color: #e09e1e;
+}
+
+.modal-1 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-1-content {
+  background: white;
+  padding: 32px;
+  border-radius: 12px;
+  min-width: 530px;
+  box-shadow: 0 6px 25px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center; /* Căn giữa nội dung theo chiều ngang */
+}
+
+
+.modal-1-content input {
+  width: 100%;
+  max-width: 400px;
+  padding: 14px 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 18px;
+  line-height: 1.6;
+  box-sizing: border-box;
+}
+
+
+.modal-1-content h3 {
+  text-align: center;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.modal-1-content .modal-1-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.modal-1-content .modal-1-buttons button {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  transition: 0.3s ease;
+}
+
+.modal-1-content .modal-1-buttons button:first-child {
+  background-color: #28a745;
+  color: white;
+}
+
+.modal-1-content .modal-1-buttons button:first-child:hover {
+  background-color: #218838;
+}
+
+.modal-1-content .modal-1-buttons button:last-child {
+  background-color: #dc3545;
+  color: white;
+}
+
+.modal-1-content .modal-1-buttons button:last-child:hover {
+  background-color: #c82333;
+}

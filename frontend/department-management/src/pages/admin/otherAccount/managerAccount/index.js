@@ -12,7 +12,7 @@ const ManagerAccount = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [newManager, setNewManager] = useState({
     employee_name: '',
-    department_id: 'ACCT',
+    department_id: '',
     username: '',
     password: '',
     phone: '',
@@ -45,7 +45,9 @@ const ManagerAccount = () => {
     
     const filtered = accounts.filter(account => 
       (account.employee_name && account.employee_name.toLowerCase().includes(term.toLowerCase())) || 
-      (account.username && account.username.toLowerCase().includes(term.toLowerCase()))
+      (account.username && account.username.toLowerCase().includes(term.toLowerCase())) ||
+      (account.department_id && account.department_id.toLowerCase().includes(term.toLowerCase())) ||
+      (account.employee_id && account.employee_id.toLowerCase().includes(term.toLowerCase()))
     );
     setFilteredAccounts(filtered);
   };
@@ -111,7 +113,7 @@ const ManagerAccount = () => {
     setShowPopup(false); 
     setNewManager({
       employee_name: '',
-      department_id: 'ACCT',
+      department_id: '',
       username: '',
       password: '',
       phone: '',
@@ -223,6 +225,23 @@ const ManagerAccount = () => {
                 <label>Chức vụ:</label>
                 <input type="text" value="Manager" disabled />
               </div>
+              <div>
+                <label>Phòng ban:</label>
+                <select
+                  name="department_id"
+                  value={newManager.department_id}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">-- Chọn phòng ban --</option>
+                  <option value="ACCT">Kế toán</option>
+                  <option value="RECEP">Lễ tân</option>
+                  <option value="CLEAN">Vệ sinh</option>
+                  <option value="SECUR">Bảo vệ</option>
+                  <option value="TECH">Kỹ thuật</option>
+                </select>
+              </div>
+
               <div>
                 <label>Username:</label>
                 <input

@@ -35,7 +35,9 @@ const StaffAccount = () => {
     
     const filtered = accounts.filter(account => 
       (account.employee_name && account.employee_name.toLowerCase().includes(term.toLowerCase())) || 
-      (account.username && account.username.toLowerCase().includes(term.toLowerCase()))
+      (account.username && account.username.toLowerCase().includes(term.toLowerCase())) ||
+      (account.department_id && account.department_id.toLowerCase().includes(term.toLowerCase())) ||
+      (account.employee_id && account.employee_id.toLowerCase().includes(term.toLowerCase()))
     );
     setFilteredAccounts(filtered);
   };
